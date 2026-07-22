@@ -7,6 +7,10 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700;900&family=Heebo:wght@300;400;500;700&display=swap');
   :root{--cream:#F3EAD8;--cream-deep:#E9DBC0;--ink:#2A3A47;--teal:#244F5E;--clay:#C0673B;--clay-soft:#D98A5E;--gold:#D9A441;--card-shadow:rgba(42,58,71,.18);}
+  /* --- global shrink for small Android screens --- */
+  .app{ zoom: 0.8; }
+  @supports not (zoom: 1){ .app{ transform: scale(0.8); transform-origin: top center; } }
+
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
   html,body{height:100%;}
   body{font-family:'Heebo',sans-serif;background:var(--cream);color:var(--ink);display:flex;justify-content:center;min-height:100vh;}
@@ -261,10 +265,12 @@ function imgURL(no){ return 'images/'+no+'.jpg'; }
 
 async function loadData(){
   try{
-    const res = await fetch('data/data.json');
+    const res = await fetch('data/data.json?v='+Date.now(), {cache:'no-store'});
+    if(!res.ok) throw new Error('HTTP '+res.status+' בטעינת data/data.json');
     DATA = await res.json();
+    if(!DATA || !DATA.cards || !DATA.cards.length) throw new Error('קובץ הנתונים ריק');
   }catch(e){
-    document.body.insertAdjacentHTML('afterbegin','<div style="padding:20px;color:#a33">שגיאה בטעינת הנתונים. ודאו שהקובץ data/data.json קיים.</div>');
+    document.body.insertAdjacentHTML('afterbegin','<div style="padding:16px;margin:10px;background:#fff;border:2px solid #a33;border-radius:10px;color:#a33;font-size:14px;line-height:1.6;direction:rtl">שגיאה בטעינת הנתונים:<br><b>'+e.message+'</b><br>נתיב: data/data.json</div>');
     return;
   }
   // Build all 12 book slots
@@ -283,7 +289,6 @@ async function loadData(){
   renderCounter();
 }
 
-const SUITS=["על-אישי","ועדה","קהילה","מלווים","מועצה","אחר"];
 
 
 // in-memory readings store (prototype; resets on reload)
@@ -551,45 +556,15 @@ function closeViewMenu(){document.getElementById('viewMenu').classList.remove('s
 function chooseBooks(){closeViewMenu();showScreen('books');}
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(id==='books')renderBooks();window.scrollTo({top:0});}
 function tap(name){const t=document.getElementById('toast');t.textContent=name;t.classList.add('show');clearTimeout(window._tt);window._tt=setTimeout(()=>t.classList.remove('show'),1800);}
-document.getElementById('editBack').onclick=()=>showScreen('cardDetail');
-loadData();
+function _bind(id, handler){ const el=document.getElementById(id); if(el) el.onclick=handler; }
+_bind('editBack', ()=>showScreen('cardDetail'));
+window.addEventListener('load', function(){ try{ loadData(); }catch(e){ document.body.insertAdjacentHTML('afterbegin','<div style="padding:16px;color:#a33;direction:rtl">שגיאה: '+e.message+'</div>'); } });
 </script>
 
 <script>
 /* ---- PWA: installable + offline (single-file friendly) ---- */
 (function(){
-    // Register a minimal service worker (enables install + basic offline of the app shell)
-  if('serviceWorker' in navigator){
-    const swCode = `
-      const CACHE='sole-collage-era-v1';
-      self.addEventListener('install', e=>{ self.skipWaiting(); });
-      self.addEventListener('activate', e=>{ self.clients.claim(); });
-      self.addEventListener('fetch', e=>{
-        e.respondWith(
-          caches.open(CACHE).then(async cache=>{
-            const hit = await cache.match(e.request);
-            if(hit) return hit;
-            try{
-              const res = await fetch(e.request);
-              if(e.request.method==='GET' && res && res.status===200 && e.request.url.startsWith(self.location.origin)){
-                cache.put(e.request, res.clone());
-              }
-              return res;
-            }catch(err){
-              return hit || Response.error();
-            }
-          })
-        );
-      });
-    `;
-    try{
-      const swBlob = new Blob([swCode], {type:'text/javascript'});
-      const swUrl = URL.createObjectURL(swBlob);
-      navigator.serviceWorker.register(swUrl).catch(err=>console.warn('SW reg failed', err));
-    }catch(e){ console.warn('SW blob failed', e); }
-  }
-
-  // Custom install prompt
+    // Custom install prompt
   let deferredPrompt=null;
   window.addEventListener('beforeinstallprompt', (e)=>{
     e.preventDefault(); deferredPrompt=e;
