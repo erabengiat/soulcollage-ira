@@ -7,6 +7,9 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700;900&family=Heebo:wght@300;400;500;700&display=swap');
   :root{--cream:#F3EAD8;--cream-deep:#E9DBC0;--ink:#2A3A47;--teal:#244F5E;--clay:#C0673B;--clay-soft:#D98A5E;--gold:#D9A441;--card-shadow:rgba(42,58,71,.18);}
+  #thumbsGrid, #searchGrid, #cardsGrid{display:grid !important;grid-template-columns:repeat(3,1fr) !important;gap:12px;}
+  #thumbsGrid .thumb-img, #searchGrid .thumb-img, #cardsGrid .thumb-img{aspect-ratio:3/4 !important;overflow:hidden !important;}
+  #thumbsGrid .thumb-img img, #searchGrid .thumb-img img, #cardsGrid .thumb-img img{width:100% !important;height:100% !important;object-fit:cover !important;max-height:100% !important;}
   /* --- fit tuning for small screens --- */
   .app{ max-width: 400px; }
 
@@ -34,8 +37,14 @@
   .subhead .sub-count{margin-inline-start:auto;font-family:'Frank Ruhl Libre',serif;font-size:14px;color:var(--clay);}
   .grid{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:18px 16px;padding:24px 22px 30px;align-content:center;}
   .tile{display:flex;flex-direction:column;align-items:center;gap:12px;background:none;border:none;cursor:pointer;font-family:inherit;}
-  .disc{width:100%;aspect-ratio:1/1;max-width:150px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px var(--card-shadow);transition:transform .15s;position:relative;overflow:hidden;}
+  .disc{width:100%;aspect-ratio:1/1;max-width:105px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px var(--card-shadow);transition:transform .15s;position:relative;overflow:hidden;}
   .tile:active .disc{transform:scale(.95);}
+  .grid .tile:nth-child(1) .disc{background:#C0673B;}
+  .grid .tile:nth-child(2) .disc{background:#244F5E;}
+  .grid .tile:nth-child(3) .disc{background:#D9A441;}
+  .grid .tile:nth-child(4) .disc{background:#6E5A8A;}
+  .grid .tile:nth-child(5) .disc{background:#3E6E5E;}
+  .grid .tile:nth-child(6) .disc{background:#A84B6B;}
   .disc svg{width:46%;height:46%;}
   .tile-label{font-family:'Frank Ruhl Libre',serif;font-weight:500;font-size:18px;color:var(--teal);text-align:center;}
   .badge{position:absolute;top:14%;left:14%;background:var(--cream);color:var(--ink);width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Frank Ruhl Libre',serif;font-weight:900;font-size:16px;box-shadow:0 2px 5px var(--card-shadow);}
@@ -81,8 +90,8 @@
   .edit-btn{margin-inline-start:auto;background:none;border:none;cursor:pointer;padding:6px;display:flex;}
   .edit-btn svg{width:22px;height:22px;}
   .empty-note{grid-column:1/-1;text-align:center;color:var(--teal);opacity:.6;padding:40px 20px;font-size:14px;line-height:1.6;}
-  .slideshow-body{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 20px 30px;}
-  .slide-img{max-width:100%;max-height:56vh;width:auto;border-radius:10px;box-shadow:0 8px 24px var(--card-shadow);display:block;margin-bottom:14px;}
+  .slideshow-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 14px 20px;min-height:70vh;}
+  .slide-img{max-width:100%;max-height:82vh;width:auto;border-radius:8px;box-shadow:0 8px 24px var(--card-shadow);display:block;margin:0 auto;}
   .slide-name{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:22px;color:var(--teal);text-align:center;}
   .slide-sub{color:var(--clay);font-size:14px;text-align:center;margin-bottom:16px;}
   .slide-controls{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:14px;}
@@ -161,13 +170,13 @@
     </div>
     <div class="grid">
       <button class="tile" onclick="openViewMenu()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="21" y1="21" x2="15.2" y2="15.2"/></svg></span><span class="tile-label">צפייה בקלפים</span></button>
-      <button class="tile" onclick="drawOne()"><span class="disc"><span class="badge">1</span><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><rect x="6" y="3.5" width="12" height="17" rx="1.5"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/></svg></span><span class="tile-label">שליפת קלף אחד</span></button>
-      <button class="tile" onclick="startFour()"><span class="disc"><span class="badge">4</span><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.4" stroke-linecap="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg></span><span class="tile-label">קריאת ארבעה קלפים</span></button>
+      <button class="tile" onclick="drawOne()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><rect x="6" y="3.5" width="12" height="17" rx="1.5"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/></svg></span><span class="tile-label">שליפת קלף אחד</span></button>
+      <button class="tile" onclick="startFour()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.4" stroke-linecap="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg></span><span class="tile-label">קריאת ארבעה קלפים</span></button>
       <button class="tile" onclick="showPastReadings()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><polyline points="12 7 12 12 15.5 14"/></svg></span><span class="tile-label">קריאות קודמות</span></button>
       <button class="tile" onclick="showAddCard()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><rect x="5" y="4" width="14" height="16" rx="1.5"/><line x1="12" y1="9" x2="12" y2="15"/><line x1="9" y1="12" x2="15" y2="12"/></svg></span><span class="tile-label">הוספת קלף</span></button>
       <button class="tile" onclick="tap('עזרה וגיבוי')"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><line x1="5" y1="6" x2="16" y2="6"/><line x1="5" y1="10" x2="16" y2="10"/><line x1="5" y1="14" x2="13" y2="14"/><line x1="5" y1="18" x2="13" y2="18"/></svg></span><span class="tile-label">עזרה וגיבוי</span></button>
     </div>
-    <div class="footer">גרסת אב-טיפוס · מסך הבית</div>
+    <div class="footer">גרסת אב-טיפוס · v3 · מסך הבית</div>
   </div>
 
   <!-- BOOKS -->
@@ -647,32 +656,16 @@ let slideOrder=[], slideIdx=0, slideTimer=null, slideDelay=4000, slidePlaying=fa
 const SLIDE_SPEEDS={slow:7000, medium:4000, fast:2000};
 function openSlideshowMenu(){
   closeViewMenu();
-  // ask order via the same modal style: quick inline choice
   const pool=allCardsWithImg();
   if(!pool.length){ tap('אין קלפים'); return; }
-  // default: random order, medium speed, autoplay
-  slideOrder = shuffle(pool.slice());
-  slideIdx=0; slideDelay=SLIDE_SPEEDS.medium;
+  slideOrder = shuffle(pool.slice());   // random order. For numeric order use: pool.slice().sort((a,b)=>a.no-b.no)
+  slideIdx=0; slideDelay=2000;          // 2 seconds
   renderSlide(); showScreen('slideshow'); startSlideshow();
 }
 function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 function renderSlide(){
   const c=slideOrder[slideIdx];
-  const body=document.getElementById('slideBody');
-  body.innerHTML =
-    '<img class="slide-img" src="'+c.img+'">'+
-    '<div class="slide-name">'+c.name+'</div>'+
-    '<div class="slide-sub">'+c.book+(c.suit?(' · '+c.suit):'')+'</div>'+
-    '<div class="slide-controls">'+
-      '<button class="slide-nav" onclick="slidePrev()"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"/></svg></button>'+
-      '<button class="slide-play" id="slidePlayBtn" onclick="toggleSlide()">'+(slidePlaying?pauseIcon():playIcon())+'</button>'+
-      '<button class="slide-nav" onclick="slideNext()"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button>'+
-    '</div>'+
-    '<div class="speed-row">'+
-      '<button class="speed-btn'+(slideDelay===SLIDE_SPEEDS.slow?' active':'')+'" onclick="setSpeed(\'slow\')">🐌 איטי</button>'+
-      '<button class="speed-btn'+(slideDelay===SLIDE_SPEEDS.medium?' active':'')+'" onclick="setSpeed(\'medium\')">🐢 בינוני</button>'+
-      '<button class="speed-btn'+(slideDelay===SLIDE_SPEEDS.fast?' active':'')+'" onclick="setSpeed(\'fast\')">🐇 מהיר</button>'+
-    '</div>';
+  document.getElementById('slideBody').innerHTML = '<img class="slide-img" src="'+c.img+'">';
 }
 function playIcon(){ return '<svg viewBox="0 0 24 24"><polygon points="7 5 19 12 7 19"/></svg>'; }
 function pauseIcon(){ return '<svg viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>'; }
