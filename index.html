@@ -7,11 +7,12 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700;900&family=Heebo:wght@300;400;500;700&display=swap');
   :root{--cream:#F3EAD8;--cream-deep:#E9DBC0;--ink:#2A3A47;--teal:#244F5E;--clay:#C0673B;--clay-soft:#D98A5E;--gold:#D9A441;--card-shadow:rgba(42,58,71,.18);}
-  #thumbsGrid, #searchGrid, #cardsGrid{display:grid !important;grid-template-columns:repeat(3,1fr) !important;gap:12px;}
-  #thumbsGrid .thumb-img, #searchGrid .thumb-img, #cardsGrid .thumb-img{aspect-ratio:3/4 !important;overflow:hidden !important;}
-  #thumbsGrid .thumb-img img, #searchGrid .thumb-img img, #cardsGrid .thumb-img img{width:100% !important;height:100% !important;object-fit:cover !important;max-height:100% !important;}
-  /* --- fit tuning for small screens --- */
-  .app{ max-width: 400px; }
+  /* grids of small card thumbnails (3 per row) */
+  #thumbsGrid, #searchGrid, #cardsGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  #thumbsGrid .thumb, #searchGrid .thumb, #cardsGrid .thumb{display:flex;flex-direction:column;gap:4px;cursor:pointer;}
+  #thumbsGrid .thumb-img, #searchGrid .thumb-img, #cardsGrid .thumb-img{aspect-ratio:3/4;border-radius:5px;overflow:hidden;box-shadow:0 3px 8px var(--card-shadow);background:#ddd;}
+  #thumbsGrid .thumb-img img, #searchGrid .thumb-img img, #cardsGrid .thumb-img img{width:100%;height:100%;object-fit:cover;display:block;}
+  #thumbsGrid .thumb-name, #searchGrid .thumb-name, #cardsGrid .thumb-name{font-size:10px;color:var(--teal);text-align:center;line-height:1.15;}
 
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
   html,body{height:100%;}
@@ -66,7 +67,7 @@
   .detail{padding:0 20px 60px;}
   .detail-img{max-height:34vh;width:auto;max-width:70%;border-radius:10px;box-shadow:0 8px 24px var(--card-shadow);margin:0 auto 16px;display:block;}
   .detail-name{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:26px;color:var(--teal);text-align:center;margin-bottom:6px;}
-  .detail-meta{text-align:center;color:var(--clay);font-size:14px;margin-bottom:20px;}
+  .detail-meta{text-align:center;color:var(--clay);font-size:11px;margin-top:2px;margin-bottom:14px;opacity:.85;}
   .cs-field{display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(36,79,94,.12);padding:11px 2px;}
   .cs-label{font-family:'Frank Ruhl Libre',serif;font-size:14px;color:var(--clay);min-width:100px;}
   .cs-value{font-size:15px;color:var(--ink);flex:1;}
@@ -90,8 +91,8 @@
   .edit-btn{margin-inline-start:auto;background:none;border:none;cursor:pointer;padding:6px;display:flex;}
   .edit-btn svg{width:22px;height:22px;}
   .empty-note{grid-column:1/-1;text-align:center;color:var(--teal);opacity:.6;padding:40px 20px;font-size:14px;line-height:1.6;}
-  .slideshow-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 14px 20px;min-height:70vh;}
-  .slide-img{max-width:100%;max-height:82vh;width:auto;border-radius:8px;box-shadow:0 8px 24px var(--card-shadow);display:block;margin:0 auto;}
+  .slideshow-body{position:fixed;inset:0;width:100vw;height:100vh;background:#000;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:200;}
+  .slide-img{max-width:100vw;max-height:100vh;width:auto;height:auto;object-fit:contain;display:block;}
   .slide-name{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:22px;color:var(--teal);text-align:center;}
   .slide-sub{color:var(--clay);font-size:14px;text-align:center;margin-bottom:16px;}
   .slide-controls{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:14px;}
@@ -194,7 +195,7 @@
 
   <!-- CARD DETAIL -->
   <div class="screen" id="cardDetail">
-    <div class="subhead"><button class="back" id="detailBack"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button><h2>הקלף</h2></div>
+    <div class="subhead"><h2>הקלף</h2></div>
     <div class="detail" id="detailBody"></div>
   </div>
   <!-- CARD EDIT -->
@@ -280,10 +281,9 @@
     </div>
   </div>
 
-  <!-- SLIDESHOW -->
+  <!-- SLIDESHOW (full screen, tap to exit) -->
   <div class="screen" id="slideshow">
-    <div class="subhead"><button class="back" onclick="stopSlideshow();showScreen('home')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button><h2>מצגת</h2></div>
-    <div class="slideshow-body" id="slideBody"></div>
+    <div class="slideshow-body" id="slideBody" onclick="exitSlideshow()"></div>
   </div>
 
 <div class="toast" id="toast"></div>
@@ -383,11 +383,12 @@ function openBook(id){
   showScreen('bookCards');
 }
 let currentCard=null; // {bookId,no}
+function goBackFromCard(){ showScreen((currentCard&&currentCard.from)||'books'); }
 function openCard(bookId,no,fromScreen){
   const b=books.find(x=>x.id===bookId);const c=b.cards.find(x=>x.no===no);
   currentCard={bookId,no,from:fromScreen||'bookCards'};
   const noteHtml=c.note?`<div class="note-box">${c.note}</div>`:`<div class="note-box note-empty">אין עדיין הערה לקלף זה</div>`;
-  const imgHtml=c.img?`<img class="detail-img" src="${c.img}">`:'';
+  const imgHtml=c.img?`<img class="detail-img" src="${c.img}" onclick="goBackFromCard()" style="cursor:pointer">`:'';
   document.getElementById('detailBody').innerHTML=`${imgHtml}
     <div class="cs-field"><div class="cs-label">שם הקלף</div><div class="cs-value cs-name">${c.name||"—"}</div><button class="edit-btn-inline" id="editBtn" title="עריכה"><svg viewBox="0 0 24 24" fill="none" stroke="#C0673B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button></div>
     <div class="cs-field"><div class="cs-label">יומן</div><div class="cs-value">${b.name}</div></div>
@@ -464,7 +465,7 @@ function drawOne(){
   const pool=allCardsWithImg();if(!pool.length){tap('אין קלפים לשליפה');return;}
   const c=pool[Math.floor(Math.random()*pool.length)];
   const noteHtml=c.note?`<div class="note-box" style="text-align:right">${c.note}</div>`:`<div class="note-box note-empty">אין הערה</div>`;
-  document.getElementById('singleBody').innerHTML=`<img class="detail-img" src="${c.img}"><div class="detail-name">${c.name}</div><div class="detail-meta">${c.book}</div>${noteHtml}<button class="btn secondary" style="margin-top:16px" onclick="drawOne()">שליפה נוספת</button>`;
+  document.getElementById('singleBody').innerHTML=`<img class="detail-img" src="${c.img}" onclick="showScreen('home')" style="cursor:pointer"><div class="detail-name">${c.name}</div><div class="detail-meta">${c.book}</div>${noteHtml}<button class="btn secondary" style="margin-top:16px" onclick="drawOne()">שליפה נוספת</button>`;
   showScreen('singleDraw');
 }
 
@@ -652,6 +653,7 @@ function runSearch(){
 }
 
 /* ---- SLIDESHOW ---- */
+function exitSlideshow(){ stopSlideshow(); showScreen("home"); }
 let slideOrder=[], slideIdx=0, slideTimer=null, slideDelay=4000, slidePlaying=false;
 const SLIDE_SPEEDS={slow:7000, medium:4000, fast:2000};
 function openSlideshowMenu(){
