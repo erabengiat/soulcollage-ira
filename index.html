@@ -2,17 +2,37 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
 <title>סול קולאז' של עירא</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700;900&family=Heebo:wght@300;400;500;700&display=swap');
+
+  /* ===== FORCE correct small thumbnails (thumbs + search + book cards) ===== */
+  #thumbsGrid, #searchGrid, #cardsGrid{
+    display:grid !important;
+    grid-template-columns:repeat(3,1fr) !important;
+    gap:10px !important;
+    padding:12px !important;
+    align-content:start !important;
+  }
+  #thumbsGrid .thumb, #searchGrid .thumb, #cardsGrid .thumb{
+    display:flex !important; flex-direction:column !important; gap:4px !important;
+    width:100% !important; min-width:0 !important; cursor:pointer !important;
+  }
+  #thumbsGrid .thumb-img, #searchGrid .thumb-img, #cardsGrid .thumb-img{
+    width:100% !important; aspect-ratio:3/4 !important; height:auto !important;
+    border-radius:5px !important; overflow:hidden !important; background:#ddd !important;
+    box-shadow:0 3px 8px rgba(42,58,71,.18) !important;
+  }
+  #thumbsGrid .thumb-img img, #searchGrid .thumb-img img, #cardsGrid .thumb-img img{
+    width:100% !important; height:100% !important; object-fit:cover !important;
+    display:block !important; max-width:100% !important; max-height:100% !important;
+  }
+  #thumbsGrid .thumb-name, #searchGrid .thumb-name, #cardsGrid .thumb-name{
+    font-size:10px !important; line-height:1.15 !important; text-align:center !important;
+    color:#244F5E !important; overflow:hidden !important;
+  }
   :root{--cream:#F3EAD8;--cream-deep:#E9DBC0;--ink:#2A3A47;--teal:#244F5E;--clay:#C0673B;--clay-soft:#D98A5E;--gold:#D9A441;--card-shadow:rgba(42,58,71,.18);}
-  /* grids of small card thumbnails (3 per row) */
-  #thumbsGrid, #searchGrid, #cardsGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
-  #thumbsGrid .thumb, #searchGrid .thumb, #cardsGrid .thumb{display:flex;flex-direction:column;gap:4px;cursor:pointer;}
-  #thumbsGrid .thumb-img, #searchGrid .thumb-img, #cardsGrid .thumb-img{aspect-ratio:3/4;border-radius:5px;overflow:hidden;box-shadow:0 3px 8px var(--card-shadow);background:#ddd;}
-  #thumbsGrid .thumb-img img, #searchGrid .thumb-img img, #cardsGrid .thumb-img img{width:100%;height:100%;object-fit:cover;display:block;}
-  #thumbsGrid .thumb-name, #searchGrid .thumb-name, #cardsGrid .thumb-name{font-size:10px;color:var(--teal);text-align:center;line-height:1.15;}
 
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
   html,body{height:100%;}
@@ -86,13 +106,20 @@
   .note-box{background:rgba(255,255,255,.55);border:1px solid rgba(36,79,94,.15);border-radius:12px;padding:18px 20px;font-size:16px;line-height:1.85;color:var(--ink);white-space:pre-wrap;margin-bottom:30px;height:auto;max-height:none;overflow:visible;}
   .note-empty{opacity:.5;font-style:italic;text-align:center;}
   .footer{text-align:center;padding:0 0 16px;font-size:11px;color:var(--teal);opacity:.5;}
+  #homeFab{position:fixed;bottom:18px;inset-inline-start:18px;width:48px;height:48px;border-radius:50%;background:var(--teal);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.3);z-index:150;}
+  #homeFab svg{width:22px;height:22px;}
+  #zoomViewer{display:none;position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;background:#000;z-index:10000;align-items:center;justify-content:center;overflow:auto;touch-action:pinch-zoom;}
+  #zoomViewer.show{display:flex;}
+  #zoomImg{max-width:100vw;max-height:100vh;width:auto;height:auto;display:block;margin:auto;transition:transform .15s ease;transform-origin:center center;}
+  #zoomClose{position:fixed;top:14px;inset-inline-end:14px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;border:none;font-size:20px;cursor:pointer;z-index:10001;}
   .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--teal);color:var(--cream);padding:11px 20px;border-radius:30px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;box-shadow:0 6px 18px rgba(0,0,0,.25);z-index:50;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
   .edit-btn{margin-inline-start:auto;background:none;border:none;cursor:pointer;padding:6px;display:flex;}
   .edit-btn svg{width:22px;height:22px;}
   .empty-note{grid-column:1/-1;text-align:center;color:var(--teal);opacity:.6;padding:40px 20px;font-size:14px;line-height:1.6;}
-  .slideshow-body{position:fixed;inset:0;width:100vw;height:100vh;background:#000;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:200;}
-  .slide-img{max-width:100vw;max-height:100vh;width:auto;height:auto;object-fit:contain;display:block;}
+  .slideshow-body{display:none;}
+  #slideshow.active .slideshow-body{position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;background:#000;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:9999;padding:0;margin:0;}
+  .slide-img{max-width:100vw;max-height:100vh;width:auto;height:auto;display:block;margin:auto;}
   .slide-name{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:22px;color:var(--teal);text-align:center;}
   .slide-sub{color:var(--clay);font-size:14px;text-align:center;margin-bottom:16px;}
   .slide-controls{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:14px;}
@@ -144,6 +171,11 @@
   .reading-item .ri-mini div{width:30px;height:40px;border-radius:3px;overflow:hidden;background:#ccc;}
   .reading-item .ri-mini img{width:100%;height:100%;object-fit:cover;}
   .add-form{padding:8px 20px 40px;}
+  .src-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:8px;}
+  .src-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:16px 6px;border:1.5px solid rgba(36,79,94,.3);border-radius:12px;background:rgba(255,255,255,.5);color:var(--teal);font-family:inherit;font-size:12px;cursor:pointer;transition:transform .1s,background .15s;}
+  .src-btn:active{transform:scale(.96);}
+  .src-btn svg{width:26px;height:26px;}
+  .src-hint{font-size:11px;color:var(--teal);opacity:.6;margin-bottom:14px;text-align:center;}
   .add-drop{border:2px dashed rgba(36,79,94,.4);border-radius:12px;padding:34px 20px;text-align:center;color:var(--teal);margin-bottom:16px;cursor:pointer;background:rgba(255,255,255,.4);}
   .add-drop b{display:block;font-family:'Frank Ruhl Libre',serif;font-size:18px;margin-top:8px;}
   .add-drop small{opacity:.6;}
@@ -238,12 +270,24 @@
   <div class="screen" id="addCard">
     <div class="subhead"><button class="back" onclick="showScreen('home')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button><h2>הוספת קלף</h2></div>
     <div class="add-form">
-      <div class="add-drop" onclick="document.getElementById('addFile').click()">
-        <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#244F5E" stroke-width="1.4" stroke-linecap="round" style="opacity:.6"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 16l-5-5L5 20"/></svg>
-        <b>הקישו כדי להעלות תמונה</b>
-        <small>JPG · PNG · HEIF</small>
+      <div class="src-grid">
+        <button type="button" class="src-btn" onclick="pickCamera()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          <span>מצלמה</span>
+        </button>
+        <button type="button" class="src-btn" onclick="pickGallery()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 16l-5-5L5 20"/></svg>
+          <span>גלריה / תמונות</span>
+        </button>
+        <button type="button" class="src-btn" onclick="pickFiles()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          <span>קבצים / Drive</span>
+        </button>
       </div>
-      <input type="file" id="addFile" accept="image/*" style="display:none" onchange="previewAdd(event)">
+      <div class="src-hint">בגלריה/קבצים יופיעו גם Google Photos ו-Drive אם הם מותקנים</div>
+      <input type="file" id="addFileCamera" accept="image/*" capture="environment" style="display:none" onchange="previewAdd(event)">
+      <input type="file" id="addFileGallery" accept="image/*" style="display:none" onchange="previewAdd(event)">
+      <input type="file" id="addFileAny" accept="image/*,.heic,.heif" style="display:none" onchange="previewAdd(event)">
       <img id="addPreview" class="add-preview">
       <div class="field"><label>שם הקלף</label><input type="text" id="addName" placeholder="שם הקלף"></div>
       <div class="field"><label>ספר</label><select id="addBook"></select></div>
@@ -277,7 +321,7 @@
       <div class="field"><label>לפי יומן</label><select id="searchBook" onchange="runSearch()"><option value="">כל היומנים</option></select></div>
       <div class="field"><label>לפי סדרה (Suit)</label><select id="searchSuit" onchange="runSearch()"><option value="">כל הסדרות</option></select></div>
       <div class="sub-count" id="searchCount" style="margin:4px 2px 10px;"></div>
-      <div class="cards" id="searchGrid" style="padding:0;"></div>
+      <div id="searchGrid"></div>
     </div>
   </div>
 
@@ -286,6 +330,13 @@
     <div class="slideshow-body" id="slideBody" onclick="exitSlideshow()"></div>
   </div>
 
+<button id="homeFab" onclick="showScreen('home')" title="מסך הבית">
+  <svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+</button>
+<div id="zoomViewer" onclick="closeZoom(event)">
+  <img id="zoomImg" src="">
+  <button id="zoomClose" onclick="closeZoom(event,true)">✕</button>
+</div>
 <div class="toast" id="toast"></div>
 
 <div class="modal-overlay" id="viewMenu" onclick="if(event.target.id==='viewMenu')closeViewMenu()">
@@ -388,7 +439,7 @@ function openCard(bookId,no,fromScreen){
   const b=books.find(x=>x.id===bookId);const c=b.cards.find(x=>x.no===no);
   currentCard={bookId,no,from:fromScreen||'bookCards'};
   const noteHtml=c.note?`<div class="note-box">${c.note}</div>`:`<div class="note-box note-empty">אין עדיין הערה לקלף זה</div>`;
-  const imgHtml=c.img?`<img class="detail-img" src="${c.img}" onclick="goBackFromCard()" style="cursor:pointer">`:'';
+  const imgHtml=c.img?`<img class="detail-img" src="${c.img}" onclick="cardImgTap('${c.img}')" ondblclick="openZoom('${c.img}')" style="cursor:pointer">`:'';
   document.getElementById('detailBody').innerHTML=`${imgHtml}
     <div class="cs-field"><div class="cs-label">שם הקלף</div><div class="cs-value cs-name">${c.name||"—"}</div><button class="edit-btn-inline" id="editBtn" title="עריכה"><svg viewBox="0 0 24 24" fill="none" stroke="#C0673B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button></div>
     <div class="cs-field"><div class="cs-label">יומן</div><div class="cs-value">${b.name}</div></div>
@@ -465,7 +516,7 @@ function drawOne(){
   const pool=allCardsWithImg();if(!pool.length){tap('אין קלפים לשליפה');return;}
   const c=pool[Math.floor(Math.random()*pool.length)];
   const noteHtml=c.note?`<div class="note-box" style="text-align:right">${c.note}</div>`:`<div class="note-box note-empty">אין הערה</div>`;
-  document.getElementById('singleBody').innerHTML=`<img class="detail-img" src="${c.img}" onclick="showScreen('home')" style="cursor:pointer"><div class="detail-name">${c.name}</div><div class="detail-meta">${c.book}</div>${noteHtml}<button class="btn secondary" style="margin-top:16px" onclick="drawOne()">שליפה נוספת</button>`;
+  document.getElementById('singleBody').innerHTML=`<img class="detail-img" src="${c.img}" onclick="cardImgTap('${c.img}','home')" ondblclick="openZoom('${c.img}')" style="cursor:pointer"><div class="detail-name">${c.name}</div><div class="detail-meta">${c.book}</div>${noteHtml}<button class="btn secondary" style="margin-top:16px" onclick="drawOne()">שליפה נוספת</button>`;
   showScreen('singleDraw');
 }
 
@@ -560,6 +611,12 @@ function showAddCard(){
   SUITS.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;ss.appendChild(o);});
   showScreen('addCard');
 }
+
+/* ---- IMAGE SOURCES for Add Card ---- */
+function pickCamera(){ document.getElementById('addFileCamera').click(); }
+function pickGallery(){ document.getElementById('addFileGallery').click(); }
+function pickFiles(){ document.getElementById('addFileAny').click(); }
+
 function previewAdd(e){
   const f=e.target.files[0];if(!f)return;
   const r=new FileReader();
@@ -618,7 +675,7 @@ function openThumbs(){
   all.forEach(c=>{
     const el=document.createElement('div'); el.className='thumb';
     el.onclick=()=>openCard(c.bookId,c.no,'thumbs');
-    el.innerHTML='<div class="thumb-img"><img src="'+c.img+'" loading="lazy"></div><div class="thumb-name">'+c.name+'</div>';
+    el.innerHTML='<div class="thumb-img"><img src="'+c.img+'"></div><div class="thumb-name">'+c.name+'</div>';
     g.appendChild(el);
   });
   showScreen('thumbs');
@@ -647,7 +704,7 @@ function runSearch(){
   all.forEach(c=>{
     const el=document.createElement('div'); el.className='thumb';
     el.onclick=()=>openCard(c.bookId,c.no,'search');
-    el.innerHTML='<div class="thumb-img"><img src="'+c.img+'" loading="lazy"></div><div class="thumb-name">'+c.name+'</div>';
+    el.innerHTML='<div class="thumb-img"><img src="'+c.img+'"></div><div class="thumb-name">'+c.name+'</div>';
     g.appendChild(el);
   });
 }
@@ -667,7 +724,7 @@ function openSlideshowMenu(){
 function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 function renderSlide(){
   const c=slideOrder[slideIdx];
-  document.getElementById('slideBody').innerHTML = '<img class="slide-img" src="'+c.img+'">';
+  document.getElementById('slideBody').innerHTML = '<img class="slide-img" src="'+c.img+'" ondblclick="event.stopPropagation();openZoom(this.src)">';
 }
 function playIcon(){ return '<svg viewBox="0 0 24 24"><polygon points="7 5 19 12 7 19"/></svg>'; }
 function pauseIcon(){ return '<svg viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>'; }
@@ -680,11 +737,65 @@ function slidePrev(){ slideIdx=(slideIdx-1+slideOrder.length)%slideOrder.length;
 function setSpeed(s){ slideDelay=SLIDE_SPEEDS[s]; if(slidePlaying) startSlideshow(); renderSlide(); }
 
 
+
+
+let _tapTimer=null;
+function cardImgTap(src, target){
+  clearTimeout(_tapTimer);
+  _tapTimer=setTimeout(function(){
+    if(target){ showScreen(target); } else { goBackFromCard(); }
+  }, 260);
+}
+function cancelCardTap(){ clearTimeout(_tapTimer); }
+
+/* ---- ZOOM VIEWER: pinch to zoom + double-tap fullscreen ---- */
+let zoomScale=1, zoomLastTap=0;
+function openZoom(src){
+  cancelCardTap();
+  const v=document.getElementById('zoomViewer'), im=document.getElementById('zoomImg');
+  im.src=src; zoomScale=1; im.style.transform='scale(1)';
+  v.classList.add('show');
+}
+function closeZoom(e, force){
+  // close when tapping the black area or the X (not when pinching the image)
+  if(!force && e && e.target && e.target.id==='zoomImg') return;
+  document.getElementById('zoomViewer').classList.remove('show');
+}
+(function(){
+  const v=document.getElementById('zoomViewer');
+  const im=document.getElementById('zoomImg');
+  if(!v||!im) return;
+  let startDist=0, startScale=1;
+  function dist(t){ const dx=t[0].clientX-t[1].clientX, dy=t[0].clientY-t[1].clientY; return Math.hypot(dx,dy); }
+  im.addEventListener('touchstart', function(ev){
+    if(ev.touches.length===2){ startDist=dist(ev.touches); startScale=zoomScale; ev.preventDefault(); }
+    else if(ev.touches.length===1){
+      const now=Date.now();
+      if(now-zoomLastTap<300){ // double tap toggles 1x <-> 2.5x
+        zoomScale = (zoomScale>1)?1:2.5;
+        im.style.transform='scale('+zoomScale+')';
+        ev.preventDefault();
+      }
+      zoomLastTap=now;
+    }
+  }, {passive:false});
+  im.addEventListener('touchmove', function(ev){
+    if(ev.touches.length===2 && startDist){
+      const s = startScale * (dist(ev.touches)/startDist);
+      zoomScale = Math.max(1, Math.min(5, s));
+      im.style.transform='scale('+zoomScale+')';
+      ev.preventDefault();
+    }
+  }, {passive:false});
+  // desktop: double-click to zoom
+  im.addEventListener('dblclick', function(){ zoomScale=(zoomScale>1)?1:2.5; im.style.transform='scale('+zoomScale+')'; });
+})();
+
 /* ---- MENU + NAV ---- */
 function openViewMenu(){document.getElementById('viewMenu').classList.add('show');}
 function closeViewMenu(){document.getElementById('viewMenu').classList.remove('show');}
 function chooseBooks(){closeViewMenu();showScreen('books');}
-function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(id==='books')renderBooks();window.scrollTo({top:0});}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(id==='books')renderBooks();window.scrollTo({top:0});var _fab=document.getElementById('homeFab');if(_fab)_fab.style.display=(id==='home'||id==='slideshow')?'none':'flex';}
 function tap(name){const t=document.getElementById('toast');t.textContent=name;t.classList.add('show');clearTimeout(window._tt);window._tt=setTimeout(()=>t.classList.remove('show'),1800);}
 function _bind(id, handler){ const el=document.getElementById(id); if(el) el.onclick=handler; }
 _bind('editBack', ()=>showScreen('cardDetail'));
