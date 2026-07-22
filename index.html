@@ -7,30 +7,33 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700;900&family=Heebo:wght@300;400;500;700&display=swap');
 
-  /* ===== FORCE correct small thumbnails (thumbs + search + book cards) ===== */
+  /* ===== FORCE correct small thumbnails (works on ALL Android, no aspect-ratio) ===== */
   #thumbsGrid, #searchGrid, #cardsGrid{
     display:grid !important;
-    grid-template-columns:repeat(3,1fr) !important;
+    grid-template-columns:1fr 1fr 1fr !important;
     gap:10px !important;
     padding:12px !important;
-    align-content:start !important;
   }
   #thumbsGrid .thumb, #searchGrid .thumb, #cardsGrid .thumb{
-    display:flex !important; flex-direction:column !important; gap:4px !important;
-    width:100% !important; min-width:0 !important; cursor:pointer !important;
+    display:block !important; width:100% !important; min-width:0 !important; cursor:pointer !important;
   }
+  /* 3:4 box using padding-bottom hack (universally supported) */
   #thumbsGrid .thumb-img, #searchGrid .thumb-img, #cardsGrid .thumb-img{
-    width:100% !important; aspect-ratio:3/4 !important; height:auto !important;
+    position:relative !important;
+    width:100% !important;
+    height:0 !important;
+    padding-bottom:133% !important;   /* 4/3 = 1.333 -> 3:4 portrait box */
     border-radius:5px !important; overflow:hidden !important; background:#ddd !important;
     box-shadow:0 3px 8px rgba(42,58,71,.18) !important;
   }
   #thumbsGrid .thumb-img img, #searchGrid .thumb-img img, #cardsGrid .thumb-img img{
+    position:absolute !important; top:0 !important; left:0 !important;
     width:100% !important; height:100% !important; object-fit:cover !important;
-    display:block !important; max-width:100% !important; max-height:100% !important;
+    display:block !important;
   }
   #thumbsGrid .thumb-name, #searchGrid .thumb-name, #cardsGrid .thumb-name{
     font-size:10px !important; line-height:1.15 !important; text-align:center !important;
-    color:#244F5E !important; overflow:hidden !important;
+    color:#244F5E !important; margin-top:4px !important; overflow:hidden !important;
   }
   :root{--cream:#F3EAD8;--cream-deep:#E9DBC0;--ink:#2A3A47;--teal:#244F5E;--clay:#C0673B;--clay-soft:#D98A5E;--gold:#D9A441;--card-shadow:rgba(42,58,71,.18);}
 
@@ -58,7 +61,7 @@
   .subhead .sub-count{margin-inline-start:auto;font-family:'Frank Ruhl Libre',serif;font-size:14px;color:var(--clay);}
   .grid{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:18px 16px;padding:24px 22px 30px;align-content:center;}
   .tile{display:flex;flex-direction:column;align-items:center;gap:12px;background:none;border:none;cursor:pointer;font-family:inherit;}
-  .disc{width:100%;aspect-ratio:1/1;max-width:105px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px var(--card-shadow);transition:transform .15s;position:relative;overflow:hidden;}
+  .disc{width:100px;height:100px;max-width:100px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px var(--card-shadow);transition:transform .15s;position:relative;overflow:hidden;margin:0 auto;}
   .tile:active .disc{transform:scale(.95);}
   .grid .tile:nth-child(1) .disc{background:#C0673B;}
   .grid .tile:nth-child(2) .disc{background:#244F5E;}
@@ -71,17 +74,17 @@
   .badge{position:absolute;top:14%;left:14%;background:var(--cream);color:var(--ink);width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Frank Ruhl Libre',serif;font-weight:900;font-size:16px;box-shadow:0 2px 5px var(--card-shadow);}
   .books{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:14px 20px 30px;align-content:start;}
   .book{cursor:pointer;display:flex;flex-direction:column;gap:8px;}
-  .book-cover{aspect-ratio:3/4;border-radius:8px 3px 3px 8px;position:relative;box-shadow:0 5px 14px var(--card-shadow);overflow:hidden;display:flex;align-items:flex-end;transition:transform .15s;border-inline-end:5px solid rgba(0,0,0,.14);}
+  .book-cover{position:relative;width:100%;height:0;padding-bottom:133%;border-radius:8px 3px 3px 8px;box-shadow:0 5px 14px var(--card-shadow);overflow:hidden;transition:transform .15s;border-inline-end:5px solid rgba(0,0,0,.14);}
   .book:active .book-cover{transform:scale(.96);}
   .book-num{position:absolute;top:10px;inset-inline-end:12px;font-family:'Frank Ruhl Libre',serif;font-size:40px;font-weight:900;color:rgba(255,255,255,.85);text-shadow:0 2px 6px rgba(0,0,0,.35);z-index:2;}
-  .book-cover span.name{width:100%;background:linear-gradient(transparent,rgba(0,0,0,.55));color:#fff;font-family:'Frank Ruhl Libre',serif;font-weight:500;font-size:15px;padding:22px 12px 10px;z-index:2;}
+  .book-cover span.name{position:absolute;bottom:0;left:0;width:100%;background:linear-gradient(transparent,rgba(0,0,0,.55));color:#fff;font-family:'Frank Ruhl Libre',serif;font-weight:500;font-size:15px;padding:22px 12px 10px;z-index:2;}
   .book-cover img.cover-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;}
   .book-meta{font-size:12px;color:var(--teal);opacity:.7;text-align:center;}
   .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:12px 16px 30px;align-content:start;}
   .thumb{cursor:pointer;display:flex;flex-direction:column;gap:5px;}
-  .thumb-img{aspect-ratio:3/4;border-radius:5px;box-shadow:0 3px 8px var(--card-shadow);overflow:hidden;transition:transform .15s;position:relative;background:#ddd;}
+  .thumb-img{position:relative;width:100%;height:0;padding-bottom:133%;border-radius:5px;box-shadow:0 3px 8px var(--card-shadow);overflow:hidden;background:#ddd;}
   .thumb:active .thumb-img{transform:scale(.94);}
-  .thumb-img img{width:100%;height:100%;object-fit:cover;display:block;max-width:100%;}
+  .thumb-img img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;}
   .thumb-name{font-size:11px;color:var(--teal);text-align:center;line-height:1.2;font-weight:500;}
   .thumb-no{position:absolute;top:4px;inset-inline-start:4px;background:rgba(36,79,94,.85);color:#fff;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:700;z-index:2;}
   .detail{padding:0 20px 60px;}
@@ -108,10 +111,9 @@
   .footer{text-align:center;padding:0 0 16px;font-size:11px;color:var(--teal);opacity:.5;}
   #homeFab{position:fixed;bottom:18px;inset-inline-start:18px;width:48px;height:48px;border-radius:50%;background:var(--teal);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.3);z-index:150;}
   #homeFab svg{width:22px;height:22px;}
-  #zoomViewer{display:none;position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;background:#000;z-index:10000;align-items:center;justify-content:center;overflow:auto;touch-action:pinch-zoom;}
-  #zoomViewer.show{display:flex;}
-  #zoomImg{max-width:100vw;max-height:100vh;width:auto;height:auto;display:block;margin:auto;transition:transform .15s ease;transform-origin:center center;}
-  #zoomClose{position:fixed;top:14px;inset-inline-end:14px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;border:none;font-size:20px;cursor:pointer;z-index:10001;}
+  #bigView{display:none;position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;background:#000;z-index:99999;align-items:center;justify-content:center;padding:8px;cursor:pointer;}
+  #bigView.show{display:flex;}
+  #bigImg{max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);width:auto;height:auto;display:block;margin:auto;}
   .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--teal);color:var(--cream);padding:11px 20px;border-radius:30px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;box-shadow:0 6px 18px rgba(0,0,0,.25);z-index:50;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
   .edit-btn{margin-inline-start:auto;background:none;border:none;cursor:pointer;padding:6px;display:flex;}
@@ -209,7 +211,7 @@
       <button class="tile" onclick="showAddCard()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><rect x="5" y="4" width="14" height="16" rx="1.5"/><line x1="12" y1="9" x2="12" y2="15"/><line x1="9" y1="12" x2="15" y2="12"/></svg></span><span class="tile-label">הוספת קלף</span></button>
       <button class="tile" onclick="tap('עזרה וגיבוי')"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><line x1="5" y1="6" x2="16" y2="6"/><line x1="5" y1="10" x2="16" y2="10"/><line x1="5" y1="14" x2="13" y2="14"/><line x1="5" y1="18" x2="13" y2="18"/></svg></span><span class="tile-label">עזרה וגיבוי</span></button>
     </div>
-    <div class="footer">גרסה v8</div>
+    <div class="footer">גרסה v10</div>
   </div>
 
   <!-- BOOKS -->
@@ -333,10 +335,7 @@
 <button id="homeFab" onclick="showScreen('home')" title="מסך הבית">
   <svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
 </button>
-<div id="zoomViewer" onclick="closeZoom(event)">
-  <img id="zoomImg" src="" onclick="closeZoom(event,true)">
-  <button id="zoomClose" onclick="closeZoom(event,true)">✕</button>
-</div>
+<div id="bigView" onclick="closeBig()"><img id="bigImg" src=""></div>
 <div class="toast" id="toast"></div>
 
 <div class="modal-overlay" id="viewMenu" onclick="if(event.target.id==='viewMenu')closeViewMenu()">
@@ -439,7 +438,7 @@ function openCard(bookId,no,fromScreen){
   const b=books.find(x=>x.id===bookId);const c=b.cards.find(x=>x.no===no);
   currentCard={bookId,no,from:fromScreen||'bookCards'};
   const noteHtml=c.note?`<div class="note-box">${c.note}</div>`:`<div class="note-box note-empty">אין עדיין הערה לקלף זה</div>`;
-  const imgHtml=c.img?`<img class="detail-img" src="${c.img}" onclick="cardImgTap('${c.img}')" ondblclick="openZoom('${c.img}')" style="cursor:pointer">`:'';
+  const imgHtml=c.img?`<img class="detail-img" src="${c.img}" onclick="openBig('${c.img}')" style="cursor:pointer">`:'';
   document.getElementById('detailBody').innerHTML=`${imgHtml}
     <div class="cs-field"><div class="cs-label">שם הקלף</div><div class="cs-value cs-name">${c.name||"—"}</div><button class="edit-btn-inline" id="editBtn" title="עריכה"><svg viewBox="0 0 24 24" fill="none" stroke="#C0673B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button></div>
     <div class="cs-field"><div class="cs-label">יומן</div><div class="cs-value">${b.name}</div></div>
@@ -516,7 +515,7 @@ function drawOne(){
   const pool=allCardsWithImg();if(!pool.length){tap('אין קלפים לשליפה');return;}
   const c=pool[Math.floor(Math.random()*pool.length)];
   const noteHtml=c.note?`<div class="note-box" style="text-align:right">${c.note}</div>`:`<div class="note-box note-empty">אין הערה</div>`;
-  document.getElementById('singleBody').innerHTML=`<img class="detail-img" src="${c.img}" onclick="cardImgTap('${c.img}','home')" ondblclick="openZoom('${c.img}')" style="cursor:pointer"><div class="detail-name">${c.name}</div><div class="detail-meta">${c.book}</div>${noteHtml}<button class="btn secondary" style="margin-top:16px" onclick="drawOne()">שליפה נוספת</button>`;
+  document.getElementById('singleBody').innerHTML=`<img class="detail-img" src="${c.img}" onclick="openBig('${c.img}')" style="cursor:pointer"><div class="detail-name">${c.name}</div><div class="detail-meta">${c.book}</div>${noteHtml}<button class="btn secondary" style="margin-top:16px" onclick="drawOne()">שליפה נוספת</button>`;
   showScreen('singleDraw');
 }
 
@@ -562,7 +561,7 @@ function renderFourResult(){
 function openReadingCard(i){
   const c=fourState.picks[i];
   const noteHtml=c.note?`<div class="note-box">${c.note}</div>`:`<div class="note-box note-empty">אין הערה</div>`;
-  document.getElementById('detailBody').innerHTML=`<img class="detail-img" src="${c.img}"><div class="detail-name">${c.name}</div><div class="detail-meta">${FOUR_POSITIONS[i]} · ${c.book}</div>${noteHtml}`;
+  document.getElementById('detailBody').innerHTML=`<img class="detail-img" src="${c.img}" onclick="openBig('${c.img}')" style="cursor:pointer"><div class="detail-name">${c.name}</div><div class="detail-meta">${FOUR_POSITIONS[i]} · ${c.book}</div>${noteHtml}`;
   document.getElementById('detailBack').onclick=()=>showScreen('fourReading');
   showScreen('cardDetail');
 }
@@ -724,7 +723,7 @@ function openSlideshowMenu(){
 function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 function renderSlide(){
   const c=slideOrder[slideIdx];
-  document.getElementById('slideBody').innerHTML = '<img class="slide-img" src="'+c.img+'" ondblclick="event.stopPropagation();openZoom(this.src)">';
+  document.getElementById('slideBody').innerHTML = '<img class="slide-img" src="'+c.img+'">';
 }
 function playIcon(){ return '<svg viewBox="0 0 24 24"><polygon points="7 5 19 12 7 19"/></svg>'; }
 function pauseIcon(){ return '<svg viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>'; }
@@ -739,59 +738,20 @@ function setSpeed(s){ slideDelay=SLIDE_SPEEDS[s]; if(slidePlaying) startSlidesho
 
 
 
-let _tapTimer=null;
-function cardImgTap(src, target){
-  clearTimeout(_tapTimer);
-  _tapTimer=setTimeout(function(){
-    if(target){ showScreen(target); } else { goBackFromCard(); }
-  }, 260);
-}
-function cancelCardTap(){ clearTimeout(_tapTimer); }
 
-/* ---- ZOOM VIEWER: pinch to zoom + double-tap fullscreen ---- */
-let zoomScale=1, zoomLastTap=0;
-function openZoom(src){
-  cancelCardTap();
-  const v=document.getElementById('zoomViewer'), im=document.getElementById('zoomImg');
-  im.src=src; zoomScale=1; im.style.transform='scale(1)';
+
+
+/* ---- FULLSCREEN CARD VIEW: one tap opens, one tap closes ---- */
+function openBig(src){
+  var v=document.getElementById('bigView'), im=document.getElementById('bigImg');
+  if(!v||!im||!src) return;
+  im.src=src;
   v.classList.add('show');
 }
-function closeZoom(e, force){
-  // Always close and reset zoom. (Tap anywhere closes.)
-  const im=document.getElementById('zoomImg');
-  if(im){ im.style.transform='scale(1)'; }
-  zoomScale=1;
-  document.getElementById('zoomViewer').classList.remove('show');
+function closeBig(){
+  var v=document.getElementById('bigView');
+  if(v) v.classList.remove('show');
 }
-(function(){
-  const v=document.getElementById('zoomViewer');
-  const im=document.getElementById('zoomImg');
-  if(!v||!im) return;
-  let startDist=0, startScale=1;
-  function dist(t){ const dx=t[0].clientX-t[1].clientX, dy=t[0].clientY-t[1].clientY; return Math.hypot(dx,dy); }
-  im.addEventListener('touchstart', function(ev){
-    if(ev.touches.length===2){ startDist=dist(ev.touches); startScale=zoomScale; ev.preventDefault(); }
-    else if(ev.touches.length===1){
-      const now=Date.now();
-      if(now-zoomLastTap<300){ // double tap toggles 1x <-> 2.5x
-        zoomScale = (zoomScale>1)?1:2.5;
-        im.style.transform='scale('+zoomScale+')';
-        ev.preventDefault();
-      }
-      zoomLastTap=now;
-    }
-  }, {passive:false});
-  im.addEventListener('touchmove', function(ev){
-    if(ev.touches.length===2 && startDist){
-      const s = startScale * (dist(ev.touches)/startDist);
-      zoomScale = Math.max(1, Math.min(5, s));
-      im.style.transform='scale('+zoomScale+')';
-      ev.preventDefault();
-    }
-  }, {passive:false});
-  // desktop: double-click to zoom
-  im.addEventListener('dblclick', function(){ zoomScale=(zoomScale>1)?1:2.5; im.style.transform='scale('+zoomScale+')'; });
-})();
 
 /* ---- MENU + NAV ---- */
 function openViewMenu(){document.getElementById('viewMenu').classList.add('show');}
