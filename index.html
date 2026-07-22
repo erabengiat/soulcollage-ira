@@ -209,7 +209,7 @@
       <button class="tile" onclick="showAddCard()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><rect x="5" y="4" width="14" height="16" rx="1.5"/><line x1="12" y1="9" x2="12" y2="15"/><line x1="9" y1="12" x2="15" y2="12"/></svg></span><span class="tile-label">הוספת קלף</span></button>
       <button class="tile" onclick="tap('עזרה וגיבוי')"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><line x1="5" y1="6" x2="16" y2="6"/><line x1="5" y1="10" x2="16" y2="10"/><line x1="5" y1="14" x2="13" y2="14"/><line x1="5" y1="18" x2="13" y2="18"/></svg></span><span class="tile-label">עזרה וגיבוי</span></button>
     </div>
-    <div class="footer">גרסה v7</div>
+    <div class="footer">גרסה v8</div>
   </div>
 
   <!-- BOOKS -->
@@ -334,7 +334,7 @@
   <svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
 </button>
 <div id="zoomViewer" onclick="closeZoom(event)">
-  <img id="zoomImg" src="">
+  <img id="zoomImg" src="" onclick="closeZoom(event,true)">
   <button id="zoomClose" onclick="closeZoom(event,true)">✕</button>
 </div>
 <div class="toast" id="toast"></div>
@@ -757,8 +757,10 @@ function openZoom(src){
   v.classList.add('show');
 }
 function closeZoom(e, force){
-  // close when tapping the black area or the X (not when pinching the image)
-  if(!force && e && e.target && e.target.id==='zoomImg') return;
+  // Always close and reset zoom. (Tap anywhere closes.)
+  const im=document.getElementById('zoomImg');
+  if(im){ im.style.transform='scale(1)'; }
+  zoomScale=1;
   document.getElementById('zoomViewer').classList.remove('show');
 }
 (function(){
