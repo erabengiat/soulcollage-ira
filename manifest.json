@@ -1,0 +1,16 @@
+{
+  "name": "סול קולאז' של עירא",
+  "short_name": "סול קולאז'",
+  "description": "ארכיון הקולאז'ים של עירא",
+  "start_url": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F3EAD8",
+  "theme_color": "#244F5E",
+  "lang": "he",
+  "dir": "rtl",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
