@@ -117,8 +117,8 @@
   .grid{flex:0 0 auto;display:grid;grid-template-columns:1fr 1fr;gap:12px 12px;padding:14px 22px 12px;align-content:center;}
   .tile{display:flex;flex-direction:column;align-items:center;gap:12px;background:none;border:none;cursor:pointer;font-family:inherit;}
   .disc{
-    width:50px;height:50px;max-width:50px;
-    border-radius:12px;
+    width:42px;height:42px;max-width:42px;
+    border-radius:10px;
     background:linear-gradient(180deg, var(--key-hi) 0%, var(--key-base) 55%, var(--key-lo) 100%);
     display:flex;align-items:center;justify-content:center;
     position:relative;overflow:hidden;margin:0 auto;
@@ -133,7 +133,7 @@
   .disc::before{
     content:"";position:absolute;top:0;left:0;right:0;height:46%;
     background:linear-gradient(180deg, rgba(255,255,255,.42), rgba(255,255,255,0));
-    border-radius:14px 14px 50% 50%/14px 14px 22% 22%;
+    border-radius:10px 10px 50% 50%/10px 10px 22% 22%;
     pointer-events:none;
   }
   /* pressed state: key travels down */
@@ -150,7 +150,7 @@
   /* --- individual key colours --- */
 
   .tile:active .disc{transform:scale(.95);}
-  .disc svg{width:46%;height:46%;}
+  .disc svg{width:52%;height:52%;}
   .tile-label{font-family:'Varela Round',sans-serif;font-weight:500;font-size:14px;color:var(--teal);text-align:center;line-height:1.25;}
   .badge{position:absolute;top:14%;left:14%;background:var(--cream);color:var(--ink);width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Varela Round',sans-serif;font-weight:900;font-size:16px;box-shadow:0 2px 5px var(--card-shadow);}
 
@@ -349,7 +349,7 @@
   .sub-count{font-size:16px;font-weight:600;}
 
   /* home buttons */
-  .tile-label{font-size:16px;font-weight:600;}
+  .tile-label{font-size:14px;font-weight:600;}
   .tile.small .tile-label{font-size:14px;font-weight:600;}
   .counter{font-size:12px;font-weight:600;}
   .counter b{font-size:17px;font-weight:800;}
@@ -483,7 +483,7 @@ if ('serviceWorker' in navigator) {
       <button class="tile small" onclick="openHelp()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><line x1="5" y1="6" x2="16" y2="6"/><line x1="5" y1="10" x2="16" y2="10"/><line x1="5" y1="14" x2="13" y2="14"/><line x1="5" y1="18" x2="13" y2="18"/></svg></span><span class="tile-label">עזרה וגיבוי</span></button>
     </div>
   </div>
-    <div class="footer">גרסה v42</div>
+    <div class="footer" id="appVersion"></div>
 
   <!-- BOOKS -->
   <div class="screen" id="books">
@@ -710,6 +710,7 @@ if ('serviceWorker' in navigator) {
 /* ============ DATA (loaded from data/data.json) ============ */
 let DATA = {books:[], cards:[]};
 
+const APP_VERSION = 'v43';
 const BOOK_COLORS=['#C0673B','#244F5E','#D9A441','#8A5A44','#3E6E5E','#B0443B','#6E5A8A','#4A7C8C','#C98A3B','#5E7A44','#A84B6B','#3B5468'];
 let books=[];
 const SUITS=["ועדה","קהילה","בני לוויה","מועצה - ארכיטיפים"];
@@ -753,6 +754,7 @@ async function loadData(){
   // sort each book's cards by number
   books.forEach(b=>b.cards.sort((x,y)=>x.no-y.no));
   restoreCustomBooks();
+  const _ver=document.getElementById('appVersion'); if(_ver) _ver.textContent='גרסה '+APP_VERSION;
   applyReadOnly();
   renderCounter();
 }
@@ -1377,7 +1379,7 @@ function openHelp(){
     'סה"כ קלפים: ' + n + '\n' +
     'קלפים עם הערה: ' + withNotes + '\n' +
     'יומנים: ' + books.filter(b=>b.cards.length).length + '\n' +
-    'גרסה: ' + (document.querySelector('#home .footer') ? document.querySelector('#home .footer').textContent : '');
+    'גרסה: ' + APP_VERSION;
   document.getElementById('guideBox').style.display='none';
   const vb=document.getElementById('viewerLinkBox'); if(vb) vb.textContent=viewerURL();
   showScreen('help');
