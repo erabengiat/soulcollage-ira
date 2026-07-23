@@ -77,6 +77,25 @@
     padding:15px 42px;font-family:'Varela Round',sans-serif;font-size:19px;cursor:pointer;
     box-shadow:0 5px 14px var(--card-shadow);transition:transform .1s;}
   .cover-enter:active{transform:scale(.97);}
+
+  /* --- key colours --- */
+  .group:nth-of-type(1) .tile:nth-child(1) .disc{--key-base:#C0673B;--key-hi:#E08A5C;--key-lo:#9E4E28;--key-edge:#7A3A1C;}
+  .group:nth-of-type(1) .tile:nth-child(2) .disc{--key-base:#12262E;--key-hi:#25454F;--key-lo:#0A171C;--key-edge:#050D10;}
+  .group:nth-of-type(2) .tile:nth-child(1) .disc{--key-base:#D9A441;--key-hi:#F0C56B;--key-lo:#B5842C;--key-edge:#8C641F;}
+  .group:nth-of-type(2) .tile:nth-child(2) .disc{--key-base:#6E5A8A;--key-hi:#9481AE;--key-lo:#54426B;--key-edge:#3E3050;}
+  .group:nth-of-type(3) .tile:nth-child(1) .disc{--key-base:#4A7C8C;--key-hi:#6EA3B3;--key-lo:#365E6B;--key-edge:#274650;}
+  .group:nth-of-type(3) .tile:nth-child(2) .disc{--key-base:#C98A3B;--key-hi:#E3AC63;--key-lo:#A06B26;--key-edge:#7A511C;}
+  .group:nth-of-type(3) .tile:nth-child(3) .disc{--key-base:#5E7A44;--key-hi:#829E66;--key-lo:#455C31;--key-edge:#324522;}
+  .bottom-row .tile:nth-child(1) .disc{--key-base:#3E6E5E;--key-hi:#5E9483;--key-lo:#2C5245;--key-edge:#1F3D33;}
+  .bottom-row .tile:nth-child(2) .disc{--key-base:#A84B6B;--key-hi:#C77190;--key-lo:#853A53;--key-edge:#642A3E;}
+  .group{margin:0 18px 14px;border:2px solid rgba(36,79,94,.30);border-radius:16px;
+    padding:16px 10px 12px;position:relative;background:rgba(255,255,255,.35);}
+  .group-title{position:absolute;top:-11px;inset-inline-start:18px;background:var(--cream);
+    padding:0 8px;font-family:'Varela Round',sans-serif;font-size:13px;color:var(--clay);}
+  .group-row{display:grid;gap:10px;}
+  .group-row.two{grid-template-columns:1fr 1fr;}
+  .group-row.three{grid-template-columns:1fr 1fr 1fr;}
+  .bottom-row{margin:6px 18px 14px;}
   .grid{flex:0 0 auto;display:grid;grid-template-columns:1fr 1fr;gap:12px 12px;padding:14px 22px 12px;align-content:center;}
   .tile{display:flex;flex-direction:column;align-items:center;gap:12px;background:none;border:none;cursor:pointer;font-family:inherit;}
   .disc{
@@ -117,17 +136,7 @@
   .tile-label{font-family:'Varela Round',sans-serif;font-weight:500;font-size:11px;color:var(--teal);text-align:center;}
   .badge{position:absolute;top:14%;left:14%;background:var(--cream);color:var(--ink);width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Varela Round',sans-serif;font-weight:900;font-size:16px;box-shadow:0 2px 5px var(--card-shadow);}
 
-  /* --- key colours --- */
-  .grid .tile:nth-child(1) .disc{--key-base:#C0673B;--key-hi:#E08A5C;--key-lo:#9E4E28;--key-edge:#7A3A1C;}
-  .grid .tile:nth-child(2) .disc{--key-base:#D9A441;--key-hi:#F0C56B;--key-lo:#B5842C;--key-edge:#8C641F;}
-  .grid .tile:nth-child(3) .disc{--key-base:#6E5A8A;--key-hi:#9481AE;--key-lo:#54426B;--key-edge:#3E3050;}
-  /* journals - much darker */
-  .grid .tile:nth-child(4) .disc{--key-base:#12262E;--key-hi:#25454F;--key-lo:#0A171C;--key-edge:#050D10;}
-  .grid-bottom .tile:nth-child(1) .disc{--key-base:#3E6E5E;--key-hi:#5E9483;--key-lo:#2C5245;--key-edge:#1F3D33;}
-  .grid-bottom .tile:nth-child(2) .disc{--key-base:#A84B6B;--key-hi:#C77190;--key-lo:#853A53;--key-edge:#642A3E;}
-  .card-actions-row .tile:nth-child(1) .disc{--key-base:#4A7C8C;--key-hi:#6EA3B3;--key-lo:#365E6B;--key-edge:#274650;}
-  .card-actions-row .tile:nth-child(2) .disc{--key-base:#C98A3B;--key-hi:#E3AC63;--key-lo:#A06B26;--key-edge:#7A511C;}
-  .card-actions-row .tile:nth-child(3) .disc{--key-base:#5E7A44;--key-hi:#829E66;--key-lo:#455C31;--key-edge:#324522;}
+
   .card-actions{margin:4px 20px 10px;border:2px solid rgba(36,79,94,.35);border-radius:16px;padding:14px 10px 12px;position:relative;background:rgba(255,255,255,.35);}
   .card-actions-title{position:absolute;top:-11px;inset-inline-start:18px;background:var(--cream);padding:0 8px;font-family:'Varela Round',sans-serif;font-size:13px;color:var(--clay);}
   .card-actions-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
@@ -191,6 +200,53 @@
   .share-btn svg{width:20px;height:20px;}
   .share-btn.wa{background:#25925a;}
   .share-btn.cp{background:var(--teal);}
+  /* ---- text fitting: never let text spill off the screen ---- */
+  .app, .screen, .add-form, .detail, .reading-area, .reading-list{
+    max-width:100%;
+    overflow-x:hidden;
+  }
+  .note-box, .g-txt, .cs-value, .detail-name, .tile-label,
+  .detail-section-label, .cover-thanks p, .q-label, .field label,
+  .subhead h2, .ri-q, .thumb-name{
+    overflow-wrap:anywhere;
+    word-break:break-word;
+    hyphens:auto;
+  }
+  #viewerLinkBox{
+    overflow-wrap:anywhere;
+    word-break:break-all;
+    font-size:11px;
+    line-height:1.6;
+    padding:12px 14px;
+  }
+  #logBox{
+    overflow-wrap:anywhere;
+    word-break:break-word;
+    font-size:13px;
+    line-height:1.7;
+    padding:14px 16px;
+  }
+  #aboutBox{
+    overflow-wrap:anywhere;
+    font-size:14px;
+    line-height:1.8;
+    padding:14px 16px;
+  }
+  /* roomier note box on small screens */
+  .note-box{padding:14px 16px;font-size:15px;}
+  .add-form{padding:8px 16px 40px;}
+  .g-row{padding:12px 12px;}
+  /* share buttons: let the label wrap, keep the icon steady */
+  .share-btn{padding:12px 6px;font-size:13px;line-height:1.3;text-align:center;min-width:0;}
+  .share-btn svg{flex:0 0 auto;}
+  .share-btn span{min-width:0;overflow-wrap:anywhere;}
+  /* inputs must not push the layout wider */
+  .field input, .field textarea, .field select{max-width:100%;}
+  @media (max-width:360px){
+    .share-row{grid-template-columns:1fr;}
+    .note-box{font-size:14px;}
+    .g-txt{font-size:13px;}
+  }
   .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--teal);color:var(--cream);padding:11px 20px;border-radius:30px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;box-shadow:0 6px 18px rgba(0,0,0,.25);z-index:50;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
   .edit-btn{margin-inline-start:auto;background:none;border:none;cursor:pointer;padding:6px;display:flex;}
@@ -313,28 +369,37 @@ if ('serviceWorker' in navigator) {
       <div class="brand"><div class="brand-mark"></div><div class="brand-name"><span class="he">סול קולאז'</span><span class="en">של עירא</span></div></div>
       <div class="counter"><b id="cardCount">0</b>קלפים</div>
     </div>
-    <div class="grid">
-      <button class="tile" onclick="openSlideshowMenu()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="13" rx="2"/><polygon points="10.5 8 15.5 10.8 10.5 13.6" fill="#F3EAD8" stroke="none"/><line x1="8" y1="20.5" x2="16" y2="20.5"/></svg></span><span class="tile-label">מצגת הקלפים</span></button>
-      <button class="tile" onclick="startFour()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.4" stroke-linecap="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg></span><span class="tile-label">קריאת ארבעה קלפים</span></button>
-      <button class="tile" onclick="showPastReadings()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><polyline points="12 7 12 12 15.5 14"/></svg></span><span class="tile-label">קריאות קודמות</span></button>
-      <button class="tile" onclick="showScreen('books')"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2z"/><path d="M8 3v18"/></svg></span><span class="tile-label">היומנים</span></button>
+    <div class="group">
+      <div class="group-title">צפייה</div>
+      <div class="group-row two">
+        <button class="tile" onclick="openSlideshowMenu()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="13" rx="2"/><polygon points="10.5 8 15.5 10.8 10.5 13.6" fill="#F3EAD8" stroke="none"/><line x1="8" y1="20.5" x2="16" y2="20.5"/></svg></span><span class="tile-label">מצגת הקלפים</span></button>
+        <button class="tile" onclick="showScreen('books')"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2z"/><path d="M8 3v18"/></svg></span><span class="tile-label">היומנים</span></button>
+      </div>
     </div>
 
-    <div class="card-actions">
-      <div class="card-actions-title">קלפים</div>
-      <div class="card-actions-row">
+    <div class="group">
+      <div class="group-title">קריאת קלפים</div>
+      <div class="group-row two">
+        <button class="tile" onclick="startFour()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.4" stroke-linecap="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg></span><span class="tile-label">קריאת ארבעה קלפים</span></button>
+        <button class="tile" onclick="showPastReadings()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><polyline points="12 7 12 12 15.5 14"/></svg></span><span class="tile-label">קריאות קודמות</span></button>
+      </div>
+    </div>
+
+    <div class="group">
+      <div class="group-title">קלפים</div>
+      <div class="group-row three">
         <button class="tile small" onclick="showAddCard()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><rect x="5" y="4" width="14" height="16" rx="1.5"/><line x1="12" y1="9" x2="12" y2="15"/><line x1="9" y1="12" x2="15" y2="12"/></svg></span><span class="tile-label">הוספת קלף</span></button>
         <button class="tile small" onclick="openSearch()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.7" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="21" y1="21" x2="15.2" y2="15.2"/></svg></span><span class="tile-label">חיפוש קלף</span></button>
         <button class="tile small" onclick="drawOne()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><rect x="6" y="3.5" width="12" height="17" rx="1.5"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/></svg></span><span class="tile-label">שליפת קלף</span></button>
       </div>
     </div>
 
-    <div class="grid grid-bottom">
-      <button class="tile" onclick="openSettings()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 9 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 9a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg></span><span class="tile-label">הגדרות</span></button>
-      <button class="tile" onclick="openHelp()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><line x1="5" y1="6" x2="16" y2="6"/><line x1="5" y1="10" x2="16" y2="10"/><line x1="5" y1="14" x2="13" y2="14"/><line x1="5" y1="18" x2="13" y2="18"/></svg></span><span class="tile-label">עזרה וגיבוי</span></button>
+    <div class="group-row two bottom-row">
+      <button class="tile small" onclick="openSettings()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 9 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 9a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg></span><span class="tile-label">הגדרות</span></button>
+      <button class="tile small" onclick="openHelp()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><line x1="5" y1="6" x2="16" y2="6"/><line x1="5" y1="10" x2="16" y2="10"/><line x1="5" y1="14" x2="13" y2="14"/><line x1="5" y1="18" x2="13" y2="18"/></svg></span><span class="tile-label">עזרה וגיבוי</span></button>
     </div>
-    <div class="footer">גרסה v31</div>
   </div>
+    <div class="footer">גרסה v34</div>
 
   <!-- BOOKS -->
   <div class="screen" id="books">
@@ -708,7 +773,7 @@ function openCard(bookId,no,fromScreen){
     </div>
     <div class="detail-section-label">הערות הקלף</div>
     ${noteHtml}`;
-  document.getElementById('detailBack').onclick=()=>showScreen(fromScreen||'bookCards');
+  const _db=document.getElementById('detailBack'); if(_db) _db.onclick=()=>showScreen(fromScreen||'bookCards');
   showScreen('cardDetail');
   const _eb=document.getElementById('editBtn'); if(_eb) _eb.onclick=openEdit;
 }
@@ -826,7 +891,7 @@ function openReadingCard(i){
   const c=fourState.picks[i];
   const noteHtml=c.note?`<div class="note-box">${c.note}</div>`:`<div class="note-box note-empty">אין הערה</div>`;
   document.getElementById('detailBody').innerHTML=`<img class="detail-img" src="${c.img}" ondblclick="openBig('${c.img}')" style="cursor:pointer"><div class="detail-name">${c.name}</div><div class="detail-meta">${FOUR_POSITIONS[i]} · ${c.book}</div>${noteHtml}`;
-  document.getElementById('detailBack').onclick=()=>showScreen('fourReading');
+  const _db2=document.getElementById('detailBack'); if(_db2) _db2.onclick=()=>showScreen('fourReading');
   showScreen('cardDetail');
 }
 function saveFourReading(){
