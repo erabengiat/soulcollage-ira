@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+<title>סול קולאז' של עירא</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700;900&family=Heebo:wght@300;400;500;700&display=swap');
+
+  /* ===== FORCE correct small thumbnails (works on ALL Android, no aspect-ratio) ===== */
+  #thumbsGrid, #searchGrid, #cardsGrid{
+    display:grid !important;
+    grid-template-columns:1fr 1fr 1fr !important;
+    gap:10px !important;
+    padding:12px !important;
+  }
+  #thumbsGrid .thumb, #searchGrid .thumb, #cardsGrid .thumb{
+    display:block !important; width:100% !important; min-width:0 !important; cursor:pointer !important;
+  }
+  /* 3:4 box using padding-bottom hack (universally supported) */
+  #thumbsGrid .thumb-img, #searchGrid .thumb-img, #cardsGrid .thumb-img{
+    position:relative !important;
+    width:100% !important;
+    height:0 !important;
+    padding-bottom:133% !important;   /* 4/3 = 1.333 -> 3:4 portrait box */
+    border-radius:5px !important; overflow:hidden !important; background:#ddd !important;
+    box-shadow:0 3px 8px rgba(42,58,71,.18) !important;
+  }
+  #thumbsGrid .thumb-img img, #searchGrid .thumb-img img, #cardsGrid .thumb-img img{
+    position:absolute !important; top:0 !important; left:0 !important;
+    width:100% !important; height:100% !important; object-fit:cover !important;
+    display:block !important;
+  }
+  #thumbsGrid .thumb-name, #searchGrid .thumb-name, #cardsGrid .thumb-name{
+    font-size:10px !important; line-height:1.15 !important; text-align:center !important;
+    color:#244F5E !important; margin-top:4px !important; overflow:hidden !important;
+  }
+  :root{--cream:#F3EAD8;--cream-deep:#E9DBC0;--ink:#2A3A47;--teal:#244F5E;--clay:#C0673B;--clay-soft:#D98A5E;--gold:#D9A441;--card-shadow:rgba(42,58,71,.18);}
+
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{font-family:'Heebo',sans-serif;background:var(--cream);color:var(--ink);display:flex;justify-content:center;min-height:100vh;}
+  html{scroll-behavior:smooth;}
+  .app{width:100%;max-width:430px;min-height:100vh;background:radial-gradient(120% 80% at 50% -10%,#F7F0E1 0%,var(--cream) 55%,var(--cream-deep) 130%);display:flex;flex-direction:column;position:relative;overflow:visible;}
+  .screen{display:none;flex-direction:column;flex:1 0 auto;animation:fade .25s ease;}
+  .screen.active{display:flex;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:22px 20px 10px;}
+  .brand{display:flex;align-items:center;gap:12px;}
+  .brand-mark{width:52px;height:52px;border-radius:50%;position:relative;background:conic-gradient(from 20deg,var(--clay),var(--gold),var(--teal),var(--clay-soft),var(--teal),var(--clay));display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px var(--card-shadow);}
+  .brand-mark::after{content:"";width:20px;height:20px;border-radius:50%;background:var(--cream);}
+  .brand-name{display:flex;flex-direction:column;line-height:1.05;}
+  .brand-name .he{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:22px;color:var(--teal);}
+  .brand-name .en{font-family:'Frank Ruhl Libre',serif;font-size:12px;letter-spacing:.14em;color:var(--clay);margin-top:2px;}
+  .counter{font-family:'Frank Ruhl Libre',serif;font-size:15px;color:var(--teal);text-align:center;opacity:.85;}
+  .counter b{font-size:20px;display:block;font-weight:900;}
+  .subhead{display:flex;align-items:center;gap:14px;padding:20px 20px 8px;}
+  .back{background:none;border:none;cursor:pointer;padding:6px;display:flex;}
+  .back svg{width:24px;height:24px;stroke:var(--teal);}
+  .subhead h2{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:22px;color:var(--teal);}
+  .subhead .sub-count{margin-inline-start:auto;font-family:'Frank Ruhl Libre',serif;font-size:14px;color:var(--clay);}
+  .grid{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:18px 16px;padding:24px 22px 30px;align-content:center;}
+  .tile{display:flex;flex-direction:column;align-items:center;gap:12px;background:none;border:none;cursor:pointer;font-family:inherit;}
+  .disc{width:78px;height:78px;max-width:78px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px var(--card-shadow);transition:transform .15s;position:relative;overflow:hidden;margin:0 auto;}
+  .tile:active .disc{transform:scale(.95);}
+  .grid .tile:nth-child(1) .disc{background:#C0673B;}
+  .grid .tile:nth-child(2) .disc{background:#244F5E;}
+  .grid .tile:nth-child(3) .disc{background:#D9A441;}
+  .grid .tile:nth-child(4) .disc{background:#6E5A8A;}
+  .grid .tile:nth-child(5) .disc{background:#3E6E5E;}
+  .grid .tile:nth-child(6) .disc{background:#A84B6B;}
+  .disc svg{width:46%;height:46%;}
+  .tile-label{font-family:'Frank Ruhl Libre',serif;font-weight:500;font-size:14px;color:var(--teal);text-align:center;}
+  .badge{position:absolute;top:14%;left:14%;background:var(--cream);color:var(--ink);width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Frank Ruhl Libre',serif;font-weight:900;font-size:16px;box-shadow:0 2px 5px var(--card-shadow);}
+  .books{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:14px 20px 30px;align-content:start;}
+  .book{cursor:pointer;display:flex;flex-direction:column;gap:8px;}
+  .book-cover{position:relative;width:100%;height:0;padding-bottom:133%;border-radius:8px 3px 3px 8px;box-shadow:0 5px 14px var(--card-shadow);overflow:hidden;transition:transform .15s;border-inline-end:5px solid rgba(0,0,0,.14);}
+  .book:active .book-cover{transform:scale(.96);}
+  .book-num{position:absolute;top:10px;inset-inline-end:12px;font-family:'Frank Ruhl Libre',serif;font-size:40px;font-weight:900;color:rgba(255,255,255,.85);text-shadow:0 2px 6px rgba(0,0,0,.35);z-index:2;}
+  .book-cover span.name{position:absolute;bottom:0;left:0;width:100%;background:linear-gradient(transparent,rgba(0,0,0,.55));color:#fff;font-family:'Frank Ruhl Libre',serif;font-weight:500;font-size:15px;padding:22px 12px 10px;z-index:2;}
+  .book-cover img.cover-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;}
+  .book-meta{font-size:12px;color:var(--teal);opacity:.7;text-align:center;}
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:12px 16px 30px;align-content:start;}
+  .thumb{cursor:pointer;display:flex;flex-direction:column;gap:5px;}
+  .thumb-img{position:relative;width:100%;height:0;padding-bottom:133%;border-radius:5px;box-shadow:0 3px 8px var(--card-shadow);overflow:hidden;background:#ddd;}
+  .thumb:active .thumb-img{transform:scale(.94);}
+  .thumb-img img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;}
+  .thumb-name{font-size:11px;color:var(--teal);text-align:center;line-height:1.2;font-weight:500;}
+  .thumb-no{position:absolute;top:4px;inset-inline-start:4px;background:rgba(36,79,94,.85);color:#fff;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:700;z-index:2;}
+  .detail{padding:0 20px 60px;}
+  .detail-img{max-height:34vh;width:auto;max-width:70%;border-radius:10px;box-shadow:0 8px 24px var(--card-shadow);margin:0 auto 16px;display:block;}
+  .detail-name{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:26px;color:var(--teal);text-align:center;margin-bottom:6px;}
+  .detail-meta{text-align:center;color:var(--clay);font-size:11px;margin-top:2px;margin-bottom:14px;opacity:.85;}
+  .cs-field{display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(36,79,94,.12);padding:11px 2px;}
+  .cs-label{font-family:'Frank Ruhl Libre',serif;font-size:14px;color:var(--clay);min-width:100px;}
+  .cs-value{font-size:15px;color:var(--ink);flex:1;}
+  .cs-value.cs-name{font-family:'Frank Ruhl Libre',serif;font-size:19px;font-weight:700;color:var(--teal);}
+  .edit-btn-inline{background:none;border:none;cursor:pointer;padding:4px;display:flex;margin-inline-start:auto;}
+  .edit-btn-inline svg{width:22px;height:22px;}
+  .edit-btn-inline:active{transform:scale(.9);}
+  .status-pill{display:inline-block;padding:3px 12px;border-radius:20px;font-size:13px;font-weight:500;}
+  .status-pill.active{background:rgba(62,110,94,.18);color:#3E6E5E;}
+  .status-pill.retired{background:rgba(120,120,120,.18);color:#666;}
+  .cs-field .suit-select{max-width:200px;}
+  .suit-row{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.5);border:1px solid rgba(36,79,94,.15);border-radius:10px;padding:10px 14px;margin-bottom:18px;}
+  .suit-label{font-family:'Frank Ruhl Libre',serif;font-size:15px;color:var(--teal);}
+  .suit-select{flex:1;border:1.5px solid rgba(192,103,59,.4);border-radius:8px;padding:8px 10px;font-family:inherit;font-size:15px;color:var(--clay);background:var(--cream);cursor:pointer;}
+  .detail-section-label{font-family:'Frank Ruhl Libre',serif;font-size:14px;color:var(--clay);margin-bottom:8px;opacity:.85;}
+  .note-box{background:rgba(255,255,255,.55);border:1px solid rgba(36,79,94,.15);border-radius:12px;padding:18px 20px;font-size:16px;line-height:1.85;color:var(--ink);white-space:pre-wrap;margin-bottom:30px;height:auto;max-height:none;overflow:visible;}
+  .note-empty{opacity:.5;font-style:italic;text-align:center;}
+  .footer{text-align:center;padding:0 0 16px;font-size:11px;color:var(--teal);opacity:.5;}
+  #homeFab{position:fixed;bottom:18px;inset-inline-start:18px;width:48px;height:48px;border-radius:50%;background:var(--teal);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.3);z-index:150;}
+  #homeFab svg{width:22px;height:22px;}
+  #bigView{display:none;position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;background:#000;z-index:99999;align-items:center;justify-content:center;padding:8px;cursor:pointer;}
+  #bigView.show{display:flex;}
+  #bigImg{max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);width:auto;height:auto;display:block;margin:auto;}
+  .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--teal);color:var(--cream);padding:11px 20px;border-radius:30px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;box-shadow:0 6px 18px rgba(0,0,0,.25);z-index:50;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .edit-btn{margin-inline-start:auto;background:none;border:none;cursor:pointer;padding:6px;display:flex;}
+  .edit-btn svg{width:22px;height:22px;}
+  .empty-note{grid-column:1/-1;text-align:center;color:var(--teal);opacity:.6;padding:40px 20px;font-size:14px;line-height:1.6;}
+  .slideshow-body{display:none;}
+  #slideshow.active .slideshow-body{position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;background:#000;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:9999;padding:0;margin:0;}
+  .slide-img{max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);width:auto;height:auto;display:block;margin:auto;}
+  .slide-name{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:22px;color:var(--teal);text-align:center;}
+  .slide-sub{color:var(--clay);font-size:14px;text-align:center;margin-bottom:16px;}
+  .slide-controls{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:14px;}
+  .slide-play{width:56px;height:56px;border-radius:50%;background:var(--teal);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 10px var(--card-shadow);}
+  .slide-play svg{width:24px;height:24px;fill:var(--cream);}
+  .slide-nav{width:44px;height:44px;border-radius:50%;background:none;border:1.5px solid rgba(36,79,94,.3);cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .slide-nav svg{width:20px;height:20px;stroke:var(--teal);}
+  .speed-row{display:flex;gap:8px;}
+  .speed-btn{border:1.5px solid rgba(36,79,94,.3);background:var(--cream);border-radius:8px;padding:8px 14px;font-family:inherit;font-size:14px;color:var(--teal);cursor:pointer;display:flex;align-items:center;gap:5px;}
+  .speed-btn.active{background:var(--teal);color:var(--cream);border-color:var(--teal);}
+  .modal-overlay{position:fixed;inset:0;background:rgba(42,58,71,.55);display:none;align-items:center;justify-content:center;z-index:60;padding:24px;}
+  .modal-overlay.show{display:flex;animation:fade .2s ease;}
+  .modal{width:100%;max-width:340px;background:var(--cream);border-radius:16px;padding:20px 20px 22px;box-shadow:0 20px 50px rgba(0,0,0,.35);max-height:86vh;overflow-y:auto;}
+  .modal-head{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(36,79,94,.2);padding-bottom:12px;margin-bottom:16px;}
+  .modal-head span{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:24px;color:var(--teal);}
+  .modal-x{background:none;border:none;font-size:26px;color:var(--teal);cursor:pointer;line-height:1;padding:0 4px;}
+  .modal-opt{display:block;width:100%;background:var(--cream);border:1.5px solid rgba(36,79,94,.35);border-radius:10px;padding:15px;margin-bottom:12px;font-family:'Frank Ruhl Libre',serif;font-size:19px;color:var(--teal);cursor:pointer;transition:background .15s,transform .1s;}
+  .modal-opt:active{transform:scale(.97);}
+  .modal-opt.highlight{border-color:var(--clay);color:var(--clay);font-weight:700;}
+  /* reading layouts */
+  .reading-area{padding:8px 20px 40px;}
+  .q-label{font-family:'Frank Ruhl Libre',serif;font-size:17px;color:var(--teal);margin:6px 0 8px;}
+  .q-input{width:100%;border:1.5px solid rgba(36,79,94,.3);border-radius:10px;padding:12px 14px;font-family:inherit;font-size:15px;background:rgba(255,255,255,.6);margin-bottom:16px;resize:vertical;min-height:52px;}
+  .q-mic-wrap{position:relative;}
+  .q-mic-wrap .q-input{padding-inline-end:56px;margin-bottom:6px;}
+  .mic-btn{position:absolute;inset-inline-end:8px;bottom:14px;width:42px;height:42px;border-radius:50%;border:none;background:var(--clay);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 8px var(--card-shadow);transition:transform .1s,background .2s;}
+  .mic-btn:active{transform:scale(.9);}
+  .mic-btn.listening{background:#c0392b;animation:pulse 1.2s infinite;}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(192,57,43,.5);}70%{box-shadow:0 0 0 12px rgba(192,57,43,0);}100%{box-shadow:0 0 0 0 rgba(192,57,43,0);}}
+  .mic-status{font-size:13px;color:var(--clay);min-height:18px;margin-bottom:12px;text-align:center;}
+  .btn{display:block;width:100%;background:var(--teal);color:var(--cream);border:none;border-radius:10px;padding:15px;font-family:'Frank Ruhl Libre',serif;font-size:19px;cursor:pointer;transition:transform .1s,background .15s;margin-bottom:12px;}
+  .btn:active{transform:scale(.98);}
+  .btn.secondary{background:none;color:var(--teal);border:1.5px solid rgba(36,79,94,.35);}
+  .btn.clay{background:var(--clay);}
+  .reading-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:6px 0 18px;}
+  .rc{display:flex;flex-direction:column;gap:6px;cursor:pointer;}
+  .rc-img{border-radius:6px;overflow:hidden;box-shadow:0 4px 10px var(--card-shadow);position:relative;background:#EDE3D0;display:flex;align-items:center;justify-content:center;}
+  .rc-img img{width:100%;height:auto;display:block;object-fit:contain;}
+  .rc-pos{font-family:'Frank Ruhl Libre',serif;font-size:13px;color:var(--clay);text-align:center;}
+  .rc-name{font-size:12px;color:var(--teal);text-align:center;font-weight:500;}
+  .single-draw{text-align:center;padding:10px 20px 40px;}
+  .single-draw .detail-img{max-height:52vh;width:auto;max-width:100%;margin:0 auto 16px;}
+  .reading-list{padding:8px 20px 40px;}
+  .reading-item{background:rgba(255,255,255,.55);border:1px solid rgba(36,79,94,.15);border-radius:12px;padding:14px 16px;margin-bottom:12px;cursor:pointer;transition:transform .1s;}
+  .reading-item:active{transform:scale(.99);}
+  .reading-item .ri-date{font-size:12px;color:var(--clay);margin-bottom:4px;}
+  .reading-item .ri-q{font-family:'Frank Ruhl Libre',serif;font-size:16px;color:var(--teal);}
+  .reading-item .ri-mini{display:flex;gap:5px;margin-top:8px;}
+  .reading-item .ri-mini div{width:30px;height:40px;border-radius:3px;overflow:hidden;background:#ccc;}
+  .reading-item .ri-mini img{width:100%;height:100%;object-fit:cover;}
+  .add-form{padding:8px 20px 40px;}
+  .src-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:8px;}
+  .src-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:16px 6px;border:1.5px solid rgba(36,79,94,.3);border-radius:12px;background:rgba(255,255,255,.5);color:var(--teal);font-family:inherit;font-size:12px;cursor:pointer;transition:transform .1s,background .15s;}
+  .src-btn:active{transform:scale(.96);}
+  .src-btn svg{width:26px;height:26px;}
+  .src-hint{font-size:11px;color:var(--teal);opacity:.6;margin-bottom:14px;text-align:center;}
+  .add-drop{border:2px dashed rgba(36,79,94,.4);border-radius:12px;padding:34px 20px;text-align:center;color:var(--teal);margin-bottom:16px;cursor:pointer;background:rgba(255,255,255,.4);}
+  .add-drop b{display:block;font-family:'Frank Ruhl Libre',serif;font-size:18px;margin-top:8px;}
+  .add-drop small{opacity:.6;}
+  .add-preview{width:100%;border-radius:10px;margin-bottom:16px;display:none;}
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-family:'Frank Ruhl Libre',serif;font-size:15px;color:var(--teal);margin-bottom:6px;}
+  .field input,.field textarea,.field select{width:100%;border:1.5px solid rgba(36,79,94,.3);border-radius:10px;padding:12px 14px;font-family:inherit;font-size:15px;background:rgba(255,255,255,.6);}
+  .field textarea{resize:vertical;min-height:80px;}
+</style>
+  <meta name="theme-color" content="#244F5E">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="סול קולאז' של עירא">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="manifest" href="manifest.json">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
+<script>
+/* Force-fresh: remove any old service worker and cached copies */
+(function(){
+  try{
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.getRegistrations().then(function(regs){
+        regs.forEach(function(r){ r.unregister(); });
+      });
+    }
+    if(window.caches && caches.keys){
+      caches.keys().then(function(names){ names.forEach(function(n){ caches.delete(n); }); });
+    }
+  }catch(e){}
+})();
+</script>
+</head>
+<body>
+<div class="app">
+
+  <!-- HOME -->
+  <div class="screen active" id="home">
+    <div class="topbar">
+      <div class="brand"><div class="brand-mark"></div><div class="brand-name"><span class="he">סול קולאז'</span><span class="en">של עירא</span></div></div>
+      <div class="counter"><b id="cardCount">0</b>קלפים</div>
+    </div>
+    <div class="grid">
+      <button class="tile" onclick="openViewMenu()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="21" y1="21" x2="15.2" y2="15.2"/></svg></span><span class="tile-label">צפייה בקלפים</span></button>
+      <button class="tile" onclick="drawOne()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><rect x="6" y="3.5" width="12" height="17" rx="1.5"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/></svg></span><span class="tile-label">שליפת קלף אחד</span></button>
+      <button class="tile" onclick="startFour()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.4" stroke-linecap="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg></span><span class="tile-label">קריאת ארבעה קלפים</span></button>
+      <button class="tile" onclick="showPastReadings()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><polyline points="12 7 12 12 15.5 14"/></svg></span><span class="tile-label">קריאות קודמות</span></button>
+      <button class="tile" onclick="showAddCard()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><rect x="5" y="4" width="14" height="16" rx="1.5"/><line x1="12" y1="9" x2="12" y2="15"/><line x1="9" y1="12" x2="15" y2="12"/></svg></span><span class="tile-label">הוספת קלף</span></button>
+      <button class="tile" onclick="showScreen('books')"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2z"/><path d="M8 3v18"/></svg></span><span class="tile-label">הספרים</span></button>
+      <button class="tile" onclick="tap('עזרה וגיבוי')"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><line x1="5" y1="6" x2="16" y2="6"/><line x1="5" y1="10" x2="16" y2="10"/><line x1="5" y1="14" x2="13" y2="14"/><line x1="5" y1="18" x2="13" y2="18"/></svg></span><span class="tile-label">עזרה וגיבוי</span></button>
+    </div>
+    <div class="footer">גרסה v12</div>
+  </div>
+
+  <!-- BOOKS -->
+  <div class="screen" id="books">
+    <div class="subhead"><button class="back" onclick="showScreen('home')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button><h2>הספרים</h2><span class="sub-count">12 ספרים</span></div>
+    <div class="books" id="booksGrid"></div>
+    <div class="footer">בחרו ספר כדי לצפות בקלפים שבו</div>
+  </div>
+
+  <!-- CARDS IN BOOK -->
+  <div class="screen" id="bookCards">
+    <div class="subhead"><button class="back" onclick="showScreen('books')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button><h2 id="bookTitle">ספר</h2><span class="sub-count" id="bookCardCount"></span></div>
+    <div class="cards" id="cardsGrid"></div>
+  </div>
+
+  <!-- CARD DETAIL -->
+  <div class="screen" id="cardDetail">
+    <div class="subhead"><h2>הקלף</h2></div>
+    <div class="detail" id="detailBody"></div>
+  </div>
+  <!-- CARD EDIT -->
+  <div class="screen" id="cardEdit">
+    <div class="subhead"><button class="back" id="editBack"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button><h2>עריכת קלף</h2></div>
+    <div class="add-form">
+      <img id="editImg" class="add-preview" style="display:block">
+      <button class="btn secondary" style="margin-bottom:16px" onclick="document.getElementById('editFile').click()">החלפת תמונה</button>
+      <input type="file" id="editFile" accept="image/*" style="display:none" onchange="editReplaceImg(event)">
+      <div class="field"><label>שם הקלף</label><input type="text" id="editName"></div>
+      <div class="field"><label>ספר</label><select id="editBook"></select></div>
+      <div class="field"><label>סדרה (Suit)</label><select id="editSuit"></select></div>
+
+      <div class="field"><label>הערה</label><textarea id="editNote" style="min-height:160px"></textarea></div>
+      <button class="btn clay" onclick="saveEdit()">שמירת השינויים</button>
+      <button class="btn secondary" onclick="showScreen('cardDetail')">ביטול</button>
+    </div>
+  </div>
+
+
+  <!-- SINGLE DRAW -->
+  <div class="screen" id="singleDraw">
+    <div class="subhead"><button class="back" onclick="showScreen('home')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button><h2>שליפת קלף אחד</h2></div>
+    <div class="single-draw" id="singleBody"></div>
+  </div>
+
+  <!-- FOUR CARD READING -->
+  <div class="screen" id="fourReading">
+    <div class="subhead"><button class="back" onclick="showScreen('home')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button><h2>קריאת ארבעה קלפים</h2></div>
+    <div class="reading-area" id="fourBody"></div>
+  </div>
+
+  <!-- PAST READINGS -->
+  <div class="screen" id="pastReadings">
+    <div class="subhead"><button class="back" onclick="showScreen('home')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button><h2>קריאות קודמות</h2><span class="sub-count" id="pastCount"></span></div>
+    <div class="reading-list" id="pastBody"></div>
+  </div>
+
+  <!-- ADD CARD -->
+  <div class="screen" id="addCard">
+    <div class="subhead"><button class="back" onclick="showScreen('home')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button><h2>הוספת קלף</h2></div>
+    <div class="add-form">
+      <div class="src-grid">
+        <button type="button" class="src-btn" onclick="pickCamera()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          <span>מצלמה</span>
+        </button>
+        <button type="button" class="src-btn" onclick="pickGallery()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 16l-5-5L5 20"/></svg>
+          <span>גלריה / תמונות</span>
+        </button>
+        <button type="button" class="src-btn" onclick="pickFiles()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          <span>קבצים / Drive</span>
+        </button>
+      </div>
+      <div class="src-hint">בגלריה/קבצים יופיעו גם Google Photos ו-Drive אם הם מותקנים</div>
+      <input type="file" id="addFileCamera" accept="image/*" capture="environment" style="display:none" onchange="previewAdd(event)">
+      <input type="file" id="addFileGallery" accept="image/*" style="display:none" onchange="previewAdd(event)">
+      <input type="file" id="addFileAny" accept="image/*,.heic,.heif" style="display:none" onchange="previewAdd(event)">
+      <img id="addPreview" class="add-preview">
+      <div class="field"><label>שם הקלף</label><input type="text" id="addName" placeholder="שם הקלף"></div>
+      <div class="field"><label>ספר</label><select id="addBook"></select></div>
+      <div class="field"><label>סדרה (Suit)</label><select id="addSuit"></select></div>
+      <div class="field"><label>הערה</label><textarea id="addNote" placeholder="ההערה של עירא..."></textarea></div>
+      <button class="btn clay" onclick="saveNewCard()">שמירת הקלף</button>
+    </div>
+  </div>
+
+</div>
+<div id="installBar" style="display:none;position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--teal);color:var(--cream);padding:14px 18px;align-items:center;justify-content:space-between;gap:12px;z-index:100;box-shadow:0 -4px 16px rgba(0,0,0,.25);">
+  <span style="font-family:'Frank Ruhl Libre',serif;font-size:15px;">להתקין את האפליקציה על המסך?</span>
+  <span style="display:flex;gap:8px;">
+    <button onclick="installApp()" style="background:var(--clay);color:#fff;border:none;border-radius:8px;padding:9px 16px;font-family:inherit;font-size:14px;cursor:pointer;">התקנה</button>
+    <button onclick="dismissInstall()" style="background:none;color:var(--cream);border:1px solid rgba(243,234,216,.4);border-radius:8px;padding:9px 12px;font-family:inherit;font-size:14px;cursor:pointer;">לא עכשיו</button>
+  </span>
+</div>
+
+  <!-- THUMBNAILS -->
+  <div class="screen" id="thumbs">
+    <div class="subhead"><button class="back" onclick="showScreen('home')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button><h2>תמונות ממוזערות</h2><span class="sub-count" id="thumbsCount"></span></div>
+    <div class="cards" id="thumbsGrid"></div>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="screen" id="search">
+    <div class="subhead"><button class="back" onclick="showScreen('home')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button><h2>חיפוש קלף</h2></div>
+    <div class="add-form">
+      <div class="field"><label>לפי שם</label><input type="text" id="searchName" placeholder="הקלידו חלק מהשם..." oninput="runSearch()"></div>
+      <div class="field"><label>לפי יומן</label><select id="searchBook" onchange="runSearch()"><option value="">כל היומנים</option></select></div>
+      <div class="field"><label>לפי סדרה (Suit)</label><select id="searchSuit" onchange="runSearch()"><option value="">כל הסדרות</option></select></div>
+      <div class="sub-count" id="searchCount" style="margin:4px 2px 10px;"></div>
+      <div id="searchGrid"></div>
+    </div>
+  </div>
+
+  <!-- SLIDESHOW (full screen, tap to exit) -->
+  <div class="screen" id="slideshow">
+    <div class="slideshow-body" id="slideBody" onclick="exitSlideshow()"></div>
+  </div>
+
+<button id="homeFab" onclick="showScreen('home')" title="מסך הבית">
+  <svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+</button>
+<div id="bigView" onclick="closeBig()"><img id="bigImg" src=""></div>
+<div class="toast" id="toast"></div>
+
+<div class="modal-overlay" id="viewMenu" onclick="if(event.target.id==='viewMenu')closeViewMenu()">
+  <div class="modal">
+    <div class="modal-head"><span>בחר אחד</span><button class="modal-x" onclick="closeViewMenu()">&times;</button></div>
+    <button class="modal-opt" onclick="openSlideshowMenu()">מצגת</button>
+    <button class="modal-opt" onclick="openThumbs()">תמונות ממוזערות</button>
+    <button class="modal-opt" onclick="openSearch()">חיפוש קלף</button>
+  </div>
+</div>
+
+<script>
+/* ============ DATA (loaded from data/data.json) ============ */
+let DATA = {books:[], cards:[]};
+
+const BOOK_COLORS=['#C0673B','#244F5E','#D9A441','#8A5A44','#3E6E5E','#B0443B','#6E5A8A','#4A7C8C','#C98A3B','#5E7A44','#A84B6B','#3B5468'];
+let books=[];
+const SUITS=["על-אישי","ועדה","קהילה","בני לוויה","מועצה - ארכיטיפים","אחר"];
+
+function imgURL(no){ return 'images/'+no+'.jpg'; }
+
+async function loadData(){
+  try{
+    // Resolve base path robustly (works with or without trailing slash, or /index.html)
+    let base = location.pathname;
+    if(/\.[a-z]+$/i.test(base)) base = base.replace(/[^/]*$/, '');
+    else if(!base.endsWith('/')) base = base + '/';
+    const candidates = [base+'data/data.json', './data/data.json', 'data/data.json', base+'data/data.json?v='+Date.now()];
+    let res=null, lastErr='';
+    for(const url of candidates){
+      try{
+        const r = await fetch(url, {cache:'no-store'});
+        if(r.ok){ res=r; break; }
+        lastErr = 'HTTP '+r.status+' → '+url;
+      }catch(err){ lastErr = err.message+' → '+url; }
+    }
+    if(!res) throw new Error(lastErr||'לא נמצא data/data.json');
+    DATA = await res.json();
+    if(!DATA || !DATA.cards || !DATA.cards.length) throw new Error('קובץ הנתונים ריק');
+  }catch(e){
+    document.body.insertAdjacentHTML('afterbegin','<div style="padding:16px;margin:10px;background:#fff;border:2px solid #a33;border-radius:10px;color:#a33;font-size:14px;line-height:1.6;direction:rtl">שגיאה בטעינת הנתונים:<br><b>'+e.message+'</b><br>נתיב: data/data.json</div>');
+    return;
+  }
+  // Build all 12 book slots
+  books = [];
+  for(let i=1;i<=12;i++){
+    const meta = DATA.books.find(b=>b.id===i);
+    books.push({id:i, name: meta?meta.name:('יומן '+i), color:BOOK_COLORS[i-1], cards:[]});
+  }
+  // Fill cards
+  DATA.cards.forEach(c=>{
+    const b = books.find(x=>x.id===c.book);
+    if(b) b.cards.push({no:c.no, name:c.name, note:c.note, suit:c.suit||'ועדה', img:imgURL(c.no)});
+  });
+  // sort each book's cards by number
+  books.forEach(b=>b.cards.sort((x,y)=>x.no-y.no));
+  renderCounter();
+}
+
+
+
+// in-memory readings store (prototype; resets on reload)
+let pastReadingsStore = [];
+let fourState = {question:'', picks:[]};
+
+function allCardsWithImg(){const p=[];books.forEach(b=>b.cards.forEach(c=>{if(c.img)p.push({bookId:b.id,book:b.name,no:c.no,name:c.name,note:c.note,suit:c.suit,img:c.img});}));return p;}
+function totalCards(){return books.reduce((s,b)=>s+b.cards.length,0);}
+function renderCounter(){document.getElementById('cardCount').textContent=totalCards();}
+function shade(hex,pct){const n=parseInt(hex.slice(1),16);let r=(n>>16)+pct,g=((n>>8)&255)+pct,b=(n&255)+pct;r=Math.max(0,Math.min(255,r));g=Math.max(0,Math.min(255,g));b=Math.max(0,Math.min(255,b));return '#'+((r<<16)|(g<<8)|b).toString(16).padStart(6,'0');}
+function today(){const d=new Date();return d.toISOString().slice(0,10);}
+
+/* ---- BOOKS + CARDS ---- */
+function renderBooks(){
+  const g=document.getElementById('booksGrid');g.innerHTML='';
+  books.forEach(b=>{
+    const el=document.createElement('div');el.className='book';el.onclick=()=>openBook(b.id);
+    const cover=b.cards.length&&b.cards[0].img?`<img class="cover-img" src="${b.cards[0].img}">`:'';
+    el.innerHTML=`<div class="book-cover" style="background:linear-gradient(150deg,${b.color},${shade(b.color,-18)});">${cover}<span class="book-num">${b.id}</span><span class="name">${b.name}</span></div><div class="book-meta">${b.cards.length} קלפים</div>`;
+    g.appendChild(el);
+  });
+}
+function openBook(id){
+  const b=books.find(x=>x.id===id);
+  document.getElementById('bookTitle').textContent=b.name;
+  document.getElementById('bookCardCount').textContent=b.cards.length+' קלפים';
+  const g=document.getElementById('cardsGrid');g.innerHTML='';
+  if(!b.cards.length){g.innerHTML=`<div class="empty-note">אין עדיין קלפים בספר זה.</div>`;}
+  else b.cards.forEach(c=>{
+    const el=document.createElement('div');el.className='thumb';el.onclick=()=>openCard(id,c.no,'bookCards');
+    const img=c.img?`<img src="${c.img}">`:`<div style="width:100%;height:100%;background:linear-gradient(160deg,${b.color},${shade(b.color,-25)});"></div>`;
+    el.innerHTML=`<div class="thumb-img">${img}</div><div class="thumb-name">${c.name}</div>`;
+    g.appendChild(el);
+  });
+  showScreen('bookCards');
+}
+let currentCard=null; // {bookId,no}
+function goBackFromCard(){ showScreen((currentCard&&currentCard.from)||'books'); }
+function openCard(bookId,no,fromScreen){
+  const b=books.find(x=>x.id===bookId);const c=b.cards.find(x=>x.no===no);
+  currentCard={bookId,no,from:fromScreen||'bookCards'};
+  const noteHtml=c.note?`<div class="note-box">${c.note}</div>`:`<div class="note-box note-empty">אין עדיין הערה לקלף זה</div>`;
+  const imgHtml=c.img?`<img class="detail-img" src="${c.img}" ondblclick="openBig('${c.img}')" style="cursor:pointer">`:'';
+  document.getElementById('detailBody').innerHTML=`${imgHtml}
+    <div class="cs-field"><div class="cs-label">שם הקלף</div><div class="cs-value cs-name">${c.name||"—"}</div><button class="edit-btn-inline" id="editBtn" title="עריכה"><svg viewBox="0 0 24 24" fill="none" stroke="#C0673B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button></div>
+    <div class="cs-field"><div class="cs-label">יומן</div><div class="cs-value">${b.name}</div></div>
+    <div class="cs-field"><div class="cs-label">סדרה (Suit)</div>
+      <select class="suit-select" id="detailSuit" onchange="changeSuitInline(this.value)">
+        <option value="">— בחרו סדרה —</option>
+        ${SUITS.map(s=>`<option value="${s}" ${c.suit===s?'selected':''}>${s}</option>`).join('')}
+      </select>
+    </div>
+    <div class="detail-section-label">הערות הקלף</div>
+    ${noteHtml}`;
+  document.getElementById('detailBack').onclick=()=>showScreen(fromScreen||'bookCards');
+  showScreen('cardDetail');
+  const _eb=document.getElementById('editBtn'); if(_eb) _eb.onclick=openEdit;
+}
+
+function changeSuitInline(val){
+  if(!currentCard)return;
+  const b=books.find(x=>x.id===currentCard.bookId);
+  const c=b.cards.find(x=>x.no===currentCard.no);
+  c.suit=val;
+  tap(val?('הסדרה עודכנה: '+val):'הסדרה הוסרה');
+}
+
+/* ---- EDIT CARD ---- */
+let editImgData=null;
+function openEdit(){
+  if(!currentCard)return;
+  const b=books.find(x=>x.id===currentCard.bookId);
+  const c=b.cards.find(x=>x.no===currentCard.no);
+  editImgData=c.img||null;
+  document.getElementById('editImg').src=c.img||'';
+  document.getElementById('editImg').style.display=c.img?'block':'none';
+  document.getElementById('editName').value=c.name||'';
+  document.getElementById('editNote').value=c.note||'';
+  const sel=document.getElementById('editBook');sel.innerHTML='';
+  books.forEach(bb=>{const o=document.createElement('option');o.value=bb.id;o.textContent=bb.name;if(bb.id===currentCard.bookId)o.selected=true;sel.appendChild(o);});
+  const ss=document.getElementById('editSuit');ss.innerHTML='<option value="">— ללא —</option>';
+  SUITS.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;if(c.suit===s)o.selected=true;ss.appendChild(o);});
+  showScreen('cardEdit');
+}
+function editReplaceImg(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{editImgData=ev.target.result;const im=document.getElementById('editImg');im.src=editImgData;im.style.display='block';};
+  r.readAsDataURL(f);
+}
+function saveEdit(){
+  const name=document.getElementById('editName').value.trim();
+  if(!name){tap('נא להזין שם לקלף');return;}
+  const oldBook=books.find(x=>x.id===currentCard.bookId);
+  const c=oldBook.cards.find(x=>x.no===currentCard.no);
+  const newBookId=parseInt(document.getElementById('editBook').value);
+  c.name=name;
+  c.note=document.getElementById('editNote').value.trim();
+  c.suit=document.getElementById('editSuit').value;
+  c.img=editImgData;
+  // if book changed, move the card
+  if(newBookId!==currentCard.bookId){
+    oldBook.cards=oldBook.cards.filter(x=>x.no!==currentCard.no);
+    const nb=books.find(x=>x.id===newBookId);
+    const maxNo=nb.cards.reduce((m,cc)=>Math.max(m,cc.no),0);
+    c.no=maxNo+1;
+    nb.cards.push(c);
+    currentCard={bookId:newBookId,no:c.no,from:currentCard.from};
+  }
+  renderCounter();
+  tap('השינויים נשמרו');
+  openCard(currentCard.bookId,currentCard.no,currentCard.from);
+}
+
+/* ---- DRAW ONE ---- */
+function drawOne(){
+  const pool=allCardsWithImg();if(!pool.length){tap('אין קלפים לשליפה');return;}
+  const c=pool[Math.floor(Math.random()*pool.length)];
+  const noteHtml=c.note?`<div class="note-box" style="text-align:right">${c.note}</div>`:`<div class="note-box note-empty">אין הערה</div>`;
+  document.getElementById('singleBody').innerHTML=`<img class="detail-img" src="${c.img}" ondblclick="openBig('${c.img}')" style="cursor:pointer"><div class="detail-name">${c.name}</div><div class="detail-meta">${c.book}</div>${noteHtml}<button class="btn secondary" style="margin-top:16px" onclick="drawOne()">שליפה נוספת</button>`;
+  showScreen('singleDraw');
+}
+
+/* ---- FOUR CARD READING ---- */
+function startFour(){
+  fourState={question:'',picks:[]};
+  const pool=allCardsWithImg();
+  if(pool.length<4){tap('צריך לפחות 4 קלפים לקריאה');return;}
+  renderFourStart();
+  showScreen('fourReading');
+}
+function renderFourStart(){
+  document.getElementById('fourBody').innerHTML=`
+    <div class="q-label">מהי השאלה או הכוונה שלך?</div>
+    <div class="q-mic-wrap">
+      <textarea class="q-input" id="fourQ" placeholder="כתבו כאן את השאלה, או הקישו על המיקרופון כדי להכתיב..."></textarea>
+      <button class="mic-btn" id="micBtn" onclick="toggleMic()" title="הכתבה קולית">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg>
+      </button>
+    </div>
+    <div class="mic-status" id="micStatus"></div>
+    <button class="btn" onclick="doFourDraw()">שליפת ארבעה קלפים</button>
+    <button class="btn secondary" onclick="showScreen('home')">ביטול</button>`;
+}
+const FOUR_POSITIONS=['מי אני','מה המצב','מה עוזר לי','לאן אני הולכת'];
+function doFourDraw(){
+  fourState.question=document.getElementById('fourQ').value.trim();
+  const pool=allCardsWithImg();
+  const picks=[];const used=new Set();
+  while(picks.length<4){const i=Math.floor(Math.random()*pool.length);if(used.has(i))continue;used.add(i);picks.push(pool[i]);}
+  fourState.picks=picks;
+  renderFourResult();
+}
+function renderFourResult(){
+  const q=fourState.question?`<div class="note-box" style="margin-bottom:16px"><b>השאלה:</b> ${fourState.question}</div>`:'';
+  let cardsHtml='<div class="reading-cards">';
+  fourState.picks.forEach((c,i)=>{
+    cardsHtml+=`<div class="rc" onclick="openReadingCard(${i})"><div class="rc-img"><img src="${c.img}"></div><div class="rc-pos">${FOUR_POSITIONS[i]}</div><div class="rc-name">${c.name}</div></div>`;
+  });
+  cardsHtml+='</div>';
+  document.getElementById('fourBody').innerHTML=`${q}${cardsHtml}<button class="btn clay" onclick="saveFourReading()">שמירת הקריאה</button><button class="btn secondary" onclick="startFour()">קריאה חדשה</button>`;
+}
+function openReadingCard(i){
+  const c=fourState.picks[i];
+  const noteHtml=c.note?`<div class="note-box">${c.note}</div>`:`<div class="note-box note-empty">אין הערה</div>`;
+  document.getElementById('detailBody').innerHTML=`<img class="detail-img" src="${c.img}" ondblclick="openBig('${c.img}')" style="cursor:pointer"><div class="detail-name">${c.name}</div><div class="detail-meta">${FOUR_POSITIONS[i]} · ${c.book}</div>${noteHtml}`;
+  document.getElementById('detailBack').onclick=()=>showScreen('fourReading');
+  showScreen('cardDetail');
+}
+function saveFourReading(){
+  pastReadingsStore.unshift({date:today(),question:fourState.question,picks:fourState.picks.map(c=>({name:c.name,img:c.img,no:c.no,book:c.book,note:c.note}))});
+  tap('הקריאה נשמרה');
+  showScreen('home');
+}
+
+/* ---- PAST READINGS ---- */
+function showPastReadings(){
+  const g=document.getElementById('pastBody');
+  document.getElementById('pastCount').textContent=pastReadingsStore.length+' קריאות';
+  if(!pastReadingsStore.length){g.innerHTML=`<div class="empty-note">עדיין אין קריאות שמורות.<br>בצעו קריאת ארבעה קלפים ושמרו אותה.</div>`;}
+  else{
+    g.innerHTML='';
+    pastReadingsStore.forEach((r,idx)=>{
+      const mini=r.picks.map(p=>`<div><img src="${p.img}"></div>`).join('');
+      const el=document.createElement('div');el.className='reading-item';el.onclick=()=>openPastReading(idx);
+      el.innerHTML=`<div class="ri-date">${r.date}</div><div class="ri-q">${r.question||'קריאה ללא שאלה'}</div><div class="ri-mini">${mini}</div>`;
+      g.appendChild(el);
+    });
+  }
+  showScreen('pastReadings');
+}
+function openPastReading(idx){
+  const r=pastReadingsStore[idx];
+  fourState={question:r.question,picks:r.picks};
+  renderFourResult();
+  // change back button target
+  document.querySelector('#fourReading .back').onclick=()=>showScreen('pastReadings');
+  showScreen('fourReading');
+}
+
+/* ---- ADD CARD ---- */
+let addImgData=null;
+function showAddCard(){
+  addImgData=null;
+  document.getElementById('addPreview').style.display='none';
+  document.getElementById('addName').value='';
+  document.getElementById('addNote').value='';
+  
+  const sel=document.getElementById('addBook');sel.innerHTML='';
+  books.forEach(b=>{const o=document.createElement('option');o.value=b.id;o.textContent=b.name;sel.appendChild(o);});
+  const ss=document.getElementById('addSuit');ss.innerHTML='<option value="">— ללא —</option>';
+  SUITS.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;ss.appendChild(o);});
+  showScreen('addCard');
+}
+
+/* ---- IMAGE SOURCES for Add Card ---- */
+function pickCamera(){ document.getElementById('addFileCamera').click(); }
+function pickGallery(){ document.getElementById('addFileGallery').click(); }
+function pickFiles(){ document.getElementById('addFileAny').click(); }
+
+function previewAdd(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{addImgData=ev.target.result;const p=document.getElementById('addPreview');p.src=addImgData;p.style.display='block';};
+  r.readAsDataURL(f);
+}
+function saveNewCard(){
+  const name=document.getElementById('addName').value.trim();
+  if(!name){tap('נא להזין שם לקלף');return;}
+  const bookId=parseInt(document.getElementById('addBook').value);
+  const b=books.find(x=>x.id===bookId);
+  const maxNo=b.cards.reduce((m,c)=>Math.max(m,c.no),0);
+  b.cards.push({no:maxNo+1,name:name,note:document.getElementById('addNote').value.trim(),suit:document.getElementById('addSuit').value,img:addImgData});
+  renderCounter();
+  tap('הקלף נוסף לספר '+b.name);
+  showScreen('home');
+}
+
+
+/* ---- VOICE DICTATION (Web Speech API) ---- */
+let recognition=null, listening=false;
+function toggleMic(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const status=document.getElementById('micStatus');
+  const btn=document.getElementById('micBtn');
+  if(!SR){ status.textContent='הדפדפן לא תומך בהכתבה קולית. נסו Chrome.'; return; }
+  if(listening){ recognition && recognition.stop(); return; }
+  recognition = new SR();
+  recognition.lang='he-IL';
+  recognition.interimResults=true;
+  recognition.continuous=true;
+  const ta=document.getElementById('fourQ');
+  const base=ta.value?ta.value+' ':'';
+  recognition.onstart=()=>{listening=true;btn.classList.add('listening');status.textContent='מקשיב... דברו עכשיו';};
+  recognition.onerror=(e)=>{status.textContent='שגיאה בהכתבה: '+e.error;listening=false;btn.classList.remove('listening');};
+  recognition.onend=()=>{listening=false;btn.classList.remove('listening');if(status.textContent==='מקשיב... דברו עכשיו')status.textContent='';};
+  recognition.onresult=(ev)=>{
+    let interim='',final='';
+    for(let i=ev.resultIndex;i<ev.results.length;i++){
+      const tr=ev.results[i];
+      if(tr.isFinal) final+=tr[0].transcript;
+      else interim+=tr[0].transcript;
+    }
+    ta.value=base+final+interim;
+  };
+  recognition.start();
+}
+
+
+/* ---- THUMBNAILS ---- */
+function openThumbs(){
+  closeViewMenu();
+  const all = allCardsWithImg();
+  document.getElementById('thumbsCount').textContent = all.length + ' קלפים';
+  const g = document.getElementById('thumbsGrid'); g.innerHTML='';
+  all.forEach(c=>{
+    const el=document.createElement('div'); el.className='thumb';
+    el.onclick=()=>openCard(c.bookId,c.no,'thumbs');
+    el.innerHTML='<div class="thumb-img"><img src="'+c.img+'"></div><div class="thumb-name">'+c.name+'</div>';
+    g.appendChild(el);
+  });
+  showScreen('thumbs');
+}
+
+/* ---- SEARCH ---- */
+function openSearch(){
+  closeViewMenu();
+  const sb=document.getElementById('searchBook');
+  if(sb.options.length<=1){ books.forEach(b=>{ if(b.cards.length){ const o=document.createElement('option'); o.value=b.id; o.textContent=b.name; sb.appendChild(o);} }); }
+  const ss=document.getElementById('searchSuit');
+  if(ss.options.length<=1){ SUITS.forEach(s=>{ const o=document.createElement('option'); o.value=s; o.textContent=s; ss.appendChild(o);}); }
+  runSearch();
+  showScreen('search');
+}
+function runSearch(){
+  const name=(document.getElementById('searchName').value||'').trim();
+  const book=document.getElementById('searchBook').value;
+  const suit=document.getElementById('searchSuit').value;
+  let all=allCardsWithImg();
+  if(name) all=all.filter(c=>c.name && c.name.indexOf(name)!==-1);
+  if(book) all=all.filter(c=>String(c.bookId)===String(book));
+  if(suit) all=all.filter(c=>c.suit===suit);
+  document.getElementById('searchCount').textContent = all.length + ' תוצאות';
+  const g=document.getElementById('searchGrid'); g.innerHTML='';
+  all.forEach(c=>{
+    const el=document.createElement('div'); el.className='thumb';
+    el.onclick=()=>openCard(c.bookId,c.no,'search');
+    el.innerHTML='<div class="thumb-img"><img src="'+c.img+'"></div><div class="thumb-name">'+c.name+'</div>';
+    g.appendChild(el);
+  });
+}
+
+/* ---- SLIDESHOW ---- */
+function exitSlideshow(){ stopSlideshow(); showScreen("home"); }
+let slideOrder=[], slideIdx=0, slideTimer=null, slideDelay=4000, slidePlaying=false;
+const SLIDE_SPEEDS={slow:7000, medium:4000, fast:2000};
+function openSlideshowMenu(){
+  closeViewMenu();
+  const pool=allCardsWithImg();
+  if(!pool.length){ tap('אין קלפים'); return; }
+  slideOrder = shuffle(pool.slice());   // random order. For numeric order use: pool.slice().sort((a,b)=>a.no-b.no)
+  slideIdx=0; slideDelay=2000;          // 2 seconds
+  renderSlide(); showScreen('slideshow'); startSlideshow();
+}
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function renderSlide(){
+  const c=slideOrder[slideIdx];
+  document.getElementById('slideBody').innerHTML = '<img class="slide-img" src="'+c.img+'">';
+}
+function playIcon(){ return '<svg viewBox="0 0 24 24"><polygon points="7 5 19 12 7 19"/></svg>'; }
+function pauseIcon(){ return '<svg viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>'; }
+function startSlideshow(){ slidePlaying=true; updatePlayBtn(); clearInterval(slideTimer); slideTimer=setInterval(slideNext, slideDelay); }
+function stopSlideshow(){ slidePlaying=false; clearInterval(slideTimer); slideTimer=null; updatePlayBtn(); }
+function toggleSlide(){ slidePlaying?stopSlideshow():startSlideshow(); }
+function updatePlayBtn(){ const b=document.getElementById('slidePlayBtn'); if(b) b.innerHTML = slidePlaying?pauseIcon():playIcon(); }
+function slideNext(){ slideIdx=(slideIdx+1)%slideOrder.length; renderSlide(); }
+function slidePrev(){ slideIdx=(slideIdx-1+slideOrder.length)%slideOrder.length; renderSlide(); }
+function setSpeed(s){ slideDelay=SLIDE_SPEEDS[s]; if(slidePlaying) startSlideshow(); renderSlide(); }
+
+
+
+
+
+
+
+/* ---- FULLSCREEN CARD VIEW: one tap opens, one tap closes ---- */
+function openBig(src){
+  var v=document.getElementById('bigView'), im=document.getElementById('bigImg');
+  if(!v||!im||!src) return;
+  im.src=src;
+  v.classList.add('show');
+}
+function closeBig(){
+  var v=document.getElementById('bigView');
+  if(v) v.classList.remove('show');
+}
+
+/* ---- MENU + NAV ---- */
+function openViewMenu(){document.getElementById('viewMenu').classList.add('show');}
+function closeViewMenu(){document.getElementById('viewMenu').classList.remove('show');}
+function chooseBooks(){closeViewMenu();showScreen('books');}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(id==='books')renderBooks();window.scrollTo({top:0});var _fab=document.getElementById('homeFab');if(_fab)_fab.style.display=(id==='home'||id==='slideshow')?'none':'flex';}
+function tap(name){const t=document.getElementById('toast');t.textContent=name;t.classList.add('show');clearTimeout(window._tt);window._tt=setTimeout(()=>t.classList.remove('show'),1800);}
+function _bind(id, handler){ const el=document.getElementById(id); if(el) el.onclick=handler; }
+_bind('editBack', ()=>showScreen('cardDetail'));
+window.addEventListener('load', function(){ try{ loadData(); }catch(e){ document.body.insertAdjacentHTML('afterbegin','<div style="padding:16px;color:#a33;direction:rtl">שגיאה: '+e.message+'</div>'); } });
+</script>
+
+<script>
+/* ---- PWA: installable + offline (single-file friendly) ---- */
+(function(){
+    // Custom install prompt
+  let deferredPrompt=null;
+  window.addEventListener('beforeinstallprompt', (e)=>{
+    e.preventDefault(); deferredPrompt=e;
+    const bar=document.getElementById('installBar');
+    if(bar) bar.style.display='flex';
+  });
+  window.installApp=function(){
+    if(!deferredPrompt) return;
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.finally(()=>{ deferredPrompt=null; const bar=document.getElementById('installBar'); if(bar) bar.style.display='none'; });
+  };
+  window.dismissInstall=function(){ const bar=document.getElementById('installBar'); if(bar) bar.style.display='none'; };
+})();
+</script>
+</body>
+</html>
