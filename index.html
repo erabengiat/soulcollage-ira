@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
 <title>סול קולאז' של עירא</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700;900&family=Heebo:wght@300;400;500;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Varela+Round&family=Assistant:wght@300;400;600;700&display=swap');
 
   /* ===== FORCE correct small thumbnails (works on ALL Android, no aspect-ratio) ===== */
   #thumbsGrid, #searchGrid, #cardsGrid{
@@ -39,7 +39,7 @@
 
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
   html,body{height:100%;}
-  body{font-family:'Heebo',sans-serif;background:var(--cream);color:var(--ink);display:flex;justify-content:center;min-height:100vh;}
+  body{font-family:'Assistant',sans-serif;background:var(--cream);color:var(--ink);display:flex;justify-content:center;min-height:100vh;}
   html{scroll-behavior:smooth;}
   .app{width:100%;max-width:430px;min-height:100vh;background:radial-gradient(120% 80% at 50% -10%,#F7F0E1 0%,var(--cream) 55%,var(--cream-deep) 130%);display:flex;flex-direction:column;position:relative;overflow:visible;}
   .screen{display:none;flex-direction:column;flex:1 0 auto;animation:fade .25s ease;}
@@ -50,34 +50,67 @@
   .brand-mark{width:52px;height:52px;border-radius:50%;position:relative;background:conic-gradient(from 20deg,var(--clay),var(--gold),var(--teal),var(--clay-soft),var(--teal),var(--clay));display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px var(--card-shadow);}
   .brand-mark::after{content:"";width:20px;height:20px;border-radius:50%;background:var(--cream);}
   .brand-name{display:flex;flex-direction:column;line-height:1.05;}
-  .brand-name .he{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:22px;color:var(--teal);}
-  .brand-name .en{font-family:'Frank Ruhl Libre',serif;font-size:12px;letter-spacing:.14em;color:var(--clay);margin-top:2px;}
-  .counter{font-family:'Frank Ruhl Libre',serif;font-size:15px;color:var(--teal);text-align:center;opacity:.85;}
+  .brand-name .he{font-family:'Varela Round',sans-serif;font-size:30px;letter-spacing:0;color:var(--teal);line-height:1.05;}
+  .brand-name .en{font-family:'Varela Round',sans-serif;font-size:16px;letter-spacing:.06em;color:var(--clay);margin-top:3px;}
+  .counter{font-family:'Varela Round',sans-serif;font-size:15px;color:var(--teal);text-align:center;opacity:.85;}
   .counter b{font-size:20px;display:block;font-weight:900;}
   .subhead{display:flex;align-items:center;gap:14px;padding:20px 20px 8px;}
   .back{background:none;border:none;cursor:pointer;padding:6px;display:flex;}
   .back svg{width:24px;height:24px;stroke:var(--teal);}
-  .subhead h2{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:22px;color:var(--teal);}
-  .subhead .sub-count{margin-inline-start:auto;font-family:'Frank Ruhl Libre',serif;font-size:14px;color:var(--clay);}
-  .grid{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:18px 16px;padding:24px 22px 30px;align-content:center;}
+  .subhead h2{font-family:'Varela Round',sans-serif;font-weight:700;font-size:22px;color:var(--teal);}
+  .subhead .sub-count{margin-inline-start:auto;font-family:'Varela Round',sans-serif;font-size:14px;color:var(--clay);}
+  .grid{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:16px 14px;padding:18px 22px 26px;align-content:center;}
   .tile{display:flex;flex-direction:column;align-items:center;gap:12px;background:none;border:none;cursor:pointer;font-family:inherit;}
-  .disc{width:78px;height:78px;max-width:78px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px var(--card-shadow);transition:transform .15s;position:relative;overflow:hidden;margin:0 auto;}
+  .disc{
+    width:62px;height:62px;max-width:62px;
+    border-radius:14px;
+    background:linear-gradient(180deg, var(--key-hi) 0%, var(--key-base) 55%, var(--key-lo) 100%);
+    display:flex;align-items:center;justify-content:center;
+    position:relative;overflow:hidden;margin:0 auto;
+    box-shadow:
+      0 6px 0 var(--key-edge),
+      0 8px 14px rgba(0,0,0,.32),
+      inset 0 1px 0 rgba(255,255,255,.55),
+      inset 0 -2px 6px rgba(0,0,0,.25);
+    transition:transform .08s ease, box-shadow .08s ease;
+  }
+  /* glossy highlight across the top of the key */
+  .disc::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:46%;
+    background:linear-gradient(180deg, rgba(255,255,255,.42), rgba(255,255,255,0));
+    border-radius:14px 14px 50% 50%/14px 14px 22% 22%;
+    pointer-events:none;
+  }
+  /* pressed state: key travels down */
+  .tile:active .disc{
+    transform:translateY(5px);
+    box-shadow:
+      0 1px 0 var(--key-edge),
+      0 2px 5px rgba(0,0,0,.3),
+      inset 0 1px 0 rgba(255,255,255,.35),
+      inset 0 -1px 4px rgba(0,0,0,.28);
+  }
+  .disc svg{position:relative;z-index:2;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35));}
+
+  /* --- individual key colours --- */
+  .grid .tile:nth-child(1) .disc{--key-base:#C0673B;--key-hi:#E08A5C;--key-lo:#9E4E28;--key-edge:#7A3A1C;}
+  .grid .tile:nth-child(2) .disc{--key-base:#244F5E;--key-hi:#3E7A8E;--key-lo:#173A46;--key-edge:#0F2A33;}
+  .grid .tile:nth-child(3) .disc{--key-base:#D9A441;--key-hi:#F0C56B;--key-lo:#B5842C;--key-edge:#8C641F;}
+  .grid .tile:nth-child(4) .disc{--key-base:#6E5A8A;--key-hi:#9481AE;--key-lo:#54426B;--key-edge:#3E3050;}
+  .grid .tile:nth-child(5) .disc{--key-base:#3E6E5E;--key-hi:#5E9483;--key-lo:#2C5245;--key-edge:#1F3D33;}
+  .grid .tile:nth-child(6) .disc{--key-base:#A84B6B;--key-hi:#C77190;--key-lo:#853A53;--key-edge:#642A3E;}
+  .grid .tile:nth-child(7) .disc{--key-base:#4A7C8C;--key-hi:#6EA3B3;--key-lo:#365E6B;--key-edge:#274650;}
+
   .tile:active .disc{transform:scale(.95);}
-  .grid .tile:nth-child(1) .disc{background:#C0673B;}
-  .grid .tile:nth-child(2) .disc{background:#244F5E;}
-  .grid .tile:nth-child(3) .disc{background:#D9A441;}
-  .grid .tile:nth-child(4) .disc{background:#6E5A8A;}
-  .grid .tile:nth-child(5) .disc{background:#3E6E5E;}
-  .grid .tile:nth-child(6) .disc{background:#A84B6B;}
   .disc svg{width:46%;height:46%;}
-  .tile-label{font-family:'Frank Ruhl Libre',serif;font-weight:500;font-size:14px;color:var(--teal);text-align:center;}
-  .badge{position:absolute;top:14%;left:14%;background:var(--cream);color:var(--ink);width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Frank Ruhl Libre',serif;font-weight:900;font-size:16px;box-shadow:0 2px 5px var(--card-shadow);}
+  .tile-label{font-family:'Varela Round',sans-serif;font-weight:500;font-size:12px;color:var(--teal);text-align:center;}
+  .badge{position:absolute;top:14%;left:14%;background:var(--cream);color:var(--ink);width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Varela Round',sans-serif;font-weight:900;font-size:16px;box-shadow:0 2px 5px var(--card-shadow);}
   .books{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:14px 20px 30px;align-content:start;}
   .book{cursor:pointer;display:flex;flex-direction:column;gap:8px;}
   .book-cover{position:relative;width:100%;height:0;padding-bottom:133%;border-radius:8px 3px 3px 8px;box-shadow:0 5px 14px var(--card-shadow);overflow:hidden;transition:transform .15s;border-inline-end:5px solid rgba(0,0,0,.14);}
   .book:active .book-cover{transform:scale(.96);}
-  .book-num{position:absolute;top:10px;inset-inline-end:12px;font-family:'Frank Ruhl Libre',serif;font-size:40px;font-weight:900;color:rgba(255,255,255,.85);text-shadow:0 2px 6px rgba(0,0,0,.35);z-index:2;}
-  .book-cover span.name{position:absolute;bottom:0;left:0;width:100%;background:linear-gradient(transparent,rgba(0,0,0,.55));color:#fff;font-family:'Frank Ruhl Libre',serif;font-weight:500;font-size:15px;padding:22px 12px 10px;z-index:2;}
+  .book-num{position:absolute;top:10px;inset-inline-end:12px;font-family:'Varela Round',sans-serif;font-size:40px;font-weight:900;color:rgba(255,255,255,.85);text-shadow:0 2px 6px rgba(0,0,0,.35);z-index:2;}
+  .book-cover span.name{position:absolute;bottom:0;left:0;width:100%;background:linear-gradient(transparent,rgba(0,0,0,.55));color:#fff;font-family:'Varela Round',sans-serif;font-weight:500;font-size:15px;padding:22px 12px 10px;z-index:2;}
   .book-cover img.cover-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;}
   .book-meta{font-size:12px;color:var(--teal);opacity:.7;text-align:center;}
   .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:12px 16px 30px;align-content:start;}
@@ -89,12 +122,12 @@
   .thumb-no{position:absolute;top:4px;inset-inline-start:4px;background:rgba(36,79,94,.85);color:#fff;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:700;z-index:2;}
   .detail{padding:0 20px 60px;}
   .detail-img{max-height:34vh;width:auto;max-width:70%;border-radius:10px;box-shadow:0 8px 24px var(--card-shadow);margin:0 auto 16px;display:block;}
-  .detail-name{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:26px;color:var(--teal);text-align:center;margin-bottom:6px;}
+  .detail-name{font-family:'Varela Round',sans-serif;font-weight:700;font-size:26px;color:var(--teal);text-align:center;margin-bottom:6px;}
   .detail-meta{text-align:center;color:var(--clay);font-size:11px;margin-top:2px;margin-bottom:14px;opacity:.85;}
   .cs-field{display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(36,79,94,.12);padding:11px 2px;}
-  .cs-label{font-family:'Frank Ruhl Libre',serif;font-size:14px;color:var(--clay);min-width:100px;}
+  .cs-label{font-family:'Varela Round',sans-serif;font-size:14px;color:var(--clay);min-width:100px;}
   .cs-value{font-size:15px;color:var(--ink);flex:1;}
-  .cs-value.cs-name{font-family:'Frank Ruhl Libre',serif;font-size:19px;font-weight:700;color:var(--teal);}
+  .cs-value.cs-name{font-family:'Varela Round',sans-serif;font-size:19px;font-weight:700;color:var(--teal);}
   .edit-btn-inline{background:none;border:none;cursor:pointer;padding:4px;display:flex;margin-inline-start:auto;}
   .edit-btn-inline svg{width:22px;height:22px;}
   .edit-btn-inline:active{transform:scale(.9);}
@@ -103,14 +136,14 @@
   .status-pill.retired{background:rgba(120,120,120,.18);color:#666;}
   .cs-field .suit-select{max-width:200px;}
   .suit-row{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.5);border:1px solid rgba(36,79,94,.15);border-radius:10px;padding:10px 14px;margin-bottom:18px;}
-  .suit-label{font-family:'Frank Ruhl Libre',serif;font-size:15px;color:var(--teal);}
+  .suit-label{font-family:'Varela Round',sans-serif;font-size:15px;color:var(--teal);}
   .suit-select{flex:1;border:1.5px solid rgba(192,103,59,.4);border-radius:8px;padding:8px 10px;font-family:inherit;font-size:15px;color:var(--clay);background:var(--cream);cursor:pointer;}
-  .detail-section-label{font-family:'Frank Ruhl Libre',serif;font-size:14px;color:var(--clay);margin-bottom:8px;opacity:.85;}
+  .detail-section-label{font-family:'Varela Round',sans-serif;font-size:14px;color:var(--clay);margin-bottom:8px;opacity:.85;}
   .note-box{background:rgba(255,255,255,.55);border:1px solid rgba(36,79,94,.15);border-radius:12px;padding:18px 20px;font-size:16px;line-height:1.85;color:var(--ink);white-space:pre-wrap;margin-bottom:30px;height:auto;max-height:none;overflow:visible;}
   .note-empty{opacity:.5;font-style:italic;text-align:center;}
   .footer{text-align:center;padding:0 0 16px;font-size:11px;color:var(--teal);opacity:.5;}
-  #homeFab{position:fixed;bottom:18px;inset-inline-start:18px;width:48px;height:48px;border-radius:50%;background:var(--teal);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.3);z-index:150;}
-  #homeFab svg{width:22px;height:22px;}
+  #homeFab{position:fixed;bottom:18px;inset-inline-start:18px;width:62px;height:62px;border-radius:50%;background:var(--teal);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.3);z-index:150;}
+  #homeFab svg{width:28px;height:28px;}
   #bigView{display:none;position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;background:#000;z-index:99999;align-items:center;justify-content:center;padding:8px;cursor:pointer;}
   #bigView.show{display:flex;}
   #bigImg{max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);width:auto;height:auto;display:block;margin:auto;}
@@ -122,7 +155,7 @@
   .slideshow-body{display:none;}
   #slideshow.active .slideshow-body{position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;background:#000;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:9999;padding:0;margin:0;}
   .slide-img{max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);width:auto;height:auto;display:block;margin:auto;}
-  .slide-name{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:22px;color:var(--teal);text-align:center;}
+  .slide-name{font-family:'Varela Round',sans-serif;font-weight:700;font-size:22px;color:var(--teal);text-align:center;}
   .slide-sub{color:var(--clay);font-size:14px;text-align:center;margin-bottom:16px;}
   .slide-controls{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:14px;}
   .slide-play{width:56px;height:56px;border-radius:50%;background:var(--teal);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 10px var(--card-shadow);}
@@ -136,14 +169,14 @@
   .modal-overlay.show{display:flex;animation:fade .2s ease;}
   .modal{width:100%;max-width:340px;background:var(--cream);border-radius:16px;padding:20px 20px 22px;box-shadow:0 20px 50px rgba(0,0,0,.35);max-height:86vh;overflow-y:auto;}
   .modal-head{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(36,79,94,.2);padding-bottom:12px;margin-bottom:16px;}
-  .modal-head span{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:24px;color:var(--teal);}
+  .modal-head span{font-family:'Varela Round',sans-serif;font-weight:700;font-size:24px;color:var(--teal);}
   .modal-x{background:none;border:none;font-size:26px;color:var(--teal);cursor:pointer;line-height:1;padding:0 4px;}
-  .modal-opt{display:block;width:100%;background:var(--cream);border:1.5px solid rgba(36,79,94,.35);border-radius:10px;padding:15px;margin-bottom:12px;font-family:'Frank Ruhl Libre',serif;font-size:19px;color:var(--teal);cursor:pointer;transition:background .15s,transform .1s;}
+  .modal-opt{display:block;width:100%;background:var(--cream);border:1.5px solid rgba(36,79,94,.35);border-radius:10px;padding:15px;margin-bottom:12px;font-family:'Varela Round',sans-serif;font-size:19px;color:var(--teal);cursor:pointer;transition:background .15s,transform .1s;}
   .modal-opt:active{transform:scale(.97);}
   .modal-opt.highlight{border-color:var(--clay);color:var(--clay);font-weight:700;}
   /* reading layouts */
   .reading-area{padding:8px 20px 40px;}
-  .q-label{font-family:'Frank Ruhl Libre',serif;font-size:17px;color:var(--teal);margin:6px 0 8px;}
+  .q-label{font-family:'Varela Round',sans-serif;font-size:17px;color:var(--teal);margin:6px 0 8px;}
   .q-input{width:100%;border:1.5px solid rgba(36,79,94,.3);border-radius:10px;padding:12px 14px;font-family:inherit;font-size:15px;background:rgba(255,255,255,.6);margin-bottom:16px;resize:vertical;min-height:52px;}
   .q-mic-wrap{position:relative;}
   .q-mic-wrap .q-input{padding-inline-end:56px;margin-bottom:6px;}
@@ -152,7 +185,7 @@
   .mic-btn.listening{background:#c0392b;animation:pulse 1.2s infinite;}
   @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(192,57,43,.5);}70%{box-shadow:0 0 0 12px rgba(192,57,43,0);}100%{box-shadow:0 0 0 0 rgba(192,57,43,0);}}
   .mic-status{font-size:13px;color:var(--clay);min-height:18px;margin-bottom:12px;text-align:center;}
-  .btn{display:block;width:100%;background:var(--teal);color:var(--cream);border:none;border-radius:10px;padding:15px;font-family:'Frank Ruhl Libre',serif;font-size:19px;cursor:pointer;transition:transform .1s,background .15s;margin-bottom:12px;}
+  .btn{display:block;width:100%;background:var(--teal);color:var(--cream);border:none;border-radius:10px;padding:15px;font-family:'Varela Round',sans-serif;font-size:19px;cursor:pointer;transition:transform .1s,background .15s;margin-bottom:12px;}
   .btn:active{transform:scale(.98);}
   .btn.secondary{background:none;color:var(--teal);border:1.5px solid rgba(36,79,94,.35);}
   .btn.clay{background:var(--clay);}
@@ -160,7 +193,7 @@
   .rc{display:flex;flex-direction:column;gap:6px;cursor:pointer;}
   .rc-img{border-radius:6px;overflow:hidden;box-shadow:0 4px 10px var(--card-shadow);position:relative;background:#EDE3D0;display:flex;align-items:center;justify-content:center;}
   .rc-img img{width:100%;height:auto;display:block;object-fit:contain;}
-  .rc-pos{font-family:'Frank Ruhl Libre',serif;font-size:13px;color:var(--clay);text-align:center;}
+  .rc-pos{font-family:'Varela Round',sans-serif;font-size:13px;color:var(--clay);text-align:center;}
   .rc-name{font-size:12px;color:var(--teal);text-align:center;font-weight:500;}
   .single-draw{text-align:center;padding:10px 20px 40px;}
   .single-draw .detail-img{max-height:52vh;width:auto;max-width:100%;margin:0 auto 16px;}
@@ -168,7 +201,7 @@
   .reading-item{background:rgba(255,255,255,.55);border:1px solid rgba(36,79,94,.15);border-radius:12px;padding:14px 16px;margin-bottom:12px;cursor:pointer;transition:transform .1s;}
   .reading-item:active{transform:scale(.99);}
   .reading-item .ri-date{font-size:12px;color:var(--clay);margin-bottom:4px;}
-  .reading-item .ri-q{font-family:'Frank Ruhl Libre',serif;font-size:16px;color:var(--teal);}
+  .reading-item .ri-q{font-family:'Varela Round',sans-serif;font-size:16px;color:var(--teal);}
   .reading-item .ri-mini{display:flex;gap:5px;margin-top:8px;}
   .reading-item .ri-mini div{width:30px;height:40px;border-radius:3px;overflow:hidden;background:#ccc;}
   .reading-item .ri-mini img{width:100%;height:100%;object-fit:cover;}
@@ -179,11 +212,11 @@
   .src-btn svg{width:26px;height:26px;}
   .src-hint{font-size:11px;color:var(--teal);opacity:.6;margin-bottom:14px;text-align:center;}
   .add-drop{border:2px dashed rgba(36,79,94,.4);border-radius:12px;padding:34px 20px;text-align:center;color:var(--teal);margin-bottom:16px;cursor:pointer;background:rgba(255,255,255,.4);}
-  .add-drop b{display:block;font-family:'Frank Ruhl Libre',serif;font-size:18px;margin-top:8px;}
+  .add-drop b{display:block;font-family:'Varela Round',sans-serif;font-size:18px;margin-top:8px;}
   .add-drop small{opacity:.6;}
   .add-preview{width:100%;border-radius:10px;margin-bottom:16px;display:none;}
   .field{margin-bottom:16px;}
-  .field label{display:block;font-family:'Frank Ruhl Libre',serif;font-size:15px;color:var(--teal);margin-bottom:6px;}
+  .field label{display:block;font-family:'Varela Round',sans-serif;font-size:15px;color:var(--teal);margin-bottom:6px;}
   .field input,.field textarea,.field select{width:100%;border:1.5px solid rgba(36,79,94,.3);border-radius:10px;padding:12px 14px;font-family:inherit;font-size:15px;background:rgba(255,255,255,.6);}
   .field textarea{resize:vertical;min-height:80px;}
 </style>
@@ -231,7 +264,7 @@
       <button class="tile" onclick="showScreen('books')"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2z"/><path d="M8 3v18"/></svg></span><span class="tile-label">הספרים</span></button>
       <button class="tile" onclick="tap('עזרה וגיבוי')"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><line x1="5" y1="6" x2="16" y2="6"/><line x1="5" y1="10" x2="16" y2="10"/><line x1="5" y1="14" x2="13" y2="14"/><line x1="5" y1="18" x2="13" y2="18"/></svg></span><span class="tile-label">עזרה וגיבוי</span></button>
     </div>
-    <div class="footer">גרסה v12</div>
+    <div class="footer">גרסה v18</div>
   </div>
 
   <!-- BOOKS -->
@@ -321,7 +354,7 @@
 
 </div>
 <div id="installBar" style="display:none;position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--teal);color:var(--cream);padding:14px 18px;align-items:center;justify-content:space-between;gap:12px;z-index:100;box-shadow:0 -4px 16px rgba(0,0,0,.25);">
-  <span style="font-family:'Frank Ruhl Libre',serif;font-size:15px;">להתקין את האפליקציה על המסך?</span>
+  <span style="font-family:'Varela Round',sans-serif;font-size:15px;">להתקין את האפליקציה על המסך?</span>
   <span style="display:flex;gap:8px;">
     <button onclick="installApp()" style="background:var(--clay);color:#fff;border:none;border-radius:8px;padding:9px 16px;font-family:inherit;font-size:14px;cursor:pointer;">התקנה</button>
     <button onclick="dismissInstall()" style="background:none;color:var(--cream);border:1px solid rgba(243,234,216,.4);border-radius:8px;padding:9px 12px;font-family:inherit;font-size:14px;cursor:pointer;">לא עכשיו</button>
@@ -440,14 +473,71 @@ function openBook(id){
   const b=books.find(x=>x.id===id);
   document.getElementById('bookTitle').textContent=b.name;
   document.getElementById('bookCardCount').textContent=b.cards.length+' קלפים';
-  const g=document.getElementById('cardsGrid');g.innerHTML='';
-  if(!b.cards.length){g.innerHTML=`<div class="empty-note">אין עדיין קלפים בספר זה.</div>`;}
-  else b.cards.forEach(c=>{
-    const el=document.createElement('div');el.className='thumb';el.onclick=()=>openCard(id,c.no,'bookCards');
-    const img=c.img?`<img src="${c.img}">`:`<div style="width:100%;height:100%;background:linear-gradient(160deg,${b.color},${shade(b.color,-25)});"></div>`;
-    el.innerHTML=`<div class="thumb-img">${img}</div><div class="thumb-name">${c.name}</div>`;
-    g.appendChild(el);
+  const g=document.getElementById('cardsGrid');
+  g.innerHTML='';
+  g.style.display='block';      // we build our own sections inside
+  g.style.padding='12px';
+
+  if(!b.cards.length){
+    g.innerHTML='<div class="empty-note">אין עדיין קלפים בספר זה.</div>';
+    showScreen('bookCards');
+    return;
+  }
+
+  // containers: portrait grid + landscape group
+  const portraitWrap=document.createElement('div');
+  portraitWrap.style.display='grid';
+  portraitWrap.style.gridTemplateColumns='1fr 1fr 1fr';
+  portraitWrap.style.gap='10px';
+
+  const wideTitle=document.createElement('div');
+  wideTitle.textContent='קלפים לרוחב';
+  wideTitle.style.cssText='font-family:\'Varela Round\',sans-serif;font-size:15px;color:#C0673B;margin:22px 2px 10px;';
+  wideTitle.style.display='none';
+
+  const wideWrap=document.createElement('div');
+  wideWrap.style.display='grid';
+  wideWrap.style.gridTemplateColumns='1fr 1fr';
+  wideWrap.style.gap='10px';
+
+  g.appendChild(portraitWrap);
+  g.appendChild(wideTitle);
+  g.appendChild(wideWrap);
+
+  b.cards.forEach(function(c){
+    const el=document.createElement('div');
+    el.style.cursor='pointer';
+    el.onclick=function(){ openCard(id,c.no,'bookCards'); };
+
+    // portrait tile (cropped 3:4 box) - default
+    el.innerHTML='<div style="display:block;width:100%;">'+
+      '<div style="position:relative;width:100%;height:0;padding-bottom:133%;border-radius:5px;overflow:hidden;background:#ddd;box-shadow:0 3px 8px rgba(42,58,71,.18);">'+
+      (c.img?'<img src="'+c.img+'" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;">':'')+
+      '</div>'+
+      '<div style="font-size:10px;line-height:1.15;text-align:center;color:#244F5E;margin-top:4px;">'+c.name+'</div>'+
+      '</div>';
+    portraitWrap.appendChild(el);
+
+    // measure the real image: if it is wider than tall, move it to the wide group
+    if(c.img){
+      const probe=new Image();
+      probe.onload=function(){
+        if(probe.naturalWidth > probe.naturalHeight){
+          // rebuild as a WHOLE (uncropped) wide tile
+          el.innerHTML='<div style="display:block;width:100%;">'+
+            '<div style="width:100%;border-radius:5px;overflow:hidden;background:#EDE3D0;box-shadow:0 3px 8px rgba(42,58,71,.18);">'+
+            '<img src="'+c.img+'" style="width:100%;height:auto;display:block;">'+
+            '</div>'+
+            '<div style="font-size:10px;line-height:1.15;text-align:center;color:#244F5E;margin-top:4px;">'+c.name+'</div>'+
+            '</div>';
+          wideWrap.appendChild(el);
+          wideTitle.style.display='block';
+        }
+      };
+      probe.src=c.img;
+    }
   });
+
   showScreen('bookCards');
 }
 let currentCard=null; // {bookId,no}
@@ -688,11 +778,11 @@ function openThumbs(){
   closeViewMenu();
   const all = allCardsWithImg();
   document.getElementById('thumbsCount').textContent = all.length + ' קלפים';
-  const g = document.getElementById('thumbsGrid'); g.innerHTML='';
+  const g = document.getElementById('thumbsGrid'); g.innerHTML=''; forceGrid(g);
   all.forEach(c=>{
     const el=document.createElement('div'); el.className='thumb';
     el.onclick=()=>openCard(c.bookId,c.no,'thumbs');
-    el.innerHTML='<div class="thumb-img"><img src="'+c.img+'"></div><div class="thumb-name">'+c.name+'</div>';
+    el.innerHTML='<div style="display:block;width:100%;"><div style="position:relative;width:100%;height:0;padding-bottom:133%;border-radius:5px;overflow:hidden;background:#ddd;box-shadow:0 3px 8px rgba(42,58,71,.18);"><img src="'+c.img+'" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;"></div><div style="font-size:10px;line-height:1.15;text-align:center;color:#244F5E;margin-top:4px;">'+c.name+'</div></div>';
     g.appendChild(el);
   });
   showScreen('thumbs');
@@ -717,11 +807,11 @@ function runSearch(){
   if(book) all=all.filter(c=>String(c.bookId)===String(book));
   if(suit) all=all.filter(c=>c.suit===suit);
   document.getElementById('searchCount').textContent = all.length + ' תוצאות';
-  const g=document.getElementById('searchGrid'); g.innerHTML='';
+  const g=document.getElementById('searchGrid'); g.innerHTML=''; forceGrid(g);
   all.forEach(c=>{
     const el=document.createElement('div'); el.className='thumb';
     el.onclick=()=>openCard(c.bookId,c.no,'search');
-    el.innerHTML='<div class="thumb-img"><img src="'+c.img+'"></div><div class="thumb-name">'+c.name+'</div>';
+    el.innerHTML='<div style="display:block;width:100%;"><div style="position:relative;width:100%;height:0;padding-bottom:133%;border-radius:5px;overflow:hidden;background:#ddd;box-shadow:0 3px 8px rgba(42,58,71,.18);"><img src="'+c.img+'" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;"></div><div style="font-size:10px;line-height:1.15;text-align:center;color:#244F5E;margin-top:4px;">'+c.name+'</div></div>';
     g.appendChild(el);
   });
 }
@@ -769,6 +859,15 @@ function openBig(src){
 function closeBig(){
   var v=document.getElementById('bigView');
   if(v) v.classList.remove('show');
+}
+
+
+function forceGrid(el){
+  if(!el) return;
+  el.style.display='grid';
+  el.style.gridTemplateColumns='1fr 1fr 1fr';
+  el.style.gap='10px';
+  el.style.padding='12px';
 }
 
 /* ---- MENU + NAV ---- */
