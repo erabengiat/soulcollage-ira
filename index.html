@@ -57,7 +57,7 @@
   .subhead{display:flex;align-items:center;gap:14px;padding:20px 20px 8px;}
   .back{background:none;border:none;cursor:pointer;padding:6px;display:flex;}
   .back svg{width:24px;height:24px;stroke:var(--teal);}
-  .subhead h2{font-family:'Varela Round',sans-serif;font-weight:700;font-size:22px;color:var(--teal);}
+  .subhead h2{font-family:'Varela Round',sans-serif;font-weight:700;font-size:22px;color:var(--teal);flex:1;text-align:center;}
   .subhead .sub-count{margin-inline-start:auto;font-family:'Varela Round',sans-serif;font-size:14px;color:var(--clay);}
   .grid{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:16px 14px;padding:18px 22px 26px;align-content:center;}
   .tile{display:flex;flex-direction:column;align-items:center;gap:12px;background:none;border:none;cursor:pointer;font-family:inherit;}
@@ -142,8 +142,8 @@
   .note-box{background:rgba(255,255,255,.55);border:1px solid rgba(36,79,94,.15);border-radius:12px;padding:18px 20px;font-size:16px;line-height:1.85;color:var(--ink);white-space:pre-wrap;margin-bottom:30px;height:auto;max-height:none;overflow:visible;}
   .note-empty{opacity:.5;font-style:italic;text-align:center;}
   .footer{text-align:center;padding:0 0 16px;font-size:11px;color:var(--teal);opacity:.5;}
-  #homeFab{position:fixed;bottom:18px;inset-inline-start:18px;width:62px;height:62px;border-radius:50%;background:var(--teal);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.3);z-index:150;}
-  #homeFab svg{width:28px;height:28px;}
+  #homeFab{position:fixed;bottom:18px;inset-inline-start:18px;width:31px;height:31px;border-radius:50%;background:var(--teal);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.3);z-index:150;}
+  #homeFab svg{width:14px;height:14px;}
   #bigView{display:none;position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;background:#000;z-index:99999;align-items:center;justify-content:center;padding:8px;cursor:pointer;}
   #bigView.show{display:flex;}
   #bigImg{max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);width:auto;height:auto;display:block;margin:auto;}
@@ -179,8 +179,9 @@
   .q-label{font-family:'Varela Round',sans-serif;font-size:17px;color:var(--teal);margin:6px 0 8px;}
   .q-input{width:100%;border:1.5px solid rgba(36,79,94,.3);border-radius:10px;padding:12px 14px;font-family:inherit;font-size:15px;background:rgba(255,255,255,.6);margin-bottom:16px;resize:vertical;min-height:52px;}
   .q-mic-wrap{position:relative;}
-  .q-mic-wrap .q-input{padding-inline-end:56px;margin-bottom:6px;}
-  .mic-btn{position:absolute;inset-inline-end:8px;bottom:14px;width:42px;height:42px;border-radius:50%;border:none;background:var(--clay);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 8px var(--card-shadow);transition:transform .1s,background .2s;}
+  .q-mic-wrap .q-input{padding-inline-end:34px;margin-bottom:6px;}
+  .mic-btn svg{width:12px;height:12px;}
+  .mic-btn{position:absolute;inset-inline-end:8px;bottom:14px;width:21px;height:21px;border-radius:50%;border:none;background:var(--clay);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 5px var(--card-shadow);transition:transform .1s,background .2s;}
   .mic-btn:active{transform:scale(.9);}
   .mic-btn.listening{background:#c0392b;animation:pulse 1.2s infinite;}
   @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(192,57,43,.5);}70%{box-shadow:0 0 0 12px rgba(192,57,43,0);}100%{box-shadow:0 0 0 0 rgba(192,57,43,0);}}
@@ -255,17 +256,19 @@ if ('serviceWorker' in navigator) {
       <button class="tile" onclick="startFour()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.4" stroke-linecap="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg></span><span class="tile-label">קריאת ארבעה קלפים</span></button>
       <button class="tile" onclick="showPastReadings()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><polyline points="12 7 12 12 15.5 14"/></svg></span><span class="tile-label">קריאות קודמות</span></button>
       <button class="tile" onclick="showAddCard()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><rect x="5" y="4" width="14" height="16" rx="1.5"/><line x1="12" y1="9" x2="12" y2="15"/><line x1="9" y1="12" x2="15" y2="12"/></svg></span><span class="tile-label">הוספת קלף</span></button>
-      <button class="tile" onclick="showScreen('books')"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2z"/><path d="M8 3v18"/></svg></span><span class="tile-label">הספרים</span></button>
+      <button class="tile" onclick="openSearch()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.7" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="21" y1="21" x2="15.2" y2="15.2"/></svg></span><span class="tile-label">חיפוש קלף</span></button>
+      <button class="tile" onclick="openSettings()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 9 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 9a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg></span><span class="tile-label">הגדרות</span></button>
+      <button class="tile" onclick="showScreen('books')"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2z"/><path d="M8 3v18"/></svg></span><span class="tile-label">היומנים</span></button>
       <button class="tile" onclick="tap('עזרה וגיבוי')"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><line x1="5" y1="6" x2="16" y2="6"/><line x1="5" y1="10" x2="16" y2="10"/><line x1="5" y1="14" x2="13" y2="14"/><line x1="5" y1="18" x2="13" y2="18"/></svg></span><span class="tile-label">עזרה וגיבוי</span></button>
     </div>
-    <div class="footer">גרסה v22</div>
+    <div class="footer">גרסה v23</div>
   </div>
 
   <!-- BOOKS -->
   <div class="screen" id="books">
-    <div class="subhead"><button class="back" onclick="showScreen('home')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button><h2>הספרים</h2><span class="sub-count">12 ספרים</span></div>
+    <div class="subhead"><button class="back" onclick="showScreen('home')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button><h2>היומנים</h2><span class="sub-count">12 יומנים</span></div>
     <div class="books" id="booksGrid"></div>
-    <div class="footer">בחרו ספר כדי לצפות בקלפים שבו</div>
+    <div class="footer">בחרו יומן כדי לצפות בקלפים שבו</div>
   </div>
 
   <!-- CARDS IN BOOK -->
@@ -287,8 +290,9 @@ if ('serviceWorker' in navigator) {
       <button class="btn secondary" style="margin-bottom:16px" onclick="document.getElementById('editFile').click()">החלפת תמונה</button>
       <input type="file" id="editFile" accept="image/*" style="display:none" onchange="editReplaceImg(event)">
       <div class="field"><label>שם הקלף</label><input type="text" id="editName"></div>
-      <div class="field"><label>ספר</label><select id="editBook"></select></div>
+      <div class="field"><label>יומן</label><select id="editBook"></select></div>
       <div class="field"><label>סדרה (Suit)</label><select id="editSuit"></select></div>
+      <div class="field" id="editSuitCustomWrap" style="display:none"><label>שם הסדרה</label><input type="text" id="editSuitCustom" placeholder="כתבו שם סדרה חדש..."></div>
 
       <div class="field"><label>הערה</label><textarea id="editNote" style="min-height:160px"></textarea></div>
       <button class="btn clay" onclick="saveEdit()">שמירת השינויים</button>
@@ -299,7 +303,7 @@ if ('serviceWorker' in navigator) {
 
   <!-- SINGLE DRAW -->
   <div class="screen" id="singleDraw">
-    <div class="subhead"><button class="back" onclick="showScreen('home')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button><h2>שליפת קלף אחד</h2></div>
+    <div class="subhead"></div>
     <div class="single-draw" id="singleBody"></div>
   </div>
 
@@ -311,13 +315,13 @@ if ('serviceWorker' in navigator) {
 
   <!-- PAST READINGS -->
   <div class="screen" id="pastReadings">
-    <div class="subhead"><button class="back" onclick="showScreen('home')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button><h2>קריאות קודמות</h2><span class="sub-count" id="pastCount"></span></div>
+    <div class="subhead"><h2>קריאות קודמות</h2><span class="sub-count" id="pastCount"></span></div>
     <div class="reading-list" id="pastBody"></div>
   </div>
 
   <!-- ADD CARD -->
   <div class="screen" id="addCard">
-    <div class="subhead"><button class="back" onclick="showScreen('home')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button><h2>הוספת קלף</h2></div>
+    <div class="subhead"><h2>הוספת קלף חדש</h2></div>
     <div class="add-form">
       <div class="src-grid">
         <button type="button" class="src-btn" onclick="pickCamera()">
@@ -339,8 +343,10 @@ if ('serviceWorker' in navigator) {
       <input type="file" id="addFileAny" accept="image/*,.heic,.heif" style="display:none" onchange="previewAdd(event)">
       <img id="addPreview" class="add-preview">
       <div class="field"><label>שם הקלף</label><input type="text" id="addName" placeholder="שם הקלף"></div>
-      <div class="field"><label>ספר</label><select id="addBook"></select></div>
+      <div class="field"><label>יומן</label><select id="addBook"></select></div>
+      <div class="field" id="addBookNewWrap" style="display:none"><label>שם היומן החדש</label><input type="text" id="addBookNew" placeholder="שם היומן..."></div>
       <div class="field"><label>סדרה (Suit)</label><select id="addSuit"></select></div>
+      <div class="field" id="addSuitCustomWrap" style="display:none"><label>שם הסדרה</label><input type="text" id="addSuitCustom" placeholder="כתבו שם סדרה חדש..."></div>
       <div class="field"><label>הערה</label><textarea id="addNote" placeholder="ההערה של עירא..."></textarea></div>
       <button class="btn clay" onclick="saveNewCard()">שמירת הקלף</button>
     </div>
@@ -365,7 +371,14 @@ if ('serviceWorker' in navigator) {
   <div class="screen" id="search">
     <div class="subhead"><button class="back" onclick="showScreen('home')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button><h2>חיפוש קלף</h2></div>
     <div class="add-form">
-      <div class="field"><label>לפי שם</label><input type="text" id="searchName" placeholder="הקלידו חלק מהשם..." oninput="runSearch()"></div>
+      <div class="field"><label>סוג החיפוש</label>
+        <select id="searchMode" onchange="runSearch()">
+          <option value="key">לפי מילת מפתח (שם + הערה)</option>
+          <option value="name">לפי שם הקלף</option>
+          <option value="recent">נוסף לאחרונה</option>
+        </select>
+      </div>
+      <div class="field"><label>טקסט לחיפוש</label><input type="text" id="searchName" placeholder="הקלידו מילה..." oninput="runSearch()"></div>
       <div class="field"><label>לפי יומן</label><select id="searchBook" onchange="runSearch()"><option value="">כל היומנים</option></select></div>
       <div class="field"><label>לפי סדרה (Suit)</label><select id="searchSuit" onchange="runSearch()"><option value="">כל הסדרות</option></select></div>
       <div class="sub-count" id="searchCount" style="margin:4px 2px 10px;"></div>
@@ -382,6 +395,28 @@ if ('serviceWorker' in navigator) {
   <svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
 </button>
 <div id="bigView" onclick="closeBig()"><img id="bigImg" src=""></div>
+
+  <!-- SETTINGS -->
+  <div class="screen" id="settings">
+    <div class="subhead"><h2>הגדרות</h2></div>
+    <div class="add-form">
+
+      <div class="field"><label>הוספת יומן חדש</label>
+        <input type="text" id="newBookName" placeholder="שם היומן החדש...">
+      </div>
+      <button class="btn clay" onclick="createBook()">יצירת יומן</button>
+
+      <button class="btn secondary" onclick="undoLast()">ביטול הפעולה האחרונה</button>
+
+      <div class="detail-section-label" style="margin-top:22px">זמן שימוש באפליקציה</div>
+      <div class="note-box" id="usageBox" style="margin-bottom:18px"></div>
+
+      <div class="detail-section-label">לוג פעילות</div>
+      <div class="note-box" id="logBox" style="max-height:300px;overflow:auto"></div>
+      <button class="btn secondary" style="margin-top:12px" onclick="clearLog()">ניקוי הלוג</button>
+    </div>
+  </div>
+
 <div class="toast" id="toast"></div>
 
 <div class="modal-overlay" id="viewMenu" onclick="if(event.target.id==='viewMenu')closeViewMenu()">
@@ -399,7 +434,8 @@ let DATA = {books:[], cards:[]};
 
 const BOOK_COLORS=['#C0673B','#244F5E','#D9A441','#8A5A44','#3E6E5E','#B0443B','#6E5A8A','#4A7C8C','#C98A3B','#5E7A44','#A84B6B','#3B5468'];
 let books=[];
-const SUITS=["על-אישי","ועדה","קהילה","בני לוויה","מועצה - ארכיטיפים","אחר"];
+const SUITS=["ועדה","קהילה","בני לוויה","מועצה - ארכיטיפים"];
+const DEFAULT_SUIT="ועדה";
 
 function imgURL(no){ return 'images/'+no+'.jpg'; }
 
@@ -434,10 +470,11 @@ async function loadData(){
   // Fill cards
   DATA.cards.forEach(c=>{
     const b = books.find(x=>x.id===c.book);
-    if(b) b.cards.push({no:c.no, name:c.name, note:c.note, suit:c.suit||'ועדה', img:imgURL(c.no)});
+    if(b) b.cards.push({no:c.no, name:c.name, note:c.note, suit:c.suit||DEFAULT_SUIT, img:imgURL(c.no)});
   });
   // sort each book's cards by number
   books.forEach(b=>b.cards.sort((x,y)=>x.no-y.no));
+  restoreCustomBooks();
   renderCounter();
 }
 
@@ -474,7 +511,7 @@ function openBook(id){
   g.style.padding='10px 14px 30px';
 
   if(!b.cards.length){
-    g.innerHTML='<div class="empty-note">אין עדיין קלפים בספר זה.</div>';
+    g.innerHTML='<div class="empty-note">אין עדיין קלפים ביומן זה.</div>';
     showScreen('bookCards');
     return;
   }
@@ -546,7 +583,7 @@ function openCard(bookId,no,fromScreen){
     <div class="cs-field"><div class="cs-label">יומן</div><div class="cs-value">${b.name}</div></div>
     <div class="cs-field"><div class="cs-label">סדרה (Suit)</div>
       <select class="suit-select" id="detailSuit" onchange="changeSuitInline(this.value)">
-        <option value="">— בחרו סדרה —</option>
+        
         ${SUITS.map(s=>`<option value="${s}" ${c.suit===s?'selected':''}>${s}</option>`).join('')}
       </select>
     </div>
@@ -578,8 +615,14 @@ function openEdit(){
   document.getElementById('editNote').value=c.note||'';
   const sel=document.getElementById('editBook');sel.innerHTML='';
   books.forEach(bb=>{const o=document.createElement('option');o.value=bb.id;o.textContent=bb.name;if(bb.id===currentCard.bookId)o.selected=true;sel.appendChild(o);});
-  const ss=document.getElementById('editSuit');ss.innerHTML='<option value="">— ללא —</option>';
+  const ss=document.getElementById('editSuit');ss.innerHTML='';
   SUITS.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;if(c.suit===s)o.selected=true;ss.appendChild(o);});
+  const oOther=document.createElement('option');oOther.value='__custom__';oOther.textContent='סדרה אחרת (כתיבה ידנית)…';ss.appendChild(oOther);
+  const known=SUITS.indexOf(c.suit)!==-1;
+  if(!known && c.suit){ oOther.selected=true; }
+  ss.onchange=function(){document.getElementById('editSuitCustomWrap').style.display=(ss.value==='__custom__')?'block':'none';};
+  document.getElementById('editSuitCustomWrap').style.display=(!known && c.suit)?'block':'none';
+  document.getElementById('editSuitCustom').value=(!known && c.suit)?c.suit:'';
   showScreen('cardEdit');
 }
 function editReplaceImg(e){
@@ -596,7 +639,7 @@ function saveEdit(){
   const newBookId=parseInt(document.getElementById('editBook').value);
   c.name=name;
   c.note=document.getElementById('editNote').value.trim();
-  c.suit=document.getElementById('editSuit').value;
+  c.suit=(document.getElementById('editSuit').value==='__custom__')?(document.getElementById('editSuitCustom').value.trim()||DEFAULT_SUIT):document.getElementById('editSuit').value;
   c.img=editImgData;
   // if book changed, move the card
   if(newBookId!==currentCard.bookId){
@@ -708,8 +751,16 @@ function showAddCard(){
   
   const sel=document.getElementById('addBook');sel.innerHTML='';
   books.forEach(b=>{const o=document.createElement('option');o.value=b.id;o.textContent=b.name;sel.appendChild(o);});
-  const ss=document.getElementById('addSuit');ss.innerHTML='<option value="">— ללא —</option>';
-  SUITS.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;ss.appendChild(o);});
+  const oNew=document.createElement('option');oNew.value='__new__';oNew.textContent='+ יצירת יומן חדש…';sel.appendChild(oNew);
+  sel.onchange=function(){document.getElementById('addBookNewWrap').style.display=(sel.value==='__new__')?'block':'none';};
+  document.getElementById('addBookNewWrap').style.display='none';
+  document.getElementById('addBookNew').value='';
+  const ss=document.getElementById('addSuit');ss.innerHTML='';
+  SUITS.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;if(s===DEFAULT_SUIT)o.selected=true;ss.appendChild(o);});
+  const oOther=document.createElement('option');oOther.value='__custom__';oOther.textContent='סדרה אחרת (כתיבה ידנית)…';ss.appendChild(oOther);
+  ss.onchange=function(){document.getElementById('addSuitCustomWrap').style.display=(ss.value==='__custom__')?'block':'none';};
+  document.getElementById('addSuitCustomWrap').style.display='none';
+  document.getElementById('addSuitCustom').value='';
   showScreen('addCard');
 }
 
@@ -727,12 +778,26 @@ function previewAdd(e){
 function saveNewCard(){
   const name=document.getElementById('addName').value.trim();
   if(!name){tap('נא להזין שם לקלף');return;}
-  const bookId=parseInt(document.getElementById('addBook').value);
-  const b=books.find(x=>x.id===bookId);
+  let bookId, b;
+  if(document.getElementById('addBook').value==='__new__'){
+    const nm=(document.getElementById('addBookNew').value||'').trim();
+    if(!nm){ tap('נא להזין שם ליומן החדש'); return; }
+    bookId=books.reduce((m,x)=>Math.max(m,x.id),0)+1;
+    const colors=['#C0673B','#244F5E','#D9A441','#8A5A44','#3E6E5E','#B0443B','#6E5A8A','#4A7C8C','#C98A3B','#5E7A44','#A84B6B','#3B5468'];
+    b={id:bookId,name:nm,color:colors[(bookId-1)%colors.length],cards:[]};
+    books.push(b);
+    try{ const cb=JSON.parse(localStorage.getItem(BOOKS_KEY)||'[]'); cb.push({id:bookId,name:nm}); localStorage.setItem(BOOKS_KEY, JSON.stringify(cb)); }catch(e){}
+    logAction('נוצר יומן חדש: '+nm);
+  }else{
+    bookId=parseInt(document.getElementById('addBook').value);
+    b=books.find(x=>x.id===bookId);
+  }
   const maxNo=b.cards.reduce((m,c)=>Math.max(m,c.no),0);
-  b.cards.push({no:maxNo+1,name:name,note:document.getElementById('addNote').value.trim(),suit:document.getElementById('addSuit').value,img:addImgData});
+  b.cards.push({no:maxNo+1,name:name,note:document.getElementById('addNote').value.trim(),suit:((document.getElementById('addSuit').value==='__custom__')?(document.getElementById('addSuitCustom').value.trim()||DEFAULT_SUIT):document.getElementById('addSuit').value),img:addImgData});
+  undoStack.push({type:'addCard', bookId:b.id, no:maxNo+1});
+  logAction('נוסף קלף: '+name+' ('+b.name+')');
   renderCounter();
-  tap('הקלף נוסף לספר '+b.name);
+  tap('הקלף נוסף ליומן '+b.name);
   showScreen('home');
 }
 
@@ -793,17 +858,25 @@ function openSearch(){
   showScreen('search');
 }
 function runSearch(){
-  const name=(document.getElementById('searchName').value||'').trim();
+  const q=(document.getElementById('searchName').value||'').trim();
+  const mode=(document.getElementById('searchMode')||{value:'key'}).value;
   const book=document.getElementById('searchBook').value;
   const suit=document.getElementById('searchSuit').value;
   let all=allCardsWithImg();
-  if(name) all=all.filter(c=>c.name && c.name.indexOf(name)!==-1);
+
+  if(mode==='recent'){
+    all=all.slice().sort((a,b)=>b.no-a.no).slice(0,60);
+  }else if(q){
+    if(mode==='name') all=all.filter(c=>c.name && c.name.indexOf(q)!==-1);
+    else all=all.filter(c=>((c.name||'')+' '+(c.note||'')).indexOf(q)!==-1);
+  }
   if(book) all=all.filter(c=>String(c.bookId)===String(book));
   if(suit) all=all.filter(c=>c.suit===suit);
-  document.getElementById('searchCount').textContent = all.length + ' תוצאות';
+
+  document.getElementById('searchCount').textContent=all.length+' תוצאות';
   const g=document.getElementById('searchGrid'); g.innerHTML=''; forceGrid(g);
   all.forEach(c=>{
-    const el=document.createElement('div'); el.className='thumb';
+    const el=document.createElement('div');el.className='thumb';
     el.onclick=()=>openCard(c.bookId,c.no,'search');
     el.innerHTML='<div style="display:block;width:100%;"><div style="position:relative;width:100%;height:0;padding-bottom:133%;border-radius:5px;overflow:hidden;background:#ddd;box-shadow:0 3px 8px rgba(42,58,71,.18);"><img src="'+c.img+'" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;"></div><div style="font-size:10px;line-height:1.15;text-align:center;color:#244F5E;margin-top:4px;">'+c.name+'</div></div>';
     g.appendChild(el);
@@ -862,6 +935,138 @@ function forceGrid(el){
   el.style.gridTemplateColumns='1fr 1fr 1fr';
   el.style.gap='10px';
   el.style.padding='12px';
+}
+
+
+/* ================= SETTINGS: journals, undo, log, usage ================= */
+const LOG_KEY='activityLog', USE_KEY='usageLog', BOOKS_KEY='customBooks';
+let undoStack=[];
+
+function nowISO(){ return new Date().toISOString(); }
+function todayKey(){ return new Date().toISOString().slice(0,10); }
+
+function logAction(text){
+  try{
+    const arr=JSON.parse(localStorage.getItem(LOG_KEY)||'[]');
+    arr.unshift({t:nowISO(), text:text});
+    localStorage.setItem(LOG_KEY, JSON.stringify(arr.slice(0,300)));
+  }catch(e){}
+}
+
+/* --- usage time --- */
+let sessionStart=Date.now();
+function saveUsage(){
+  try{
+    const mins=Math.round((Date.now()-sessionStart)/60000);
+    if(mins<=0) return;
+    const u=JSON.parse(localStorage.getItem(USE_KEY)||'{}');
+    const k=todayKey();
+    u[k]=(u[k]||0)+mins;
+    localStorage.setItem(USE_KEY, JSON.stringify(u));
+    sessionStart=Date.now();
+  }catch(e){}
+}
+window.addEventListener('beforeunload', saveUsage);
+setInterval(saveUsage, 60000);
+
+function usageSummary(){
+  let u={};
+  try{ u=JSON.parse(localStorage.getItem(USE_KEY)||'{}'); }catch(e){}
+  const today=todayKey();
+  const month=today.slice(0,7);
+  const year=today.slice(0,4);
+  let d=0,m=0,y=0;
+  Object.keys(u).forEach(function(k){
+    const v=u[k]||0;
+    if(k===today) d+=v;
+    if(k.slice(0,7)===month) m+=v;
+    if(k.slice(0,4)===year) y+=v;
+  });
+  function fmt(mins){
+    const h=Math.floor(mins/60), mm=mins%60;
+    return h? (h+' שעות ו-'+mm+' דקות') : (mm+' דקות');
+  }
+  return 'היום: '+fmt(d)+'\nהחודש: '+fmt(m)+'\nהשנה: '+fmt(y);
+}
+
+/* --- create a new journal --- */
+function createBook(){
+  const name=(document.getElementById('newBookName').value||'').trim();
+  if(!name){ tap('נא להזין שם ליומן'); return; }
+  const id=books.reduce((m,b)=>Math.max(m,b.id),0)+1;
+  const colors=['#C0673B','#244F5E','#D9A441','#8A5A44','#3E6E5E','#B0443B','#6E5A8A','#4A7C8C','#C98A3B','#5E7A44','#A84B6B','#3B5468'];
+  books.push({id:id, name:name, color:colors[(id-1)%colors.length], cards:[]});
+  try{
+    const cb=JSON.parse(localStorage.getItem(BOOKS_KEY)||'[]');
+    cb.push({id:id,name:name});
+    localStorage.setItem(BOOKS_KEY, JSON.stringify(cb));
+  }catch(e){}
+  undoStack.push({type:'createBook', id:id});
+  logAction('נוצר יומן חדש: '+name);
+  document.getElementById('newBookName').value='';
+  renderCounter();
+  tap('היומן "'+name+'" נוצר');
+  renderSettings();
+}
+
+/* --- undo last action --- */
+function undoLast(){
+  const a=undoStack.pop();
+  if(!a){ tap('אין פעולה לביטול'); return; }
+  if(a.type==='createBook'){
+    books=books.filter(b=>b.id!==a.id);
+    try{
+      const cb=JSON.parse(localStorage.getItem(BOOKS_KEY)||'[]').filter(x=>x.id!==a.id);
+      localStorage.setItem(BOOKS_KEY, JSON.stringify(cb));
+    }catch(e){}
+    logAction('בוטלה יצירת יומן');
+  }else if(a.type==='addCard'){
+    const b=books.find(x=>x.id===a.bookId);
+    if(b) b.cards=b.cards.filter(c=>c.no!==a.no);
+    logAction('בוטלה הוספת קלף');
+  }else if(a.type==='editCard'){
+    const b=books.find(x=>x.id===a.bookId);
+    const c=b&&b.cards.find(x=>x.no===a.no);
+    if(c){ c.name=a.prev.name; c.note=a.prev.note; c.suit=a.prev.suit; }
+    logAction('בוטל שינוי בקלף');
+  }
+  renderCounter();
+  tap('הפעולה האחרונה בוטלה');
+  renderSettings();
+}
+
+function clearLog(){
+  try{ localStorage.removeItem(LOG_KEY); }catch(e){}
+  renderSettings();
+  tap('הלוג נוקה');
+}
+
+function renderSettings(){
+  document.getElementById('usageBox').textContent = usageSummary();
+  let arr=[];
+  try{ arr=JSON.parse(localStorage.getItem(LOG_KEY)||'[]'); }catch(e){}
+  const box=document.getElementById('logBox');
+  if(!arr.length){ box.textContent='אין עדיין פעילות רשומה.'; return; }
+  box.textContent = arr.map(function(x){
+    const d=new Date(x.t);
+    const p=n=>String(n).padStart(2,'0');
+    return p(d.getDate())+'/'+p(d.getMonth()+1)+' '+p(d.getHours())+':'+p(d.getMinutes())+' — '+x.text;
+  }).join('\n');
+}
+
+function openSettings(){ renderSettings(); showScreen('settings'); }
+
+/* restore custom journals on load */
+function restoreCustomBooks(){
+  try{
+    const cb=JSON.parse(localStorage.getItem(BOOKS_KEY)||'[]');
+    cb.forEach(function(x){
+      if(!books.find(b=>b.id===x.id)){
+        const colors=['#C0673B','#244F5E','#D9A441','#8A5A44','#3E6E5E','#B0443B','#6E5A8A','#4A7C8C','#C98A3B','#5E7A44','#A84B6B','#3B5468'];
+        books.push({id:x.id,name:x.name,color:colors[(x.id-1)%colors.length],cards:[]});
+      }
+    });
+  }catch(e){}
 }
 
 /* ---- MENU + NAV ---- */
