@@ -61,7 +61,7 @@
   .subhead .sub-count{margin-inline-start:auto;font-family:'Frank Ruhl Libre',serif;font-size:14px;color:var(--clay);}
   .grid{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:18px 16px;padding:24px 22px 30px;align-content:center;}
   .tile{display:flex;flex-direction:column;align-items:center;gap:12px;background:none;border:none;cursor:pointer;font-family:inherit;}
-  .disc{width:100px;height:100px;max-width:100px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px var(--card-shadow);transition:transform .15s;position:relative;overflow:hidden;margin:0 auto;}
+  .disc{width:78px;height:78px;max-width:78px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px var(--card-shadow);transition:transform .15s;position:relative;overflow:hidden;margin:0 auto;}
   .tile:active .disc{transform:scale(.95);}
   .grid .tile:nth-child(1) .disc{background:#C0673B;}
   .grid .tile:nth-child(2) .disc{background:#244F5E;}
@@ -70,7 +70,7 @@
   .grid .tile:nth-child(5) .disc{background:#3E6E5E;}
   .grid .tile:nth-child(6) .disc{background:#A84B6B;}
   .disc svg{width:46%;height:46%;}
-  .tile-label{font-family:'Frank Ruhl Libre',serif;font-weight:500;font-size:18px;color:var(--teal);text-align:center;}
+  .tile-label{font-family:'Frank Ruhl Libre',serif;font-weight:500;font-size:14px;color:var(--teal);text-align:center;}
   .badge{position:absolute;top:14%;left:14%;background:var(--cream);color:var(--ink);width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Frank Ruhl Libre',serif;font-weight:900;font-size:16px;box-shadow:0 2px 5px var(--card-shadow);}
   .books{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:14px 20px 30px;align-content:start;}
   .book{cursor:pointer;display:flex;flex-direction:column;gap:8px;}
@@ -121,7 +121,7 @@
   .empty-note{grid-column:1/-1;text-align:center;color:var(--teal);opacity:.6;padding:40px 20px;font-size:14px;line-height:1.6;}
   .slideshow-body{display:none;}
   #slideshow.active .slideshow-body{position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;background:#000;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:9999;padding:0;margin:0;}
-  .slide-img{max-width:100vw;max-height:100vh;width:auto;height:auto;display:block;margin:auto;}
+  .slide-img{max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);width:auto;height:auto;display:block;margin:auto;}
   .slide-name{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:22px;color:var(--teal);text-align:center;}
   .slide-sub{color:var(--clay);font-size:14px;text-align:center;margin-bottom:16px;}
   .slide-controls{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:14px;}
@@ -193,6 +193,25 @@
   <meta name="apple-mobile-web-app-title" content="סול קולאז' של עירא">
   <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="manifest" href="manifest.json">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
+<script>
+/* Force-fresh: remove any old service worker and cached copies */
+(function(){
+  try{
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.getRegistrations().then(function(regs){
+        regs.forEach(function(r){ r.unregister(); });
+      });
+    }
+    if(window.caches && caches.keys){
+      caches.keys().then(function(names){ names.forEach(function(n){ caches.delete(n); }); });
+    }
+  }catch(e){}
+})();
+</script>
 </head>
 <body>
 <div class="app">
@@ -209,9 +228,10 @@
       <button class="tile" onclick="startFour()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.4" stroke-linecap="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg></span><span class="tile-label">קריאת ארבעה קלפים</span></button>
       <button class="tile" onclick="showPastReadings()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><polyline points="12 7 12 12 15.5 14"/></svg></span><span class="tile-label">קריאות קודמות</span></button>
       <button class="tile" onclick="showAddCard()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><rect x="5" y="4" width="14" height="16" rx="1.5"/><line x1="12" y1="9" x2="12" y2="15"/><line x1="9" y1="12" x2="15" y2="12"/></svg></span><span class="tile-label">הוספת קלף</span></button>
+      <button class="tile" onclick="showScreen('books')"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2z"/><path d="M8 3v18"/></svg></span><span class="tile-label">הספרים</span></button>
       <button class="tile" onclick="tap('עזרה וגיבוי')"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><line x1="5" y1="6" x2="16" y2="6"/><line x1="5" y1="10" x2="16" y2="10"/><line x1="5" y1="14" x2="13" y2="14"/><line x1="5" y1="18" x2="13" y2="18"/></svg></span><span class="tile-label">עזרה וגיבוי</span></button>
     </div>
-    <div class="footer">גרסה v10</div>
+    <div class="footer">גרסה v12</div>
   </div>
 
   <!-- BOOKS -->
@@ -294,7 +314,6 @@
       <div class="field"><label>שם הקלף</label><input type="text" id="addName" placeholder="שם הקלף"></div>
       <div class="field"><label>ספר</label><select id="addBook"></select></div>
       <div class="field"><label>סדרה (Suit)</label><select id="addSuit"></select></div>
-      <div class="field"><label>תאריך</label><input type="date" id="addDate"></div>
       <div class="field"><label>הערה</label><textarea id="addNote" placeholder="ההערה של עירא..."></textarea></div>
       <button class="btn clay" onclick="saveNewCard()">שמירת הקלף</button>
     </div>
@@ -344,7 +363,6 @@
     <button class="modal-opt" onclick="openSlideshowMenu()">מצגת</button>
     <button class="modal-opt" onclick="openThumbs()">תמונות ממוזערות</button>
     <button class="modal-opt" onclick="openSearch()">חיפוש קלף</button>
-    <button class="modal-opt highlight" onclick="chooseBooks()">לפי ספרים</button>
   </div>
 </div>
 
@@ -354,7 +372,7 @@ let DATA = {books:[], cards:[]};
 
 const BOOK_COLORS=['#C0673B','#244F5E','#D9A441','#8A5A44','#3E6E5E','#B0443B','#6E5A8A','#4A7C8C','#C98A3B','#5E7A44','#A84B6B','#3B5468'];
 let books=[];
-const SUITS=["על-אישי","ועדה","קהילה","מלווים","מועצה","אחר"];
+const SUITS=["על-אישי","ועדה","קהילה","בני לוויה","מועצה - ארכיטיפים","אחר"];
 
 function imgURL(no){ return 'images/'+no+'.jpg'; }
 
@@ -402,7 +420,7 @@ async function loadData(){
 let pastReadingsStore = [];
 let fourState = {question:'', picks:[]};
 
-function allCardsWithImg(){const p=[];books.forEach(b=>b.cards.forEach(c=>{if(c.img)p.push({bookId:b.id,book:b.name,no:c.no,name:c.name,note:c.note,img:c.img});}));return p;}
+function allCardsWithImg(){const p=[];books.forEach(b=>b.cards.forEach(c=>{if(c.img)p.push({bookId:b.id,book:b.name,no:c.no,name:c.name,note:c.note,suit:c.suit,img:c.img});}));return p;}
 function totalCards(){return books.reduce((s,b)=>s+b.cards.length,0);}
 function renderCounter(){document.getElementById('cardCount').textContent=totalCards();}
 function shade(hex,pct){const n=parseInt(hex.slice(1),16);let r=(n>>16)+pct,g=((n>>8)&255)+pct,b=(n&255)+pct;r=Math.max(0,Math.min(255,r));g=Math.max(0,Math.min(255,g));b=Math.max(0,Math.min(255,b));return '#'+((r<<16)|(g<<8)|b).toString(16).padStart(6,'0');}
@@ -438,7 +456,7 @@ function openCard(bookId,no,fromScreen){
   const b=books.find(x=>x.id===bookId);const c=b.cards.find(x=>x.no===no);
   currentCard={bookId,no,from:fromScreen||'bookCards'};
   const noteHtml=c.note?`<div class="note-box">${c.note}</div>`:`<div class="note-box note-empty">אין עדיין הערה לקלף זה</div>`;
-  const imgHtml=c.img?`<img class="detail-img" src="${c.img}" onclick="openBig('${c.img}')" style="cursor:pointer">`:'';
+  const imgHtml=c.img?`<img class="detail-img" src="${c.img}" ondblclick="openBig('${c.img}')" style="cursor:pointer">`:'';
   document.getElementById('detailBody').innerHTML=`${imgHtml}
     <div class="cs-field"><div class="cs-label">שם הקלף</div><div class="cs-value cs-name">${c.name||"—"}</div><button class="edit-btn-inline" id="editBtn" title="עריכה"><svg viewBox="0 0 24 24" fill="none" stroke="#C0673B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button></div>
     <div class="cs-field"><div class="cs-label">יומן</div><div class="cs-value">${b.name}</div></div>
@@ -515,7 +533,7 @@ function drawOne(){
   const pool=allCardsWithImg();if(!pool.length){tap('אין קלפים לשליפה');return;}
   const c=pool[Math.floor(Math.random()*pool.length)];
   const noteHtml=c.note?`<div class="note-box" style="text-align:right">${c.note}</div>`:`<div class="note-box note-empty">אין הערה</div>`;
-  document.getElementById('singleBody').innerHTML=`<img class="detail-img" src="${c.img}" onclick="openBig('${c.img}')" style="cursor:pointer"><div class="detail-name">${c.name}</div><div class="detail-meta">${c.book}</div>${noteHtml}<button class="btn secondary" style="margin-top:16px" onclick="drawOne()">שליפה נוספת</button>`;
+  document.getElementById('singleBody').innerHTML=`<img class="detail-img" src="${c.img}" ondblclick="openBig('${c.img}')" style="cursor:pointer"><div class="detail-name">${c.name}</div><div class="detail-meta">${c.book}</div>${noteHtml}<button class="btn secondary" style="margin-top:16px" onclick="drawOne()">שליפה נוספת</button>`;
   showScreen('singleDraw');
 }
 
@@ -561,7 +579,7 @@ function renderFourResult(){
 function openReadingCard(i){
   const c=fourState.picks[i];
   const noteHtml=c.note?`<div class="note-box">${c.note}</div>`:`<div class="note-box note-empty">אין הערה</div>`;
-  document.getElementById('detailBody').innerHTML=`<img class="detail-img" src="${c.img}" onclick="openBig('${c.img}')" style="cursor:pointer"><div class="detail-name">${c.name}</div><div class="detail-meta">${FOUR_POSITIONS[i]} · ${c.book}</div>${noteHtml}`;
+  document.getElementById('detailBody').innerHTML=`<img class="detail-img" src="${c.img}" ondblclick="openBig('${c.img}')" style="cursor:pointer"><div class="detail-name">${c.name}</div><div class="detail-meta">${FOUR_POSITIONS[i]} · ${c.book}</div>${noteHtml}`;
   document.getElementById('detailBack').onclick=()=>showScreen('fourReading');
   showScreen('cardDetail');
 }
@@ -603,7 +621,7 @@ function showAddCard(){
   document.getElementById('addPreview').style.display='none';
   document.getElementById('addName').value='';
   document.getElementById('addNote').value='';
-  document.getElementById('addDate').value=today();
+  
   const sel=document.getElementById('addBook');sel.innerHTML='';
   books.forEach(b=>{const o=document.createElement('option');o.value=b.id;o.textContent=b.name;sel.appendChild(o);});
   const ss=document.getElementById('addSuit');ss.innerHTML='<option value="">— ללא —</option>';
