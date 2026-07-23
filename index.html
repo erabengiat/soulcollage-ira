@@ -93,18 +93,29 @@
   .disc svg{position:relative;z-index:2;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35));}
 
   /* --- individual key colours --- */
-  .grid .tile:nth-child(1) .disc{--key-base:#C0673B;--key-hi:#E08A5C;--key-lo:#9E4E28;--key-edge:#7A3A1C;}
-  .grid .tile:nth-child(2) .disc{--key-base:#244F5E;--key-hi:#3E7A8E;--key-lo:#173A46;--key-edge:#0F2A33;}
-  .grid .tile:nth-child(3) .disc{--key-base:#D9A441;--key-hi:#F0C56B;--key-lo:#B5842C;--key-edge:#8C641F;}
-  .grid .tile:nth-child(4) .disc{--key-base:#6E5A8A;--key-hi:#9481AE;--key-lo:#54426B;--key-edge:#3E3050;}
-  .grid .tile:nth-child(5) .disc{--key-base:#3E6E5E;--key-hi:#5E9483;--key-lo:#2C5245;--key-edge:#1F3D33;}
-  .grid .tile:nth-child(6) .disc{--key-base:#A84B6B;--key-hi:#C77190;--key-lo:#853A53;--key-edge:#642A3E;}
-  .grid .tile:nth-child(7) .disc{--key-base:#4A7C8C;--key-hi:#6EA3B3;--key-lo:#365E6B;--key-edge:#274650;}
 
   .tile:active .disc{transform:scale(.95);}
   .disc svg{width:46%;height:46%;}
   .tile-label{font-family:'Varela Round',sans-serif;font-weight:500;font-size:12px;color:var(--teal);text-align:center;}
   .badge{position:absolute;top:14%;left:14%;background:var(--cream);color:var(--ink);width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Varela Round',sans-serif;font-weight:900;font-size:16px;box-shadow:0 2px 5px var(--card-shadow);}
+
+  /* --- key colours --- */
+  .grid .tile:nth-child(1) .disc{--key-base:#C0673B;--key-hi:#E08A5C;--key-lo:#9E4E28;--key-edge:#7A3A1C;}
+  .grid .tile:nth-child(2) .disc{--key-base:#D9A441;--key-hi:#F0C56B;--key-lo:#B5842C;--key-edge:#8C641F;}
+  .grid .tile:nth-child(3) .disc{--key-base:#6E5A8A;--key-hi:#9481AE;--key-lo:#54426B;--key-edge:#3E3050;}
+  /* journals - much darker */
+  .grid .tile:nth-child(4) .disc{--key-base:#12262E;--key-hi:#25454F;--key-lo:#0A171C;--key-edge:#050D10;}
+  .grid-bottom .tile:nth-child(1) .disc{--key-base:#3E6E5E;--key-hi:#5E9483;--key-lo:#2C5245;--key-edge:#1F3D33;}
+  .grid-bottom .tile:nth-child(2) .disc{--key-base:#A84B6B;--key-hi:#C77190;--key-lo:#853A53;--key-edge:#642A3E;}
+  .card-actions-row .tile:nth-child(1) .disc{--key-base:#4A7C8C;--key-hi:#6EA3B3;--key-lo:#365E6B;--key-edge:#274650;}
+  .card-actions-row .tile:nth-child(2) .disc{--key-base:#C98A3B;--key-hi:#E3AC63;--key-lo:#A06B26;--key-edge:#7A511C;}
+  .card-actions-row .tile:nth-child(3) .disc{--key-base:#5E7A44;--key-hi:#829E66;--key-lo:#455C31;--key-edge:#324522;}
+  .card-actions{margin:4px 20px 10px;border:2px solid rgba(36,79,94,.35);border-radius:16px;padding:14px 10px 12px;position:relative;background:rgba(255,255,255,.35);}
+  .card-actions-title{position:absolute;top:-11px;inset-inline-start:18px;background:var(--cream);padding:0 8px;font-family:'Varela Round',sans-serif;font-size:13px;color:var(--clay);}
+  .card-actions-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+  .grid-bottom{flex:0 0 auto;padding-top:6px;padding-bottom:10px;}
+  .tile.small .disc{width:52px;height:52px;max-width:52px;border-radius:12px;}
+  .tile.small .tile-label{font-size:11px;}
   .books{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:14px 20px 30px;align-content:start;}
   .book{cursor:pointer;display:flex;flex-direction:column;gap:8px;}
   .book-cover{position:relative;width:100%;height:0;padding-bottom:133%;border-radius:8px 3px 3px 8px;box-shadow:0 5px 14px var(--card-shadow);overflow:hidden;transition:transform .15s;border-inline-end:5px solid rgba(0,0,0,.14);}
@@ -251,17 +262,26 @@ if ('serviceWorker' in navigator) {
       <div class="counter"><b id="cardCount">0</b>קלפים</div>
     </div>
     <div class="grid">
-      <button class="tile" onclick="openViewMenu()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="21" y1="21" x2="15.2" y2="15.2"/></svg></span><span class="tile-label">צפייה בקלפים</span></button>
-      <button class="tile" onclick="drawOne()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><rect x="6" y="3.5" width="12" height="17" rx="1.5"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/></svg></span><span class="tile-label">שליפת קלף אחד</span></button>
+      <button class="tile" onclick="openSlideshowMenu()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="13" rx="2"/><polygon points="10.5 8 15.5 10.8 10.5 13.6" fill="#F3EAD8" stroke="none"/><line x1="8" y1="20.5" x2="16" y2="20.5"/></svg></span><span class="tile-label">מצגת הקלפים</span></button>
       <button class="tile" onclick="startFour()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.4" stroke-linecap="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg></span><span class="tile-label">קריאת ארבעה קלפים</span></button>
       <button class="tile" onclick="showPastReadings()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><polyline points="12 7 12 12 15.5 14"/></svg></span><span class="tile-label">קריאות קודמות</span></button>
-      <button class="tile" onclick="showAddCard()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><rect x="5" y="4" width="14" height="16" rx="1.5"/><line x1="12" y1="9" x2="12" y2="15"/><line x1="9" y1="12" x2="15" y2="12"/></svg></span><span class="tile-label">הוספת קלף</span></button>
-      <button class="tile" onclick="openSearch()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.7" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="21" y1="21" x2="15.2" y2="15.2"/></svg></span><span class="tile-label">חיפוש קלף</span></button>
-      <button class="tile" onclick="openSettings()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 9 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 9a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg></span><span class="tile-label">הגדרות</span></button>
       <button class="tile" onclick="showScreen('books')"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2z"/><path d="M8 3v18"/></svg></span><span class="tile-label">היומנים</span></button>
-      <button class="tile" onclick="tap('עזרה וגיבוי')"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><line x1="5" y1="6" x2="16" y2="6"/><line x1="5" y1="10" x2="16" y2="10"/><line x1="5" y1="14" x2="13" y2="14"/><line x1="5" y1="18" x2="13" y2="18"/></svg></span><span class="tile-label">עזרה וגיבוי</span></button>
     </div>
-    <div class="footer">גרסה v23</div>
+
+    <div class="card-actions">
+      <div class="card-actions-title">קלפים</div>
+      <div class="card-actions-row">
+        <button class="tile small" onclick="showAddCard()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><rect x="5" y="4" width="14" height="16" rx="1.5"/><line x1="12" y1="9" x2="12" y2="15"/><line x1="9" y1="12" x2="15" y2="12"/></svg></span><span class="tile-label">הוספת קלף</span></button>
+        <button class="tile small" onclick="openSearch()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.7" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="21" y1="21" x2="15.2" y2="15.2"/></svg></span><span class="tile-label">חיפוש קלף</span></button>
+        <button class="tile small" onclick="drawOne()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><rect x="6" y="3.5" width="12" height="17" rx="1.5"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/></svg></span><span class="tile-label">שליפת קלף</span></button>
+      </div>
+    </div>
+
+    <div class="grid grid-bottom">
+      <button class="tile" onclick="openSettings()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 9 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 9a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg></span><span class="tile-label">הגדרות</span></button>
+      <button class="tile" onclick="openHelp()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><line x1="5" y1="6" x2="16" y2="6"/><line x1="5" y1="10" x2="16" y2="10"/><line x1="5" y1="14" x2="13" y2="14"/><line x1="5" y1="18" x2="13" y2="18"/></svg></span><span class="tile-label">עזרה וגיבוי</span></button>
+    </div>
+    <div class="footer">גרסה v24</div>
   </div>
 
   <!-- BOOKS -->
@@ -413,20 +433,37 @@ if ('serviceWorker' in navigator) {
 
       <div class="detail-section-label">לוג פעילות</div>
       <div class="note-box" id="logBox" style="max-height:300px;overflow:auto"></div>
-      <button class="btn secondary" style="margin-top:12px" onclick="clearLog()">ניקוי הלוג</button>
+    </div>
+  </div>
+
+
+  <!-- HELP & BACKUP -->
+  <div class="screen" id="help">
+    <div class="subhead"><h2>עזרה וגיבוי</h2></div>
+    <div class="add-form">
+
+      <div class="detail-section-label">מדריכים</div>
+      <button class="btn secondary" onclick="showGuide('short')">מדריך מקוצר</button>
+      <button class="btn secondary" onclick="showGuide('full')">מדריך מפורט</button>
+
+      <div class="detail-section-label" style="margin-top:22px">גיבוי</div>
+      <div class="note-box" style="font-size:14px;margin-bottom:12px">
+        הגיבוי שומר את מה שנוסף באפליקציה: יומנים חדשים, קלפים שהוספתם, עריכות, קריאות שמורות ולוג הפעילות.
+      </div>
+      <button class="btn clay" onclick="exportBackup()">שמירת גיבוי לקובץ</button>
+      <button class="btn secondary" onclick="document.getElementById('restoreFile').click()">שחזור מגיבוי</button>
+      <input type="file" id="restoreFile" accept=".json,application/json" style="display:none" onchange="importBackup(event)">
+
+      <div class="detail-section-label" style="margin-top:22px">מידע</div>
+      <div class="note-box" id="aboutBox" style="font-size:14px"></div>
+
+      <div id="guideBox" style="display:none;margin-top:20px"></div>
     </div>
   </div>
 
 <div class="toast" id="toast"></div>
 
-<div class="modal-overlay" id="viewMenu" onclick="if(event.target.id==='viewMenu')closeViewMenu()">
-  <div class="modal">
-    <div class="modal-head"><span>בחר אחד</span><button class="modal-x" onclick="closeViewMenu()">&times;</button></div>
-    <button class="modal-opt" onclick="openSlideshowMenu()">מצגת</button>
-    <button class="modal-opt" onclick="openThumbs()">תמונות ממוזערות</button>
-    <button class="modal-opt" onclick="openSearch()">חיפוש קלף</button>
-  </div>
-</div>
+
 
 <script>
 /* ============ DATA (loaded from data/data.json) ============ */
@@ -834,7 +871,6 @@ function toggleMic(){
 
 /* ---- THUMBNAILS ---- */
 function openThumbs(){
-  closeViewMenu();
   const all = allCardsWithImg();
   document.getElementById('thumbsCount').textContent = all.length + ' קלפים';
   const g = document.getElementById('thumbsGrid'); g.innerHTML=''; forceGrid(g);
@@ -849,7 +885,6 @@ function openThumbs(){
 
 /* ---- SEARCH ---- */
 function openSearch(){
-  closeViewMenu();
   const sb=document.getElementById('searchBook');
   if(sb.options.length<=1){ books.forEach(b=>{ if(b.cards.length){ const o=document.createElement('option'); o.value=b.id; o.textContent=b.name; sb.appendChild(o);} }); }
   const ss=document.getElementById('searchSuit');
@@ -888,7 +923,6 @@ function exitSlideshow(){ stopSlideshow(); showScreen("home"); }
 let slideOrder=[], slideIdx=0, slideTimer=null, slideDelay=4000, slidePlaying=false;
 const SLIDE_SPEEDS={slow:7000, medium:4000, fast:2000};
 function openSlideshowMenu(){
-  closeViewMenu();
   const pool=allCardsWithImg();
   if(!pool.length){ tap('אין קלפים'); return; }
   slideOrder = shuffle(pool.slice());   // random order. For numeric order use: pool.slice().sort((a,b)=>a.no-b.no)
@@ -1069,10 +1103,145 @@ function restoreCustomBooks(){
   }catch(e){}
 }
 
+
+/* ================= HELP & BACKUP ================= */
+function openHelp(){
+  const n = books.reduce((s,b)=>s+b.cards.length,0);
+  const withNotes = books.reduce((s,b)=>s+b.cards.filter(c=>c.note).length,0);
+  document.getElementById('aboutBox').textContent =
+    'סול קולאז\' של עירא\n' +
+    'סה"כ קלפים: ' + n + '\n' +
+    'קלפים עם הערה: ' + withNotes + '\n' +
+    'יומנים: ' + books.filter(b=>b.cards.length).length + '\n' +
+    'גרסה: ' + (document.querySelector('#home .footer') ? document.querySelector('#home .footer').textContent : '');
+  document.getElementById('guideBox').style.display='none';
+  showScreen('help');
+}
+
+const GUIDE_SHORT = [
+  ['פתיחה', 'האפליקציה נפתחת בכתובת שלה. כדי שתהיה על מסך הבית: תפריט Chrome ⋮ ← הוסף למסך הבית.'],
+  ['מצגת הקלפים', 'הקלפים מתחלפים כל 2 שניות באקראי, על מסך מלא. לחיצה יוצאת.'],
+  ['היומנים', 'כל היומנים. בתוך יומן — קודם הקלפים לאורך, ואז קבוצה נפרדת של קלפים לרוחב.'],
+  ['לראות קלף', 'לחיצה אחת פותחת קלף. לחיצה כפולה על התמונה מגדילה למסך מלא.'],
+  ['לערוך קלף', 'פתחו קלף ← ✏️ שליד השם ← שנו ← שמירה.'],
+  ['קריאת ארבעה קלפים', 'כתבו שאלה או הכתיבו בקול (🎤) ← שליפה ← לחיצה על קלף מציגה את ההערה ← שמירת הקריאה.'],
+  ['הוספת קלף', 'בחרו מקור (מצלמה / גלריה / קבצים), שם, יומן, סדרה והערה.'],
+  ['חיפוש קלף', 'לפי מילת מפתח, לפי שם, או "נוסף לאחרונה". אפשר לסנן לפי יומן וסדרה.'],
+  ['הגדרות', 'יצירת יומן חדש, ביטול הפעולה האחרונה, לוג פעילות וזמן שימוש.'],
+  ['כפתור הבית', 'העיגול הקטן בפינה מחזיר תמיד למסך הבית.']
+];
+
+const GUIDE_FULL = [
+  ['מהי האפליקציה', 'הבית הדיגיטלי של אוסף הקולאז\'ים של עירא. כל קלף הוא יצירה, ולצידה השם וההערה שעירא כתבה. האוסף מחולק ליומנים, והמספור רציף על פני כל האוסף.'],
+  ['הסדרות (Suits)', 'ועדה — חלקים פנימיים (ברירת מחדל).\nקהילה — אנשים אמיתיים.\nבני לוויה — בעלי חיים.\nמועצה - ארכיטיפים — דמויות מנחות.\nאפשר גם לכתוב שם סדרה משלכם.'],
+  ['מצגת הקלפים', 'מסך מלא, מסגרת שחורה, החלפה כל 2 שניות בסדר אקראי. כל קלף מוצג בשלמותו בלי חיתוך. לחיצה יוצאת.'],
+  ['היומנים', 'כל יומן מציג כריכה, שם ומספר קלפים. בתוך יומן הקלפים גדולים — כשלושה במסך. קודם הקלפים לאורך, ואז "קלפים לרוחב" בקבוצה נפרדת, כדי שייראו בשלמותם.'],
+  ['תצוגת קלף', 'תמונה, שם, יומן, בורר סדרה (ניתן לשינוי במקום), וההערה המלאה. ✏️ שליד השם פותח עריכה. לחיצה כפולה על התמונה — מסך מלא.'],
+  ['שליפת קלף', 'שולף קלף אקראי מכל האוסף. "שליפה נוספת" שולף אחר.'],
+  ['קריאת ארבעה קלפים', 'שאלה (בכתיבה או בהכתבה קולית) ← 4 קלפים בעמדות: מי אני / מה המצב / מה עוזר לי / לאן אני הולכת. לחיצה על קלף מציגה את ההערה. ניתן לשמור.'],
+  ['קריאות קודמות', 'כל הקריאות ששמרתם, עם תאריך, שאלה ותמונות. לחיצה פותחת קריאה מלאה.'],
+  ['הוספת קלף', 'מקור: מצלמה (לצלם קולאז\' חדש), גלריה, או קבצים (כולל Google Photos ו-Drive). אחר כך: שם, יומן (או יצירת יומן חדש), סדרה והערה.'],
+  ['חיפוש קלף', 'שלושה מצבים: מילת מפתח (שם + הערה), שם הקלף בלבד, או נוסף לאחרונה. סינון נוסף לפי יומן וסדרה. התוצאות מתעדכנות תוך כדי הקלדה.'],
+  ['הגדרות', 'הוספת יומן חדש · ביטול הפעולה האחרונה · לוג פעילות עם תאריך ושעה · זמן שימוש מצטבר (יומי, חודשי, שנתי).'],
+  ['גיבוי ושחזור', 'שמירת גיבוי יוצרת קובץ עם כל מה שהוספתם באפליקציה. שחזור טוען אותו בחזרה. מומלץ לגבות מדי פעם.'],
+  ['עדכונים', 'האפליקציה מתעדכנת אוטומטית. אם מוצגת גרסה ישנה — סגרו לגמרי ופתחו מחדש.']
+];
+
+function showGuide(kind){
+  const data = (kind==='short') ? GUIDE_SHORT : GUIDE_FULL;
+  const title = (kind==='short') ? 'מדריך מקוצר' : 'מדריך מפורט';
+  let h = '<div class="detail-section-label" style="margin-bottom:8px">'+title+'</div>';
+  data.forEach(function(row){
+    h += '<div class="note-box" style="margin-bottom:10px;font-size:14px">'
+       + '<b style="color:#C0673B">'+row[0]+'</b><br>'+row[1].replace(/\n/g,'<br>')+'</div>';
+  });
+  const box = document.getElementById('guideBox');
+  box.innerHTML = h;
+  box.style.display = 'block';
+  box.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function collectBackup(){
+  const custom = [];
+  books.forEach(function(b){
+    const added = b.cards.filter(function(c){ return c.img && c.img.indexOf('data:')===0; });
+    const edits = b.cards.filter(function(c){ return c.img && c.img.indexOf('data:')!==0; })
+                         .map(function(c){ return {no:c.no, name:c.name, note:c.note, suit:c.suit}; });
+    custom.push({id:b.id, name:b.name, added:added, edits:edits});
+  });
+  let log=[], usage={}, cbooks=[];
+  try{ log=JSON.parse(localStorage.getItem(LOG_KEY)||'[]'); }catch(e){}
+  try{ usage=JSON.parse(localStorage.getItem(USE_KEY)||'{}'); }catch(e){}
+  try{ cbooks=JSON.parse(localStorage.getItem(BOOKS_KEY)||'[]'); }catch(e){}
+  return {
+    app:'sole-collage-era',
+    date:new Date().toISOString(),
+    books:custom,
+    readings:pastReadingsStore,
+    log:log,
+    usage:usage,
+    customBooks:cbooks
+  };
+}
+
+function exportBackup(){
+  try{
+    const data = JSON.stringify(collectBackup());
+    const blob = new Blob([data], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const d = new Date();
+    const pad = function(n){ return String(n).padStart(2,'0'); };
+    a.href = url;
+    a.download = 'soulcollage-backup-' + d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate()) + '.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+    logAction('נשמר גיבוי');
+    tap('הגיבוי נשמר');
+  }catch(e){ tap('שגיאה בשמירת הגיבוי'); }
+}
+
+function importBackup(ev){
+  const f = ev.target.files[0];
+  if(!f) return;
+  const r = new FileReader();
+  r.onload = function(e){
+    try{
+      const d = JSON.parse(e.target.result);
+      if(d.app!=='sole-collage-era'){ tap('קובץ גיבוי לא מתאים'); return; }
+
+      if(d.customBooks){
+        try{ localStorage.setItem(BOOKS_KEY, JSON.stringify(d.customBooks)); }catch(x){}
+        restoreCustomBooks();
+      }
+      if(d.books){
+        d.books.forEach(function(bb){
+          let b = books.find(function(x){ return x.id===bb.id; });
+          if(!b) return;
+          (bb.added||[]).forEach(function(c){
+            if(!b.cards.find(function(x){ return x.no===c.no; })) b.cards.push(c);
+          });
+          (bb.edits||[]).forEach(function(ed){
+            const c = b.cards.find(function(x){ return x.no===ed.no; });
+            if(c){ c.name=ed.name; c.note=ed.note; c.suit=ed.suit; }
+          });
+          b.cards.sort(function(x,y){ return x.no-y.no; });
+        });
+      }
+      if(d.readings) pastReadingsStore = d.readings;
+      if(d.log){ try{ localStorage.setItem(LOG_KEY, JSON.stringify(d.log)); }catch(x){} }
+      if(d.usage){ try{ localStorage.setItem(USE_KEY, JSON.stringify(d.usage)); }catch(x){} }
+
+      renderCounter();
+      logAction('שוחזר גיבוי');
+      tap('הגיבוי שוחזר');
+      openHelp();
+    }catch(err){ tap('שגיאה בקריאת הגיבוי'); }
+  };
+  r.readAsText(f);
+}
+
 /* ---- MENU + NAV ---- */
-function openViewMenu(){document.getElementById('viewMenu').classList.add('show');}
-function closeViewMenu(){document.getElementById('viewMenu').classList.remove('show');}
-function chooseBooks(){closeViewMenu();showScreen('books');}
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(id==='books')renderBooks();window.scrollTo({top:0});var _fab=document.getElementById('homeFab');if(_fab)_fab.style.display=(id==='home'||id==='slideshow')?'none':'flex';}
 function tap(name){const t=document.getElementById('toast');t.textContent=name;t.classList.add('show');clearTimeout(window._tt);window._tt=setTimeout(()=>t.classList.remove('show'),1800);}
 function _bind(id, handler){ const el=document.getElementById(id); if(el) el.onclick=handler; }
