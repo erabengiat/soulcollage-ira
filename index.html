@@ -231,19 +231,13 @@
   <meta http-equiv="Expires" content="0">
 
 <script>
-/* Force-fresh: remove any old service worker and cached copies */
-(function(){
-  try{
-    if('serviceWorker' in navigator){
-      navigator.serviceWorker.getRegistrations().then(function(regs){
-        regs.forEach(function(r){ r.unregister(); });
-      });
-    }
-    if(window.caches && caches.keys){
-      caches.keys().then(function(names){ names.forEach(function(n){ caches.delete(n); }); });
-    }
-  }catch(e){}
-})();
+/* Register service worker (network-first) so Android can install a real app icon */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js')
+      .catch(function (err) { console.warn('SW registration failed', err); });
+  });
+}
 </script>
 </head>
 <body>
@@ -264,7 +258,7 @@
       <button class="tile" onclick="showScreen('books')"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2z"/><path d="M8 3v18"/></svg></span><span class="tile-label">הספרים</span></button>
       <button class="tile" onclick="tap('עזרה וגיבוי')"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><line x1="5" y1="6" x2="16" y2="6"/><line x1="5" y1="10" x2="16" y2="10"/><line x1="5" y1="14" x2="13" y2="14"/><line x1="5" y1="18" x2="13" y2="18"/></svg></span><span class="tile-label">עזרה וגיבוי</span></button>
     </div>
-    <div class="footer">גרסה v19</div>
+    <div class="footer">גרסה v21</div>
   </div>
 
   <!-- BOOKS -->
@@ -886,17 +880,27 @@ window.addEventListener('load', function(){ try{ loadData(); }catch(e){ document
 (function(){
     // Custom install prompt
   let deferredPrompt=null;
+  function alreadyInstalled(){
+    return window.matchMedia('(display-mode: standalone)').matches
+        || window.navigator.standalone === true;
+  }
+  function installDismissed(){
+    try{ return localStorage.getItem('installDismissed')==='1'; }catch(e){ return false; }
+  }
   window.addEventListener('beforeinstallprompt', (e)=>{
     e.preventDefault(); deferredPrompt=e;
+    // don't nag: hide if already installed, or if the user dismissed it before
+    if(alreadyInstalled() || installDismissed()) return;
     const bar=document.getElementById('installBar');
     if(bar) bar.style.display='flex';
   });
+  window.addEventListener('appinstalled', function(){ const bar=document.getElementById('installBar'); if(bar) bar.style.display='none'; try{ localStorage.setItem('installDismissed','1'); }catch(e){} });
   window.installApp=function(){
     if(!deferredPrompt) return;
     deferredPrompt.prompt();
     deferredPrompt.userChoice.finally(()=>{ deferredPrompt=null; const bar=document.getElementById('installBar'); if(bar) bar.style.display='none'; });
   };
-  window.dismissInstall=function(){ const bar=document.getElementById('installBar'); if(bar) bar.style.display='none'; };
+  window.dismissInstall=function(){ try{ localStorage.setItem('installDismissed','1'); }catch(e){} const bar=document.getElementById('installBar'); if(bar) bar.style.display='none'; };
 })();
 </script>
 </body>
