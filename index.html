@@ -45,7 +45,7 @@
   .screen{display:none;flex-direction:column;flex:1 0 auto;animation:fade .25s ease;}
   .screen.active{display:flex;}
   @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
-  .topbar{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 20px 10px;}
+  .topbar{display:flex;align-items:center;justify-content:center;padding:14px 20px 12px;}
   .brand{display:flex;align-items:center;justify-content:center;gap:10px;}
   .brand-mark{width:40px;height:40px;border-radius:50%;background:url('logo.png') center/cover no-repeat;box-shadow:0 2px 8px var(--card-shadow);flex:0 0 auto;}
   .brand-name{display:flex;flex-direction:column;line-height:1.05;align-items:center;text-align:center;}
@@ -74,14 +74,14 @@
   .g-cards .tile:nth-child(3) .disc{--key-base:#31441F;--key-hi:#4C6634;--key-lo:#212F13;--key-edge:#16200C;}
   .bottom-row .tile:nth-child(1) .disc{--key-base:#3E6E5E;--key-hi:#5E9483;--key-lo:#2C5245;--key-edge:#1F3D33;}
   .bottom-row .tile:nth-child(2) .disc{--key-base:#A84B6B;--key-hi:#C77190;--key-lo:#853A53;--key-edge:#642A3E;}
-  .group{margin:0 18px 14px;border:2px solid rgba(36,79,94,.30);border-radius:16px;
-    padding:16px 10px 12px;position:relative;background:rgba(255,255,255,.35);}
-  .group-title{position:absolute;top:-11px;inset-inline-start:18px;background:var(--cream);
-    padding:0 8px;font-family:'Varela Round',sans-serif;font-size:13px;color:var(--clay);}
-  .group-row{display:grid;gap:10px;}
+  .home-logo{width:104px;height:104px;border-radius:50%;margin:0 auto;
+    background:url('logo.png') center/cover no-repeat;box-shadow:0 3px 12px var(--card-shadow);}
+  .group{margin:0 16px 18px;border:1px solid rgba(36,79,94,.13);border-radius:14px;padding:16px 8px 12px;position:relative;background:transparent;}
+  .group-title{display:none;}
+  .group-row{display:grid;gap:14px;}
   .group-row.two{grid-template-columns:1fr 1fr;}
   .group-row.three{grid-template-columns:1fr 1fr 1fr;}
-  .bottom-row{margin:6px 18px 14px;}
+  .bottom-row{margin:2px 16px 18px;}
   #cover{align-items:center;justify-content:center;min-height:100vh;padding:0;}
   .cover-wrap{display:flex;flex-direction:column;align-items:center;text-align:center;
     padding:clamp(10px,2.2vh,18px) 18px clamp(12px,2.5vh,20px);
@@ -102,6 +102,9 @@
   .cover-thanks p{font-size:clamp(13.5px,1.95vh,16px);line-height:1.45;color:var(--ink);
     margin-bottom:clamp(5px,1vh,9px);}
   .cover-thanks p:last-child{margin-bottom:0;}
+  .cover-count{font-family:'Varela Round',sans-serif;font-size:clamp(16px,2.6vh,19px);
+    color:var(--teal);margin-top:clamp(8px,1.8vh,14px);}
+  .cover-count b{font-weight:800;font-size:clamp(18px,3vh,22px);}
   .cover-enter{margin-top:clamp(10px,2.2vh,20px);background:var(--teal);color:var(--cream);
     border:none;border-radius:12px;
     padding:clamp(10px,1.7vh,14px) clamp(26px,9vw,40px);
@@ -116,8 +119,8 @@
   .grid{flex:0 0 auto;display:grid;grid-template-columns:1fr 1fr;gap:12px 12px;padding:14px 22px 12px;align-content:center;}
   .tile{display:flex;flex-direction:column;align-items:center;gap:12px;background:none;border:none;cursor:pointer;font-family:inherit;}
   .disc{
-    width:42px;height:42px;max-width:42px;
-    border-radius:10px;
+    width:66px;height:66px;max-width:66px;
+    border-radius:16px;
     background:linear-gradient(180deg, var(--key-hi) 0%, var(--key-base) 55%, var(--key-lo) 100%);
     display:flex;align-items:center;justify-content:center;
     position:relative;overflow:hidden;margin:0 auto;
@@ -132,7 +135,7 @@
   .disc::before{
     content:"";position:absolute;top:0;left:0;right:0;height:46%;
     background:linear-gradient(180deg, rgba(255,255,255,.42), rgba(255,255,255,0));
-    border-radius:10px 10px 50% 50%/10px 10px 22% 22%;
+    border-radius:16px 16px 50% 50%/16px 16px 22% 22%;
     pointer-events:none;
   }
   /* pressed state: key travels down */
@@ -149,7 +152,7 @@
   /* --- individual key colours --- */
 
   .tile:active .disc{transform:scale(.95);}
-  .disc svg{width:52%;height:52%;}
+  .disc svg{width:46%;height:46%;}
   .tile-label{font-family:'Varela Round',sans-serif;font-weight:500;font-size:14px;color:var(--teal);text-align:center;line-height:1.25;}
   .badge{position:absolute;top:14%;left:14%;background:var(--cream);color:var(--ink);width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Varela Round',sans-serif;font-weight:900;font-size:16px;box-shadow:0 2px 5px var(--card-shadow);}
 
@@ -158,7 +161,7 @@
   .card-actions-title{position:absolute;top:-11px;inset-inline-start:18px;background:var(--cream);padding:0 8px;font-family:'Varela Round',sans-serif;font-size:13px;color:var(--clay);}
   .card-actions-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
   .grid-bottom{flex:0 0 auto;padding-top:6px;padding-bottom:10px;}
-  .tile.small .disc{width:42px;height:42px;max-width:42px;border-radius:10px;}
+  .tile.small .disc{width:66px;height:66px;max-width:66px;border-radius:16px;}
   .tile.small .tile-label{font-size:13px;}
   .books{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:14px 20px 30px;align-content:start;}
   .book{cursor:pointer;display:flex;flex-direction:column;gap:8px;}
@@ -264,6 +267,17 @@
     .note-box{font-size:14px;}
     .g-txt{font-size:13px;}
   }
+  .fld{padding:14px 4px 12px;border-bottom:1px solid rgba(36,79,94,.16);}
+  .fld-top{display:flex;align-items:center;justify-content:space-between;}
+  .fld-label{font-family:'Varela Round',sans-serif;font-size:17px;color:var(--clay);}
+  .fld-name{font-family:'Varela Round',sans-serif;font-size:24px;color:var(--teal);
+    margin-top:10px;text-align:center;overflow-wrap:anywhere;}
+  .fld-row{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .fld-row .suit-select{max-width:210px;flex:1;}
+  .fld-suit-txt{font-size:17px;color:var(--teal);}
+  .fld-note-label{display:block;margin:16px 4px 10px;}
+  #cardDetail .subhead h2{font-family:'Varela Round',sans-serif;font-size:20px;color:var(--clay);}
+  #cardDetail .detail-img{max-height:38vh;max-width:62%;border-radius:12px;}
   .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--teal);color:var(--cream);padding:11px 20px;border-radius:30px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;box-shadow:0 6px 18px rgba(0,0,0,.25);z-index:50;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
   .edit-btn{margin-inline-start:auto;background:none;border:none;cursor:pointer;padding:6px;display:flex;}
@@ -443,15 +457,13 @@ if ('serviceWorker' in navigator) {
         <p>תודה לקלוד – הרובוט שעזר לנו בצד הטכני.</p>
       </div>
 
+      <div class="cover-count"><b id="coverCount">0</b> קלפים</div>
       <button class="cover-enter" onclick="showScreen('home')">כניסה לאוסף</button>
     </div>
   </div>
 
   <div class="screen" id="home">
-    <div class="topbar">
-      <div class="brand"><div class="brand-mark"></div><div class="brand-name"><span class="he">סול קולאז'</span><span class="en">של עירא</span></div></div>
-      <div class="counter"><b id="cardCount">0</b>קלפים</div>
-    </div>
+    <div class="topbar"><div class="home-logo"></div></div>
     <div class="group g-view">
       <div class="group-title">צפייה</div>
       <div class="group-row two">
@@ -463,7 +475,7 @@ if ('serviceWorker' in navigator) {
     <div class="group g-read">
       <div class="group-title">קריאת קלפים</div>
       <div class="group-row two">
-        <button class="tile" onclick="startFour()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.4" stroke-linecap="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg></span><span class="tile-label">קריאת ארבעה קלפים</span></button>
+        <button class="tile" onclick="startFour()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.4" stroke-linecap="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg></span><span class="tile-label">קריאת 4 קלפים</span></button>
         <button class="tile" onclick="showPastReadings()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><polyline points="12 7 12 12 15.5 14"/></svg></span><span class="tile-label">קריאות קודמות</span></button>
       </div>
     </div>
@@ -499,7 +511,7 @@ if ('serviceWorker' in navigator) {
 
   <!-- CARD DETAIL -->
   <div class="screen" id="cardDetail">
-    <div class="subhead"><button class="back" id="detailBack" title="חזרה"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button><h2>הקלף</h2></div>
+    <div class="subhead"><button class="back" id="detailBack" title="חזרה"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button><h2 id="detailHead"></h2></div>
     <div class="detail" id="detailBody"></div>
   </div>
   <!-- CARD EDIT -->
@@ -529,7 +541,7 @@ if ('serviceWorker' in navigator) {
 
   <!-- FOUR CARD READING -->
   <div class="screen" id="fourReading">
-    <div class="subhead"><button class="back" onclick="showScreen('home')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button><h2>קריאת ארבעה קלפים</h2></div>
+    <div class="subhead"><button class="back" onclick="showScreen('home')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button><h2>קריאת 4 קלפים</h2></div>
     <div class="reading-area" id="fourBody"></div>
   </div>
 
@@ -709,7 +721,7 @@ if ('serviceWorker' in navigator) {
 /* ============ DATA (loaded from data/data.json) ============ */
 let DATA = {books:[], cards:[]};
 
-const APP_VERSION = 'v43';
+const APP_VERSION = 'v44';
 const BOOK_COLORS=['#C0673B','#244F5E','#D9A441','#8A5A44','#3E6E5E','#B0443B','#6E5A8A','#4A7C8C','#C98A3B','#5E7A44','#A84B6B','#3B5468'];
 let books=[];
 const SUITS=["ועדה","קהילה","בני לוויה","מועצה - ארכיטיפים"];
@@ -754,6 +766,7 @@ async function loadData(){
   books.forEach(b=>b.cards.sort((x,y)=>x.no-y.no));
   restoreCustomBooks();
   const _ver=document.getElementById('appVersion'); if(_ver) _ver.textContent='גרסה '+APP_VERSION;
+  const _cc=document.getElementById('coverCount'); if(_cc) _cc.textContent=totalCards();
   applyReadOnly();
   renderCounter();
 }
@@ -766,7 +779,11 @@ let fourState = {question:'', picks:[]};
 
 function allCardsWithImg(){const p=[];books.forEach(b=>b.cards.forEach(c=>{if(c.img)p.push({bookId:b.id,book:b.name,no:c.no,name:c.name,note:c.note,suit:c.suit,img:c.img});}));return p;}
 function totalCards(){return books.reduce((s,b)=>s+b.cards.length,0);}
-function renderCounter(){document.getElementById('cardCount').textContent=totalCards();}
+function renderCounter(){
+  const t=totalCards();
+  const a=document.getElementById('cardCount'); if(a) a.textContent=t;
+  const b=document.getElementById('coverCount'); if(b) b.textContent=t;
+}
 function shade(hex,pct){const n=parseInt(hex.slice(1),16);let r=(n>>16)+pct,g=((n>>8)&255)+pct,b=(n&255)+pct;r=Math.max(0,Math.min(255,r));g=Math.max(0,Math.min(255,g));b=Math.max(0,Math.min(255,b));return '#'+((r<<16)|(g<<8)|b).toString(16).padStart(6,'0');}
 function today(){const d=new Date();return d.toISOString().slice(0,10);}
 
@@ -850,16 +867,20 @@ function openCard(bookId,no,fromScreen){
   const noteHtml=c.note?`<div class="note-box">${c.note}</div>`:`<div class="note-box note-empty">אין עדיין הערה לקלף זה</div>`;
   const imgHtml=c.img?`<img class="detail-img" src="${c.img}" ondblclick="openBig('${c.img}')" style="cursor:pointer">`:'';
   document.getElementById('detailBody').innerHTML=`${imgHtml}
-    <div class="cs-field"><div class="cs-label">שם הקלף</div><div class="cs-value cs-name">${c.name||"—"}</div><button class="edit-btn-inline" id="editBtn" title="עריכה"><svg viewBox="0 0 24 24" fill="none" stroke="#C0673B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button></div>
-    <div class="cs-field"><div class="cs-label">יומן</div><div class="cs-value">${b.name}</div></div>
-    <div class="cs-field"><div class="cs-label">סדרה (Suit)</div>
+    <div class="fld">
+      <div class="fld-top"><span class="fld-label">שם הקלף</span>${READONLY?'':`<button class="edit-btn-inline" id="editBtn" title="עריכה"><svg viewBox="0 0 24 24" fill="none" stroke="#C0673B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>`}</div>
+      <div class="fld-name">${c.name||"—"}</div>
+    </div>
+    <div class="fld fld-row">
+      <span class="fld-label">סדרה</span>
       ${READONLY
-        ? `<div class="cs-value">${c.suit||'—'}</div>`
+        ? `<span class="fld-suit-txt">${c.suit||'—'}</span>`
         : `<select class="suit-select" id="detailSuit" onchange="changeSuitInline(this.value)">${SUITS.map(s=>`<option value="${s}" ${c.suit===s?'selected':''}>${s}</option>`).join('')}</select>`}
     </div>
-    <div class="detail-section-label">הערות הקלף</div>
+    <div class="fld-label fld-note-label">תאור הקלף</div>
     ${noteHtml}`;
   const _db=document.getElementById('detailBack'); if(_db) _db.onclick=()=>showScreen(fromScreen||'bookCards');
+  const _dh=document.getElementById('detailHead'); if(_dh) _dh.textContent=b.id+'- '+c.no;
   showScreen('cardDetail');
   const _eb=document.getElementById('editBtn'); if(_eb) _eb.onclick=openEdit;
 }
@@ -990,7 +1011,7 @@ function saveFourReading(){
 function showPastReadings(){
   const g=document.getElementById('pastBody');
   document.getElementById('pastCount').textContent=pastReadingsStore.length+' קריאות';
-  if(!pastReadingsStore.length){g.innerHTML=`<div class="empty-note">עדיין אין קריאות שמורות.<br>בצעו קריאת ארבעה קלפים ושמרו אותה.</div>`;}
+  if(!pastReadingsStore.length){g.innerHTML=`<div class="empty-note">עדיין אין קריאות שמורות.<br>בצעו קריאת 4 קלפים ושמרו אותה.</div>`;}
   else{
     g.innerHTML='';
     pastReadingsStore.forEach((r,idx)=>{
@@ -1418,7 +1439,7 @@ const GUIDE_SHORT = [
   ['books','היומנים','כל היומנים. בתוך יומן — קודם הקלפים לאורך, ואז קבוצה נפרדת של קלפים לרוחב.'],
   ['card','לראות קלף','לחיצה אחת פותחת קלף. לחיצה כפולה על התמונה מגדילה למסך מלא.'],
   ['edit','לערוך קלף','פתחו קלף ← האייקון שליד השם ← שנו ← שמירה.'],
-  ['four','קריאת ארבעה קלפים','כתבו שאלה או הכתיבו בקול ← שליפה ← לחיצה על קלף מציגה את ההערה ← שמירת הקריאה.'],
+  ['four','קריאת 4 קלפים','כתבו שאלה או הכתיבו בקול ← שליפה ← לחיצה על קלף מציגה את ההערה ← שמירת הקריאה.'],
   ['add','הוספת קלף','בחרו מקור (מצלמה / גלריה / קבצים), שם, יומן, סדרה והערה.'],
   ['search','חיפוש קלף','לפי מילת מפתח, לפי שם, או "נוסף לאחרונה". אפשר לסנן לפי יומן וסדרה.'],
   ['draw','שליפת קלף','שולף קלף אקראי אחד מכל האוסף.'],
@@ -1434,7 +1455,7 @@ const GUIDE_FULL = [
   ['card','תצוגת קלף','תמונה, שם, יומן, בורר סדרה (ניתן לשינוי במקום), וההערה המלאה. לחיצה כפולה על התמונה — מסך מלא.'],
   ['edit','עריכת קלף','האייקון שליד שם הקלף פותח עריכה: תמונה, שם, יומן, סדרה והערה.'],
   ['draw','שליפת קלף','שולף קלף אקראי מכל האוסף. "שליפה נוספת" שולף אחר.'],
-  ['four','קריאת ארבעה קלפים','שאלה (בכתיבה או בהכתבה קולית) ← 4 קלפים בעמדות: מי אני / מה המצב / מה עוזר לי / לאן אני הולכת. לחיצה על קלף מציגה את ההערה. ניתן לשמור.'],
+  ['four','קריאת 4 קלפים','שאלה (בכתיבה או בהכתבה קולית) ← 4 קלפים בעמדות: מי אני / מה המצב / מה עוזר לי / לאן אני הולכת. לחיצה על קלף מציגה את ההערה. ניתן לשמור.'],
   ['past','קריאות קודמות','כל הקריאות ששמרתם, עם תאריך, שאלה ותמונות. לחיצה פותחת קריאה מלאה.'],
   ['add','הוספת קלף','מקור: מצלמה (לצלם קולאז\' חדש), גלריה, או קבצים (כולל Google Photos ו-Drive). אחר כך: שם, יומן (או יצירת יומן חדש), סדרה והערה.'],
   ['search','חיפוש קלף','שלושה מצבים: מילת מפתח (שם + הערה), שם הקלף בלבד, או נוסף לאחרונה. סינון נוסף לפי יומן וסדרה. התוצאות מתעדכנות תוך כדי הקלדה.'],
@@ -1650,7 +1671,7 @@ function showLinkFallback(url){
 }
 
 /* ---- MENU + NAV ---- */
-function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(id==='books')renderBooks();window.scrollTo({top:0});var _fab=document.getElementById('homeFab');if(_fab)_fab.style.display=(id==='home'||id==='cover'||id==='slideshow')?'none':'flex';}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(id==='books')renderBooks();window.scrollTo({top:0});var _fab=document.getElementById('homeFab');if(_fab)_fab.style.display=(id==='slideshow')?'none':'flex';}
 function tap(name){const t=document.getElementById('toast');t.textContent=name;t.classList.add('show');clearTimeout(window._tt);window._tt=setTimeout(()=>t.classList.remove('show'),1800);}
 function _bind(id, handler){ const el=document.getElementById(id); if(el) el.onclick=handler; }
 _bind('editBack', ()=>showScreen('cardDetail'));
