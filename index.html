@@ -47,8 +47,7 @@
   @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
   .topbar{display:flex;align-items:center;justify-content:space-between;padding:22px 20px 10px;}
   .brand{display:flex;align-items:center;gap:12px;}
-  .brand-mark{width:52px;height:52px;border-radius:50%;position:relative;background:conic-gradient(from 20deg,var(--clay),var(--gold),var(--teal),var(--clay-soft),var(--teal),var(--clay));display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px var(--card-shadow);}
-  .brand-mark::after{content:"";width:20px;height:20px;border-radius:50%;background:var(--cream);}
+  .brand-mark{width:50px;height:50px;border-radius:50%;background:url('logo.png') center/cover no-repeat;box-shadow:0 3px 10px var(--card-shadow);}
   .brand-name{display:flex;flex-direction:column;line-height:1.05;}
   .brand-name .he{font-family:'Varela Round',sans-serif;font-size:30px;letter-spacing:0;color:var(--teal);line-height:1.05;}
   .brand-name .en{font-family:'Varela Round',sans-serif;font-size:16px;letter-spacing:.06em;color:var(--clay);margin-top:3px;}
@@ -61,11 +60,7 @@
   .subhead .sub-count{margin-inline-start:auto;font-family:'Varela Round',sans-serif;font-size:14px;color:var(--clay);}
   #cover{align-items:center;justify-content:center;}
   .cover-wrap{display:flex;flex-direction:column;align-items:center;text-align:center;padding:26px 24px 34px;max-width:420px;margin:auto;}
-  .cover-mark{width:82px;height:82px;border-radius:50%;margin-bottom:16px;
-    background:conic-gradient(from 20deg,var(--clay),var(--gold),var(--teal),var(--clay-soft),var(--teal),var(--clay));
-    position:relative;box-shadow:0 4px 14px var(--card-shadow);}
-  .cover-mark::after{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-    width:30px;height:30px;border-radius:50%;background:var(--cream);}
+  .cover-mark{width:120px;height:120px;border-radius:50%;margin-bottom:16px;background:url('logo.png') center/cover no-repeat;box-shadow:0 5px 16px var(--card-shadow);}
   .cover-title{font-family:'Varela Round',sans-serif;font-size:34px;line-height:1.2;color:var(--teal);margin-bottom:6px;}
   .cover-title span{color:var(--clay);font-size:26px;}
   .cover-thanks{margin-top:22px;background:rgba(255,255,255,.55);border:1px solid rgba(36,79,94,.18);
@@ -83,9 +78,9 @@
   .group:nth-of-type(1) .tile:nth-child(2) .disc{--key-base:#12262E;--key-hi:#25454F;--key-lo:#0A171C;--key-edge:#050D10;}
   .group:nth-of-type(2) .tile:nth-child(1) .disc{--key-base:#D9A441;--key-hi:#F0C56B;--key-lo:#B5842C;--key-edge:#8C641F;}
   .group:nth-of-type(2) .tile:nth-child(2) .disc{--key-base:#6E5A8A;--key-hi:#9481AE;--key-lo:#54426B;--key-edge:#3E3050;}
-  .group:nth-of-type(3) .tile:nth-child(1) .disc{--key-base:#4A7C8C;--key-hi:#6EA3B3;--key-lo:#365E6B;--key-edge:#274650;}
-  .group:nth-of-type(3) .tile:nth-child(2) .disc{--key-base:#C98A3B;--key-hi:#E3AC63;--key-lo:#A06B26;--key-edge:#7A511C;}
-  .group:nth-of-type(3) .tile:nth-child(3) .disc{--key-base:#5E7A44;--key-hi:#829E66;--key-lo:#455C31;--key-edge:#324522;}
+  .group:nth-of-type(3) .tile:nth-child(1) .disc{--key-base:#22414D;--key-hi:#3A6472;--key-lo:#152A33;--key-edge:#0D1B21;}
+  .group:nth-of-type(3) .tile:nth-child(2) .disc{--key-base:#6E4A18;--key-hi:#96692A;--key-lo:#4E3410;--key-edge:#38250A;}
+  .group:nth-of-type(3) .tile:nth-child(3) .disc{--key-base:#31441F;--key-hi:#4C6634;--key-lo:#212F13;--key-edge:#16200C;}
   .bottom-row .tile:nth-child(1) .disc{--key-base:#3E6E5E;--key-hi:#5E9483;--key-lo:#2C5245;--key-edge:#1F3D33;}
   .bottom-row .tile:nth-child(2) .disc{--key-base:#A84B6B;--key-hi:#C77190;--key-lo:#853A53;--key-edge:#642A3E;}
   .group{margin:0 18px 14px;border:2px solid rgba(36,79,94,.30);border-radius:16px;
@@ -133,7 +128,7 @@
 
   .tile:active .disc{transform:scale(.95);}
   .disc svg{width:46%;height:46%;}
-  .tile-label{font-family:'Varela Round',sans-serif;font-weight:500;font-size:11px;color:var(--teal);text-align:center;}
+  .tile-label{font-family:'Varela Round',sans-serif;font-weight:500;font-size:14px;color:var(--teal);text-align:center;line-height:1.25;}
   .badge{position:absolute;top:14%;left:14%;background:var(--cream);color:var(--ink);width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Varela Round',sans-serif;font-weight:900;font-size:16px;box-shadow:0 2px 5px var(--card-shadow);}
 
 
@@ -142,7 +137,7 @@
   .card-actions-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
   .grid-bottom{flex:0 0 auto;padding-top:6px;padding-bottom:10px;}
   .tile.small .disc{width:42px;height:42px;max-width:42px;border-radius:10px;}
-  .tile.small .tile-label{font-size:10px;}
+  .tile.small .tile-label{font-size:13px;}
   .books{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:14px 20px 30px;align-content:start;}
   .book{cursor:pointer;display:flex;flex-direction:column;gap:8px;}
   .book-cover{position:relative;width:100%;height:0;padding-bottom:133%;border-radius:8px 3px 3px 8px;box-shadow:0 5px 14px var(--card-shadow);overflow:hidden;transition:transform .15s;border-inline-end:5px solid rgba(0,0,0,.14);}
@@ -325,7 +320,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="סול קולאז' של עירא">
-  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png?v=7">
   <link rel="manifest" href="manifest.json">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
@@ -399,7 +394,7 @@ if ('serviceWorker' in navigator) {
       <button class="tile small" onclick="openHelp()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><line x1="5" y1="6" x2="16" y2="6"/><line x1="5" y1="10" x2="16" y2="10"/><line x1="5" y1="14" x2="13" y2="14"/><line x1="5" y1="18" x2="13" y2="18"/></svg></span><span class="tile-label">עזרה וגיבוי</span></button>
     </div>
   </div>
-    <div class="footer">גרסה v34</div>
+    <div class="footer">גרסה v36</div>
 
   <!-- BOOKS -->
   <div class="screen" id="books">
