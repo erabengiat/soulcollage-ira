@@ -8,17 +8,17 @@
   @import url('https://fonts.googleapis.com/css2?family=Varela+Round&family=Assistant:wght@300;400;600;700&display=swap');
 
   /* ===== FORCE correct small thumbnails (works on ALL Android, no aspect-ratio) ===== */
-  #thumbsGrid, #searchGrid, #cardsGrid{
+  #thumbsGrid, #searchGrid{
     display:grid !important;
     grid-template-columns:1fr 1fr 1fr !important;
     gap:10px !important;
     padding:12px !important;
   }
-  #thumbsGrid .thumb, #searchGrid .thumb, #cardsGrid .thumb{
+  #thumbsGrid .thumb, #searchGrid .thumb{
     display:block !important; width:100% !important; min-width:0 !important; cursor:pointer !important;
   }
   /* 3:4 box using padding-bottom hack (universally supported) */
-  #thumbsGrid .thumb-img, #searchGrid .thumb-img, #cardsGrid .thumb-img{
+  #thumbsGrid .thumb-img, #searchGrid .thumb-img{
     position:relative !important;
     width:100% !important;
     height:0 !important;
@@ -26,12 +26,12 @@
     border-radius:5px !important; overflow:hidden !important; background:#ddd !important;
     box-shadow:0 3px 8px rgba(42,58,71,.18) !important;
   }
-  #thumbsGrid .thumb-img img, #searchGrid .thumb-img img, #cardsGrid .thumb-img img{
+  #thumbsGrid .thumb-img img, #searchGrid .thumb-img img{
     position:absolute !important; top:0 !important; left:0 !important;
     width:100% !important; height:100% !important; object-fit:cover !important;
     display:block !important;
   }
-  #thumbsGrid .thumb-name, #searchGrid .thumb-name, #cardsGrid .thumb-name{
+  #thumbsGrid .thumb-name, #searchGrid .thumb-name{
     font-size:10px !important; line-height:1.15 !important; text-align:center !important;
     color:#244F5E !important; margin-top:4px !important; overflow:hidden !important;
   }
@@ -264,7 +264,7 @@
       <button class="tile" onclick="showScreen('books')"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2z"/><path d="M8 3v18"/></svg></span><span class="tile-label">הספרים</span></button>
       <button class="tile" onclick="tap('עזרה וגיבוי')"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><line x1="5" y1="6" x2="16" y2="6"/><line x1="5" y1="10" x2="16" y2="10"/><line x1="5" y1="14" x2="13" y2="14"/><line x1="5" y1="18" x2="13" y2="18"/></svg></span><span class="tile-label">עזרה וגיבוי</span></button>
     </div>
-    <div class="footer">גרסה v18</div>
+    <div class="footer">גרסה v19</div>
   </div>
 
   <!-- BOOKS -->
@@ -473,10 +473,11 @@ function openBook(id){
   const b=books.find(x=>x.id===id);
   document.getElementById('bookTitle').textContent=b.name;
   document.getElementById('bookCardCount').textContent=b.cards.length+' קלפים';
+
   const g=document.getElementById('cardsGrid');
   g.innerHTML='';
-  g.style.display='block';      // we build our own sections inside
-  g.style.padding='12px';
+  g.style.display='block';
+  g.style.padding='10px 14px 30px';
 
   if(!b.cards.length){
     g.innerHTML='<div class="empty-note">אין עדיין קלפים בספר זה.</div>';
@@ -484,53 +485,52 @@ function openBook(id){
     return;
   }
 
-  // containers: portrait grid + landscape group
-  const portraitWrap=document.createElement('div');
-  portraitWrap.style.display='grid';
-  portraitWrap.style.gridTemplateColumns='1fr 1fr 1fr';
-  portraitWrap.style.gap='10px';
+  // --- two sections: portrait (לאורך) and wide (לרוחב) ---
+  const tallWrap=document.createElement('div');
 
   const wideTitle=document.createElement('div');
   wideTitle.textContent='קלפים לרוחב';
-  wideTitle.style.cssText='font-family:\'Varela Round\',sans-serif;font-size:15px;color:#C0673B;margin:22px 2px 10px;';
+  wideTitle.style.cssText="font-family:'Varela Round',sans-serif;font-size:16px;color:#C0673B;margin:26px 2px 12px;padding-top:14px;border-top:1px solid rgba(36,79,94,.18);";
   wideTitle.style.display='none';
 
   const wideWrap=document.createElement('div');
-  wideWrap.style.display='grid';
-  wideWrap.style.gridTemplateColumns='1fr 1fr';
-  wideWrap.style.gap='10px';
 
-  g.appendChild(portraitWrap);
+  g.appendChild(tallWrap);
   g.appendChild(wideTitle);
   g.appendChild(wideWrap);
 
-  b.cards.forEach(function(c){
+  function makeTile(c){
     const el=document.createElement('div');
-    el.style.cursor='pointer';
-    el.onclick=function(){ openCard(id,c.no,'bookCards'); };
-
-    // portrait tile (cropped 3:4 box) - default
-    el.innerHTML='<div style="display:block;width:100%;">'+
-      '<div style="position:relative;width:100%;height:0;padding-bottom:133%;border-radius:5px;overflow:hidden;background:#ddd;box-shadow:0 3px 8px rgba(42,58,71,.18);">'+
-      (c.img?'<img src="'+c.img+'" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;">':'')+
+    el.style.cssText='width:100%;margin-bottom:16px;cursor:pointer;';
+    el.innerHTML=
+      '<div style="width:100%;height:30vh;min-height:190px;background:#EDE3D0;border-radius:8px;'+
+      'box-shadow:0 3px 10px rgba(42,58,71,.18);display:flex;align-items:center;justify-content:center;overflow:hidden;">'+
+        (c.img?'<img src="'+c.img+'" style="max-width:100%;max-height:100%;width:auto;height:auto;display:block;">':'')+
       '</div>'+
-      '<div style="font-size:10px;line-height:1.15;text-align:center;color:#244F5E;margin-top:4px;">'+c.name+'</div>'+
-      '</div>';
-    portraitWrap.appendChild(el);
+      '<div style="font-family:\'Varela Round\',sans-serif;font-size:14px;text-align:center;color:#244F5E;margin-top:7px;">'+c.name+'</div>';
 
-    // measure the real image: if it is wider than tall, move it to the wide group
+    // single tap -> open the card ; double tap -> fullscreen
+    let t=null;
+    el.onclick=function(){
+      clearTimeout(t);
+      t=setTimeout(function(){ openCard(id,c.no,'bookCards'); }, 260);
+    };
+    el.ondblclick=function(ev){
+      ev.preventDefault();
+      clearTimeout(t);
+      if(c.img) openBig(c.img);
+    };
+    return el;
+  }
+
+  b.cards.forEach(function(c){
+    const el=makeTile(c);
+    tallWrap.appendChild(el);
     if(c.img){
       const probe=new Image();
       probe.onload=function(){
         if(probe.naturalWidth > probe.naturalHeight){
-          // rebuild as a WHOLE (uncropped) wide tile
-          el.innerHTML='<div style="display:block;width:100%;">'+
-            '<div style="width:100%;border-radius:5px;overflow:hidden;background:#EDE3D0;box-shadow:0 3px 8px rgba(42,58,71,.18);">'+
-            '<img src="'+c.img+'" style="width:100%;height:auto;display:block;">'+
-            '</div>'+
-            '<div style="font-size:10px;line-height:1.15;text-align:center;color:#244F5E;margin-top:4px;">'+c.name+'</div>'+
-            '</div>';
-          wideWrap.appendChild(el);
+          wideWrap.appendChild(el);          // move to the wide group
           wideTitle.style.display='block';
         }
       };
