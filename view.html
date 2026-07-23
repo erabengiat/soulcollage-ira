@@ -60,11 +60,29 @@
   .back svg{width:24px;height:24px;stroke:var(--teal);}
   .subhead h2{font-family:'Varela Round',sans-serif;font-weight:700;font-size:22px;color:var(--teal);flex:1;text-align:center;}
   .subhead .sub-count{margin-inline-start:auto;font-family:'Varela Round',sans-serif;font-size:14px;color:var(--clay);}
-  .grid{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:16px 14px;padding:18px 22px 26px;align-content:center;}
+  #cover{align-items:center;justify-content:center;}
+  .cover-wrap{display:flex;flex-direction:column;align-items:center;text-align:center;padding:26px 24px 34px;max-width:420px;margin:auto;}
+  .cover-mark{width:82px;height:82px;border-radius:50%;margin-bottom:16px;
+    background:conic-gradient(from 20deg,var(--clay),var(--gold),var(--teal),var(--clay-soft),var(--teal),var(--clay));
+    position:relative;box-shadow:0 4px 14px var(--card-shadow);}
+  .cover-mark::after{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    width:30px;height:30px;border-radius:50%;background:var(--cream);}
+  .cover-title{font-family:'Varela Round',sans-serif;font-size:34px;line-height:1.2;color:var(--teal);margin-bottom:6px;}
+  .cover-title span{color:var(--clay);font-size:26px;}
+  .cover-thanks{margin-top:22px;background:rgba(255,255,255,.55);border:1px solid rgba(36,79,94,.18);
+    border-radius:14px;padding:18px 18px 14px;text-align:center;}
+  .cover-thanks-h{font-family:'Varela Round',sans-serif;font-size:19px;color:var(--clay);margin-bottom:12px;}
+  .cover-thanks p{font-size:14px;line-height:1.85;color:var(--ink);margin-bottom:10px;}
+  .cover-thanks p:last-child{margin-bottom:0;}
+  .cover-enter{margin-top:26px;background:var(--teal);color:var(--cream);border:none;border-radius:12px;
+    padding:15px 42px;font-family:'Varela Round',sans-serif;font-size:19px;cursor:pointer;
+    box-shadow:0 5px 14px var(--card-shadow);transition:transform .1s;}
+  .cover-enter:active{transform:scale(.97);}
+  .grid{flex:0 0 auto;display:grid;grid-template-columns:1fr 1fr;gap:12px 12px;padding:14px 22px 12px;align-content:center;}
   .tile{display:flex;flex-direction:column;align-items:center;gap:12px;background:none;border:none;cursor:pointer;font-family:inherit;}
   .disc{
-    width:62px;height:62px;max-width:62px;
-    border-radius:14px;
+    width:50px;height:50px;max-width:50px;
+    border-radius:12px;
     background:linear-gradient(180deg, var(--key-hi) 0%, var(--key-base) 55%, var(--key-lo) 100%);
     display:flex;align-items:center;justify-content:center;
     position:relative;overflow:hidden;margin:0 auto;
@@ -97,7 +115,7 @@
 
   .tile:active .disc{transform:scale(.95);}
   .disc svg{width:46%;height:46%;}
-  .tile-label{font-family:'Varela Round',sans-serif;font-weight:500;font-size:12px;color:var(--teal);text-align:center;}
+  .tile-label{font-family:'Varela Round',sans-serif;font-weight:500;font-size:11px;color:var(--teal);text-align:center;}
   .badge{position:absolute;top:14%;left:14%;background:var(--cream);color:var(--ink);width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Varela Round',sans-serif;font-weight:900;font-size:16px;box-shadow:0 2px 5px var(--card-shadow);}
 
   /* --- key colours --- */
@@ -115,8 +133,8 @@
   .card-actions-title{position:absolute;top:-11px;inset-inline-start:18px;background:var(--cream);padding:0 8px;font-family:'Varela Round',sans-serif;font-size:13px;color:var(--clay);}
   .card-actions-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
   .grid-bottom{flex:0 0 auto;padding-top:6px;padding-bottom:10px;}
-  .tile.small .disc{width:52px;height:52px;max-width:52px;border-radius:12px;}
-  .tile.small .tile-label{font-size:11px;}
+  .tile.small .disc{width:42px;height:42px;max-width:42px;border-radius:10px;}
+  .tile.small .tile-label{font-size:10px;}
   .books{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:14px 20px 30px;align-content:start;}
   .book{cursor:pointer;display:flex;flex-direction:column;gap:8px;}
   .book-cover{position:relative;width:100%;height:0;padding-bottom:133%;border-radius:8px 3px 3px 8px;box-shadow:0 5px 14px var(--card-shadow);overflow:hidden;transition:transform .15s;border-inline-end:5px solid rgba(0,0,0,.14);}
@@ -272,7 +290,26 @@ if ('serviceWorker' in navigator) {
 <div class="app">
 
   <!-- HOME -->
-  <div class="screen active" id="home">
+  
+  <!-- COVER -->
+  <div class="screen active" id="cover">
+    <div class="cover-wrap">
+      <div class="cover-mark"></div>
+      <h1 class="cover-title">סול קולאז'<br><span>של עירא</span></h1>
+
+      <div class="cover-thanks">
+        <div class="cover-thanks-h">תודות</div>
+        <p>תודה לסינה פרוסט מייסדת שיטת סול קולאז' ולמיכל שהם שביב המנחה שלי.</p>
+        <p>תודה לכל האמנים, צלמים, עיתונים, חוברות, ספרים ששימשו אותי ביצירת הקלפים.</p>
+        <p>תודה חמה ומיוחדת לשמי בן זוגי על העידוד להגשים חלום למציאות — ביצירת האפליקציה.</p>
+        <p>תודה לקלוד – הרובוט שעזר לנו בצד הטכני.</p>
+      </div>
+
+      <button class="cover-enter" onclick="showScreen('home')">כניסה לאוסף</button>
+    </div>
+  </div>
+
+  <div class="screen" id="home">
     <div class="topbar">
       <div class="brand"><div class="brand-mark"></div><div class="brand-name"><span class="he">סול קולאז'</span><span class="en">של עירא</span></div></div>
       <div class="counter"><b id="cardCount">0</b>קלפים</div>
@@ -297,7 +334,7 @@ if ('serviceWorker' in navigator) {
       <button class="tile" onclick="openSettings()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 9 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 9a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg></span><span class="tile-label">הגדרות</span></button>
       <button class="tile" onclick="openHelp()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><line x1="5" y1="6" x2="16" y2="6"/><line x1="5" y1="10" x2="16" y2="10"/><line x1="5" y1="14" x2="13" y2="14"/><line x1="5" y1="18" x2="13" y2="18"/></svg></span><span class="tile-label">עזרה וגיבוי</span></button>
     </div>
-    <div class="footer">גרסה v28</div>
+    <div class="footer">גרסה v31</div>
   </div>
 
   <!-- BOOKS -->
@@ -633,17 +670,8 @@ function openBook(id){
       '</div>'+
       '<div style="font-family:\'Varela Round\',sans-serif;font-size:14px;text-align:center;color:#244F5E;margin-top:7px;">'+c.name+'</div>';
 
-    // single tap -> open the card ; double tap -> fullscreen
-    let t=null;
-    el.onclick=function(){
-      clearTimeout(t);
-      t=setTimeout(function(){ openCard(id,c.no,'bookCards'); }, 260);
-    };
-    el.ondblclick=function(ev){
-      ev.preventDefault();
-      clearTimeout(t);
-      if(c.img) openBig(c.img);
-    };
+    // one tap opens the card straight away (with its note)
+    el.onclick=function(){ openCard(id,c.no,'bookCards'); };
     return el;
   }
 
@@ -974,7 +1002,7 @@ function runSearch(){
 }
 
 /* ---- SLIDESHOW ---- */
-function exitSlideshow(){ stopSlideshow(); showScreen('home'); }
+function exitSlideshow(){ stopSlideshow(); showScreen('slideMenu'); }
 let slideOrder=[], slideIdx=0, slideTimer=null, slideDelay=4000, slidePlaying=false;
 const SLIDE_SPEEDS={slow:7000, medium:4000, fast:2000};
 function openSlideshowMenu(){
@@ -1434,7 +1462,7 @@ function showLinkFallback(url){
 }
 
 /* ---- MENU + NAV ---- */
-function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(id==='books')renderBooks();window.scrollTo({top:0});var _fab=document.getElementById('homeFab');if(_fab)_fab.style.display=(id==='home'||id==='slideshow')?'none':'flex';}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(id==='books')renderBooks();window.scrollTo({top:0});var _fab=document.getElementById('homeFab');if(_fab)_fab.style.display=(id==='home'||id==='cover'||id==='slideshow')?'none':'flex';}
 function tap(name){const t=document.getElementById('toast');t.textContent=name;t.classList.add('show');clearTimeout(window._tt);window._tt=setTimeout(()=>t.classList.remove('show'),1800);}
 function _bind(id, handler){ const el=document.getElementById(id); if(el) el.onclick=handler; }
 _bind('editBack', ()=>showScreen('cardDetail'));
