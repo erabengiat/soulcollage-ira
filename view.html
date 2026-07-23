@@ -58,6 +58,8 @@
   .back{background:none;border:none;cursor:pointer;padding:6px;display:flex;}
   .back svg{width:24px;height:24px;stroke:var(--teal);}
   .subhead h2{font-family:'Varela Round',sans-serif;font-weight:700;font-size:22px;color:var(--teal);flex:1;text-align:center;}
+  #cardDetail .subhead{position:relative;}
+  #cardDetail .back{position:absolute;inset-inline-start:14px;top:50%;transform:translateY(-50%);}
   .subhead .sub-count{margin-inline-start:auto;font-family:'Varela Round',sans-serif;font-size:14px;color:var(--clay);}
   #cover{align-items:center;justify-content:center;}
   .cover-wrap{display:flex;flex-direction:column;align-items:center;text-align:center;padding:26px 24px 34px;max-width:420px;margin:auto;}
@@ -398,7 +400,7 @@ if ('serviceWorker' in navigator) {
       <button class="tile small" onclick="openHelp()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><line x1="5" y1="6" x2="16" y2="6"/><line x1="5" y1="10" x2="16" y2="10"/><line x1="5" y1="14" x2="13" y2="14"/><line x1="5" y1="18" x2="13" y2="18"/></svg></span><span class="tile-label">עזרה וגיבוי</span></button>
     </div>
   </div>
-    <div class="footer">גרסה v37</div>
+    <div class="footer">גרסה v38</div>
 
   <!-- BOOKS -->
   <div class="screen" id="books">
@@ -415,7 +417,7 @@ if ('serviceWorker' in navigator) {
 
   <!-- CARD DETAIL -->
   <div class="screen" id="cardDetail">
-    <div class="subhead"><h2>הקלף</h2></div>
+    <div class="subhead"><button class="back" id="detailBack" title="חזרה"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button><h2>הקלף</h2></div>
     <div class="detail" id="detailBody"></div>
   </div>
   <!-- CARD EDIT -->
