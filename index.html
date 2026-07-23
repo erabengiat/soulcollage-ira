@@ -45,14 +45,14 @@
   .screen{display:none;flex-direction:column;flex:1 0 auto;animation:fade .25s ease;}
   .screen.active{display:flex;}
   @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
-  .topbar{display:flex;align-items:center;justify-content:space-between;padding:22px 20px 10px;}
-  .brand{display:flex;align-items:center;gap:12px;}
-  .brand-mark{width:50px;height:50px;border-radius:50%;background:url('logo.png') center/cover no-repeat;box-shadow:0 3px 10px var(--card-shadow);}
-  .brand-name{display:flex;flex-direction:column;line-height:1.05;}
-  .brand-name .he{font-family:'Varela Round',sans-serif;font-size:30px;letter-spacing:0;color:var(--teal);line-height:1.05;}
-  .brand-name .en{font-family:'Varela Round',sans-serif;font-size:16px;letter-spacing:.06em;color:var(--clay);margin-top:3px;}
-  .counter{font-family:'Varela Round',sans-serif;font-size:15px;color:var(--teal);text-align:center;opacity:.85;}
-  .counter b{font-size:20px;display:block;font-weight:900;}
+  .topbar{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 20px 10px;}
+  .brand{display:flex;align-items:center;justify-content:center;gap:10px;}
+  .brand-mark{width:40px;height:40px;border-radius:50%;background:url('logo.png') center/cover no-repeat;box-shadow:0 2px 8px var(--card-shadow);flex:0 0 auto;}
+  .brand-name{display:flex;flex-direction:column;line-height:1.05;align-items:center;text-align:center;}
+  .brand-name .he{font-family:'Varela Round',sans-serif;font-size:19px;letter-spacing:0;color:var(--teal);}
+  .brand-name .en{font-family:'Varela Round',sans-serif;font-size:12px;letter-spacing:.05em;color:var(--clay);margin-top:2px;}
+  .counter{position:absolute;top:14px;inset-inline-end:18px;font-family:'Varela Round',sans-serif;font-size:11px;color:var(--teal);text-align:center;opacity:.75;line-height:1.1;}
+  .counter b{font-size:15px;display:block;font-weight:700;}
   .subhead{display:flex;align-items:center;gap:14px;padding:20px 20px 8px;}
   .back{background:none;border:none;cursor:pointer;padding:6px;display:flex;}
   .back svg{width:24px;height:24px;stroke:var(--teal);}
@@ -73,14 +73,17 @@
     box-shadow:0 5px 14px var(--card-shadow);transition:transform .1s;}
   .cover-enter:active{transform:scale(.97);}
 
+
+
   /* --- key colours --- */
-  .group:nth-of-type(1) .tile:nth-child(1) .disc{--key-base:#C0673B;--key-hi:#E08A5C;--key-lo:#9E4E28;--key-edge:#7A3A1C;}
-  .group:nth-of-type(1) .tile:nth-child(2) .disc{--key-base:#12262E;--key-hi:#25454F;--key-lo:#0A171C;--key-edge:#050D10;}
-  .group:nth-of-type(2) .tile:nth-child(1) .disc{--key-base:#D9A441;--key-hi:#F0C56B;--key-lo:#B5842C;--key-edge:#8C641F;}
-  .group:nth-of-type(2) .tile:nth-child(2) .disc{--key-base:#6E5A8A;--key-hi:#9481AE;--key-lo:#54426B;--key-edge:#3E3050;}
-  .group:nth-of-type(3) .tile:nth-child(1) .disc{--key-base:#22414D;--key-hi:#3A6472;--key-lo:#152A33;--key-edge:#0D1B21;}
-  .group:nth-of-type(3) .tile:nth-child(2) .disc{--key-base:#6E4A18;--key-hi:#96692A;--key-lo:#4E3410;--key-edge:#38250A;}
-  .group:nth-of-type(3) .tile:nth-child(3) .disc{--key-base:#31441F;--key-hi:#4C6634;--key-lo:#212F13;--key-edge:#16200C;}
+  .g-view  .tile:nth-child(1) .disc{--key-base:#C0673B;--key-hi:#E08A5C;--key-lo:#9E4E28;--key-edge:#7A3A1C;}
+  .g-view  .tile:nth-child(2) .disc{--key-base:#12262E;--key-hi:#25454F;--key-lo:#0A171C;--key-edge:#050D10;}
+  .g-read  .tile:nth-child(1) .disc{--key-base:#D9A441;--key-hi:#F0C56B;--key-lo:#B5842C;--key-edge:#8C641F;}
+  .g-read  .tile:nth-child(2) .disc{--key-base:#6E5A8A;--key-hi:#9481AE;--key-lo:#54426B;--key-edge:#3E3050;}
+  /* third frame - dark keys */
+  .g-cards .tile:nth-child(1) .disc{--key-base:#22414D;--key-hi:#3A6472;--key-lo:#152A33;--key-edge:#0D1B21;}
+  .g-cards .tile:nth-child(2) .disc{--key-base:#6E4A18;--key-hi:#96692A;--key-lo:#4E3410;--key-edge:#38250A;}
+  .g-cards .tile:nth-child(3) .disc{--key-base:#31441F;--key-hi:#4C6634;--key-lo:#212F13;--key-edge:#16200C;}
   .bottom-row .tile:nth-child(1) .disc{--key-base:#3E6E5E;--key-hi:#5E9483;--key-lo:#2C5245;--key-edge:#1F3D33;}
   .bottom-row .tile:nth-child(2) .disc{--key-base:#A84B6B;--key-hi:#C77190;--key-lo:#853A53;--key-edge:#642A3E;}
   .group{margin:0 18px 14px;border:2px solid rgba(36,79,94,.30);border-radius:16px;
@@ -364,7 +367,7 @@ if ('serviceWorker' in navigator) {
       <div class="brand"><div class="brand-mark"></div><div class="brand-name"><span class="he">סול קולאז'</span><span class="en">של עירא</span></div></div>
       <div class="counter"><b id="cardCount">0</b>קלפים</div>
     </div>
-    <div class="group">
+    <div class="group g-view">
       <div class="group-title">צפייה</div>
       <div class="group-row two">
         <button class="tile" onclick="openSlideshowMenu()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="13" rx="2"/><polygon points="10.5 8 15.5 10.8 10.5 13.6" fill="#F3EAD8" stroke="none"/><line x1="8" y1="20.5" x2="16" y2="20.5"/></svg></span><span class="tile-label">מצגת הקלפים</span></button>
@@ -372,7 +375,7 @@ if ('serviceWorker' in navigator) {
       </div>
     </div>
 
-    <div class="group">
+    <div class="group g-read">
       <div class="group-title">קריאת קלפים</div>
       <div class="group-row two">
         <button class="tile" onclick="startFour()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.4" stroke-linecap="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg></span><span class="tile-label">קריאת ארבעה קלפים</span></button>
@@ -380,7 +383,7 @@ if ('serviceWorker' in navigator) {
       </div>
     </div>
 
-    <div class="group">
+    <div class="group g-cards">
       <div class="group-title">קלפים</div>
       <div class="group-row three">
         <button class="tile small" onclick="showAddCard()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><rect x="5" y="4" width="14" height="16" rx="1.5"/><line x1="12" y1="9" x2="12" y2="15"/><line x1="9" y1="12" x2="15" y2="12"/></svg></span><span class="tile-label">הוספת קלף</span></button>
@@ -394,7 +397,7 @@ if ('serviceWorker' in navigator) {
       <button class="tile small" onclick="openHelp()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><line x1="5" y1="6" x2="16" y2="6"/><line x1="5" y1="10" x2="16" y2="10"/><line x1="5" y1="14" x2="13" y2="14"/><line x1="5" y1="18" x2="13" y2="18"/></svg></span><span class="tile-label">עזרה וגיבוי</span></button>
     </div>
   </div>
-    <div class="footer">גרסה v36</div>
+    <div class="footer">גרסה v37</div>
 
   <!-- BOOKS -->
   <div class="screen" id="books">
