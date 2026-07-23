@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
 <title>סול קולאז' של עירא — תצוגה</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Varela+Round&family=Assistant:wght@300;400;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Varela+Round&family=Assistant:wght@400;500;600;700;800&display=swap');
 
   /* ===== FORCE correct small thumbnails (works on ALL Android, no aspect-ratio) ===== */
   #thumbsGrid, #searchGrid{
@@ -61,20 +61,6 @@
   #cardDetail .subhead{position:relative;}
   #cardDetail .back{position:absolute;inset-inline-start:14px;top:50%;transform:translateY(-50%);}
   .subhead .sub-count{margin-inline-start:auto;font-family:'Varela Round',sans-serif;font-size:14px;color:var(--clay);}
-  #cover{align-items:center;justify-content:center;}
-  .cover-wrap{display:flex;flex-direction:column;align-items:center;text-align:center;padding:26px 24px 34px;max-width:420px;margin:auto;}
-  .cover-mark{width:120px;height:120px;border-radius:50%;margin-bottom:16px;background:url('logo.png') center/cover no-repeat;box-shadow:0 5px 16px var(--card-shadow);}
-  .cover-title{font-family:'Varela Round',sans-serif;font-size:34px;line-height:1.2;color:var(--teal);margin-bottom:6px;}
-  .cover-title span{color:var(--clay);font-size:26px;}
-  .cover-thanks{margin-top:22px;background:rgba(255,255,255,.55);border:1px solid rgba(36,79,94,.18);
-    border-radius:14px;padding:18px 18px 14px;text-align:center;}
-  .cover-thanks-h{font-family:'Varela Round',sans-serif;font-size:19px;color:var(--clay);margin-bottom:12px;}
-  .cover-thanks p{font-size:14px;line-height:1.85;color:var(--ink);margin-bottom:10px;}
-  .cover-thanks p:last-child{margin-bottom:0;}
-  .cover-enter{margin-top:26px;background:var(--teal);color:var(--cream);border:none;border-radius:12px;
-    padding:15px 42px;font-family:'Varela Round',sans-serif;font-size:19px;cursor:pointer;
-    box-shadow:0 5px 14px var(--card-shadow);transition:transform .1s;}
-  .cover-enter:active{transform:scale(.97);}
 
 
 
@@ -97,6 +83,37 @@
   .group-row.two{grid-template-columns:1fr 1fr;}
   .group-row.three{grid-template-columns:1fr 1fr 1fr;}
   .bottom-row{margin:6px 18px 14px;}
+  #cover{align-items:center;justify-content:center;min-height:100vh;padding:0;}
+  .cover-wrap{display:flex;flex-direction:column;align-items:center;text-align:center;
+    padding:clamp(10px,2.2vh,18px) 18px clamp(12px,2.5vh,20px);
+    max-width:430px;margin:auto;width:100%;}
+  .cover-mark{width:clamp(52px,11vh,74px);height:clamp(52px,11vh,74px);border-radius:50%;
+    margin-bottom:clamp(6px,1.4vh,12px);
+    background:url('logo.png') center/cover no-repeat;
+    box-shadow:0 4px 12px var(--card-shadow);flex:0 0 auto;}
+  .cover-title{font-family:'Varela Round',sans-serif;
+    font-size:clamp(18px,4.6vh,24px);line-height:1.15;color:var(--teal);
+    margin-bottom:clamp(6px,1.4vh,12px);}
+  .cover-title span{color:var(--clay);font-size:clamp(14px,3.4vh,18px);}
+  .cover-thanks{width:100%;background:rgba(255,255,255,.55);border:1px solid rgba(36,79,94,.18);
+    border-radius:14px;padding:clamp(10px,1.8vh,16px) clamp(12px,4vw,18px);text-align:center;}
+  .cover-thanks-h{font-family:'Varela Round',sans-serif;
+    font-size:clamp(15px,3.2vh,18px);color:var(--clay);
+    margin-bottom:clamp(6px,1.2vh,10px);}
+  .cover-thanks p{font-size:clamp(13.5px,1.95vh,16px);line-height:1.45;color:var(--ink);
+    margin-bottom:clamp(5px,1vh,9px);}
+  .cover-thanks p:last-child{margin-bottom:0;}
+  .cover-enter{margin-top:clamp(10px,2.2vh,20px);background:var(--teal);color:var(--cream);
+    border:none;border-radius:12px;
+    padding:clamp(10px,1.7vh,14px) clamp(26px,9vw,40px);
+    font-family:'Varela Round',sans-serif;font-size:clamp(15px,2.4vh,18px);cursor:pointer;
+    box-shadow:0 4px 12px var(--card-shadow);transition:transform .1s;flex:0 0 auto;}
+  .cover-enter:active{transform:scale(.97);}
+  /* very short screens: trim a little more */
+  @media (max-height:620px){
+    .cover-thanks p{line-height:1.35;}
+    .cover-mark{margin-bottom:5px;}
+  }
   .grid{flex:0 0 auto;display:grid;grid-template-columns:1fr 1fr;gap:12px 12px;padding:14px 22px 12px;align-content:center;}
   .tile{display:flex;flex-direction:column;align-items:center;gap:12px;background:none;border:none;cursor:pointer;font-family:inherit;}
   .disc{
@@ -321,6 +338,72 @@
   .field label{display:block;font-family:'Varela Round',sans-serif;font-size:15px;color:var(--teal);margin-bottom:6px;}
   .field input,.field textarea,.field select{width:100%;border:1.5px solid rgba(36,79,94,.3);border-radius:10px;padding:12px 14px;font-family:inherit;font-size:15px;background:rgba(255,255,255,.6);}
   .field textarea{resize:vertical;min-height:80px;}
+
+  /* ================= TYPOGRAPHY: larger + heavier ================= */
+  body{font-weight:600;}
+
+  /* screen titles */
+  .subhead h2{font-size:25px;}
+  .group-title{font-size:15px;font-weight:700;}
+  .detail-section-label{font-size:16px;font-weight:700;opacity:1;}
+  .sub-count{font-size:16px;font-weight:600;}
+
+  /* home buttons */
+  .tile-label{font-size:16px;font-weight:600;}
+  .tile.small .tile-label{font-size:14px;font-weight:600;}
+  .counter{font-size:12px;font-weight:600;}
+  .counter b{font-size:17px;font-weight:800;}
+
+  /* card view */
+  .detail-name{font-size:29px;}
+  .detail-meta{font-size:13px;font-weight:600;}
+  .cs-label{font-size:16px;font-weight:700;}
+  .cs-value{font-size:17px;font-weight:600;}
+  .cs-value.cs-name{font-size:22px;}
+  .note-box{font-size:17px;font-weight:600;line-height:1.8;}
+  .note-empty{font-weight:600;}
+  .suit-select{font-size:16px;font-weight:600;}
+
+  /* lists of cards */
+  .thumb-name{font-size:12px !important;font-weight:600 !important;}
+  .book-meta{font-size:14px;font-weight:600;}
+  .book-cover span.name{font-size:17px;}
+  .book-num{font-size:44px;}
+  .empty-note{font-size:16px;font-weight:600;}
+
+  /* readings */
+  .rc-pos{font-size:15px;font-weight:700;}
+  .rc-name{font-size:14px;font-weight:600;}
+  .ri-date{font-size:14px;font-weight:600;}
+  .ri-q{font-size:18px;}
+  .q-label{font-size:19px;}
+  .q-input{font-size:17px;font-weight:600;}
+  .mic-status{font-size:14px;font-weight:600;}
+
+  /* forms + buttons */
+  .field label{font-size:17px;font-weight:700;}
+  .field input,.field textarea,.field select{font-size:17px;font-weight:600;}
+  .btn{font-size:20px;}
+  .modal-opt{font-size:20px;}
+  .src-btn{font-size:14px;font-weight:600;}
+  .src-hint{font-size:13px;font-weight:600;}
+  .share-btn{font-size:15px;}
+
+  /* help + guides */
+  .g-txt{font-size:16px;font-weight:600;line-height:1.7;}
+  .g-txt b{font-size:17px;}
+  #aboutBox{font-size:16px;font-weight:600;}
+  #logBox{font-size:15px;font-weight:600;}
+  #viewerLinkBox{font-size:13px;font-weight:600;}
+
+  /* cover */
+  .cover-thanks p{font-size:clamp(14.5px,2.05vh,17px);font-weight:600;}
+  .cover-thanks-h{font-size:clamp(16px,3.3vh,19px);}
+
+  /* misc */
+  .toast{font-size:16px;font-weight:600;}
+  .footer{font-size:13px;font-weight:600;}
+  #roBanner{font-size:13px;font-weight:600;}
 </style>
   <meta name="theme-color" content="#244F5E">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -400,7 +483,7 @@ if ('serviceWorker' in navigator) {
       <button class="tile small" onclick="openHelp()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><line x1="5" y1="6" x2="16" y2="6"/><line x1="5" y1="10" x2="16" y2="10"/><line x1="5" y1="14" x2="13" y2="14"/><line x1="5" y1="18" x2="13" y2="18"/></svg></span><span class="tile-label">עזרה וגיבוי</span></button>
     </div>
   </div>
-    <div class="footer">גרסה v38</div>
+    <div class="footer">גרסה v42</div>
 
   <!-- BOOKS -->
   <div class="screen" id="books">
@@ -510,9 +593,10 @@ if ('serviceWorker' in navigator) {
     <div class="subhead"><button class="back" onclick="showScreen('home')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button><h2>חיפוש קלף</h2></div>
     <div class="add-form">
       <div class="field"><label>סוג החיפוש</label>
-        <select id="searchMode" onchange="runSearch()">
+        <select id="searchMode" onchange="searchModeChanged()">
           <option value="key">לפי מילת מפתח (שם + הערה)</option>
           <option value="name">לפי שם הקלף</option>
+          <option value="num">לפי מספר קלף</option>
           <option value="recent">נוסף לאחרונה</option>
         </select>
       </div>
@@ -1040,6 +1124,17 @@ function openSearch(){
   runSearch();
   showScreen('search');
 }
+
+function searchModeChanged(){
+  const m=document.getElementById('searchMode').value;
+  const inp=document.getElementById('searchName');
+  if(m==='num'){ inp.placeholder='הקלידו מספר קלף, למשל 218'; inp.setAttribute('inputmode','numeric'); }
+  else if(m==='recent'){ inp.placeholder='(לא נדרש טקסט)'; inp.removeAttribute('inputmode'); }
+  else if(m==='name'){ inp.placeholder='הקלידו חלק משם הקלף...'; inp.removeAttribute('inputmode'); }
+  else { inp.placeholder='הקלידו מילה...'; inp.removeAttribute('inputmode'); }
+  runSearch();
+}
+
 function runSearch(){
   const q=(document.getElementById('searchName').value||'').trim();
   const mode=(document.getElementById('searchMode')||{value:'key'}).value;
@@ -1049,6 +1144,12 @@ function runSearch(){
 
   if(mode==='recent'){
     all=all.slice().sort((a,b)=>b.no-a.no).slice(0,60);
+  }else if(mode==='num'){
+    if(q){
+      const exact=all.filter(c=>String(c.no)===q);
+      all = exact.length ? exact : all.filter(c=>String(c.no).indexOf(q)!==-1);
+    }
+    all=all.slice().sort((a,b)=>a.no-b.no);
   }else if(q){
     if(mode==='name') all=all.filter(c=>c.name && c.name.indexOf(q)!==-1);
     else all=all.filter(c=>((c.name||'')+' '+(c.note||'')).indexOf(q)!==-1);
@@ -1061,7 +1162,7 @@ function runSearch(){
   all.forEach(c=>{
     const el=document.createElement('div');el.className='thumb';
     el.onclick=()=>openCard(c.bookId,c.no,'search');
-    el.innerHTML='<div style="display:block;width:100%;"><div style="position:relative;width:100%;height:0;padding-bottom:133%;border-radius:5px;overflow:hidden;background:#ddd;box-shadow:0 3px 8px rgba(42,58,71,.18);"><img src="'+c.img+'" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;"></div><div style="font-size:10px;line-height:1.15;text-align:center;color:#244F5E;margin-top:4px;">'+c.name+'</div></div>';
+    el.innerHTML='<div style="display:block;width:100%;"><div style="position:relative;width:100%;height:0;padding-bottom:133%;border-radius:5px;overflow:hidden;background:#ddd;box-shadow:0 3px 8px rgba(42,58,71,.18);"><img src="'+c.img+'" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;"><span style="position:absolute;top:4px;inset-inline-start:4px;background:rgba(36,79,94,.85);color:#fff;font-size:11px;font-weight:700;padding:1px 6px;border-radius:9px;">'+c.no+'</span></div><div style="font-size:12px;font-weight:600;line-height:1.15;text-align:center;color:#244F5E;margin-top:4px;">'+c.name+'</div></div>';
     g.appendChild(el);
   });
 }
@@ -1456,6 +1557,26 @@ function applyReadOnly(){
     if(lab && hideLabels.indexOf(lab.textContent.trim())!==-1) t.style.display='none';
   });
 
+  // re-balance every button row so the remaining buttons stay symmetric
+  document.querySelectorAll('.group-row').forEach(function(row){
+    const visible = Array.prototype.filter.call(row.children, function(c){
+      return c.style.display !== 'none';
+    });
+    if(!visible.length){ row.style.display='none'; return; }
+    row.style.gridTemplateColumns = '1fr '.repeat(visible.length).trim();
+    if(visible.length === 1){
+      row.style.maxWidth = '52%';
+      row.style.marginInlineStart = 'auto';
+      row.style.marginInlineEnd = 'auto';
+    }
+  });
+
+  // if a whole frame ended up empty, drop it
+  document.querySelectorAll('.group').forEach(function(g){
+    const row = g.querySelector('.group-row');
+    if(row && row.style.display === 'none') g.style.display = 'none';
+  });
+
   // mark the app so CSS can hide edit affordances
   document.body.classList.add('readonly');
 
@@ -1465,6 +1586,7 @@ function applyReadOnly(){
   b.textContent = 'תצוגה בלבד — האוסף של עירא';
   document.body.appendChild(b);
 }
+
 
 
 /* ================= SHARE (view-only link) ================= */
