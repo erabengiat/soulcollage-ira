@@ -344,14 +344,9 @@
   #search .add-form, #addCard .add-form, #cardEdit .add-form{flex:1 1 auto;}
 
   /* the slideshow chooser: roomy, centred buttons */
-  #slideMenu .add-form{display:flex;flex-direction:column;justify-content:center;align-items:center;
-    padding:0 20px 60px;flex:1;}
-  #slideMenu .note-box{width:100%;margin-bottom:24px;}
-  #slideMenu .btn{padding:20px 30px;font-size:22px;margin-bottom:18px;width:100%;}
-  
-  @media (max-width:600px){
-    #slideMenu .btn{padding:18px 24px;font-size:18px;margin-bottom:14px;}
-  }
+  #slideMenu .add-form{display:flex;flex-direction:column;justify-content:center;
+    padding-bottom:60px;}
+  #slideMenu .btn{padding:20px;font-size:22px;margin-bottom:16px;}
   .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--teal);color:var(--cream);padding:11px 20px;border-radius:30px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;box-shadow:0 6px 18px rgba(0,0,0,.25);z-index:50;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
   .edit-btn{margin-inline-start:auto;background:none;border:none;cursor:pointer;padding:6px;display:flex;}
@@ -548,7 +543,6 @@ if ('serviceWorker' in navigator) {
       <div class="group-row two">
         <button class="tile" onclick="startFour()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.4" stroke-linecap="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg></span><span class="tile-label">קריאת 4 קלפים</span></button>
         <button class="tile" onclick="showPastReadings()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><polyline points="12 7 12 12 15.5 14"/></svg></span><span class="tile-label">קריאות קודמות</span></button>
-        <button class="tile" onclick="openTimeline()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="18" cy="18" r="2"/><path d="M6 8v4h6M12 14v2h6M18 20v-2h-6"/><polyline points="6 6 12 12 18 18"/></svg></span><span class="tile-label">ניתוח בזמן</span></button>
       </div>
     </div>
 
@@ -1448,12 +1442,6 @@ function renderSettings(){
 
 function openSettings(){ renderSettings(); showScreen('settings'); }
 
-function openTimeline(){
-  // Open the timeline analysis in a new tab/window
-  const timelineURL = 'analyze-timeline.html';
-  window.open(timelineURL, '_self');
-}
-
 /* restore custom journals on load */
 function restoreCustomBooks(){
   try{
@@ -1748,25 +1736,13 @@ function showLinkFallback(url){
   tap('העתיקו את הקישור המוצג למטה');
 }
 
-/* ---- FULLSCREEN CARD DETAIL ---- */
-function toggleDetailFullscreen(){
-  const detail = document.getElementById('detailBody');
-  const btn = document.getElementById('detailFullscreen');
-  if(!detail || !btn) return;
-  
-  detail.classList.toggle('fullscreen');
-  
-  if(detail.classList.contains('fullscreen')){
-    btn.style.transform = 'scale(1.2)';
-    btn.title = 'חזרה';
-  } else {
-    btn.style.transform = '';
-    btn.title = 'מסך מלא';
-  }
-}
-
 /* ---- MENU + NAV ---- */
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(id==='books')renderBooks();window.scrollTo({top:0});var _fab=document.getElementById('homeFab');if(_fab)_fab.style.display=(id==='slideshow')?'none':'flex';}
+
+function toggleDetailFullscreen(){
+  const detail = document.getElementById('detailBody');
+  if(detail) detail.classList.toggle('fullscreen');
+}
 function tap(name){const t=document.getElementById('toast');t.textContent=name;t.classList.add('show');clearTimeout(window._tt);window._tt=setTimeout(()=>t.classList.remove('show'),1800);}
 function _bind(id, handler){ const el=document.getElementById(id); if(el) el.onclick=handler; }
 _bind('editBack', ()=>showScreen('cardDetail'));
