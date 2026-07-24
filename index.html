@@ -228,29 +228,29 @@
   #cardDetail .subhead h2{font-family:'Varela Round',sans-serif;font-size:20px;color:var(--clay);}
   #cardDetail .detail-img{max-height:38vh;max-width:62%;border-radius:0;}
   /* ---------- form styling (Add / Edit card) ---------- */
-  .add-form .field{margin-bottom:20px;}
-  .add-form .field label{
+  #addCard .field, #cardEdit .field{margin-bottom:20px;}
+  #addCard .field label, #cardEdit .field label{
     display:block;font-family:'Varela Round',sans-serif;
     font-size:21px;font-weight:700;color:var(--teal);
     margin-bottom:9px;text-align:right;
   }
-  .add-form .field label.lbl-mark{
+  #addCard .field label.lbl-mark, #cardEdit .field label.lbl-mark{
     background:rgba(255,255,255,.55);
     padding:1px 8px;border-radius:5px;display:inline-block;
   }
-  .add-form .field input[type="text"],
-  .add-form .field input[type="email"],
-  .add-form .field select,
-  .add-form .field textarea{
+  #addCard .field input[type="text"], #cardEdit .field input[type="text"],
+  #addCard .field input[type="email"], #cardEdit .field input[type="email"],
+  #addCard .field select, #cardEdit .field select,
+  #addCard .field textarea, #cardEdit .field textarea{
     width:100%;background:#FBF8F1;
     border:1px solid rgba(36,79,94,.30);border-radius:12px;
     padding:14px 16px;font-family:inherit;font-size:19px;font-weight:600;
     color:var(--teal);text-align:right;
   }
-  .add-form .field input[type="text"],
-  .add-form .field input[type="email"]{min-height:62px;}
-  .add-form .field select{min-height:62px;}
-  .add-form .field textarea{min-height:130px;line-height:1.6;resize:vertical;}
+  #addCard .field input[type="text"], #cardEdit .field input[type="text"],
+  #addCard .field input[type="email"], #cardEdit .field input[type="email"]{min-height:62px;}
+  #addCard .field select, #cardEdit .field select{min-height:62px;}
+  #addCard .field textarea, #cardEdit .field textarea{min-height:130px;line-height:1.6;resize:vertical;}
 
   /* image-source buttons */
   .src-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:12px;}
@@ -268,7 +268,7 @@
     line-height:1.5;margin-bottom:20px;}
 
   /* save button */
-  .add-form .btn.clay{
+  #addCard .btn.clay, #cardEdit .btn.clay{
     background:var(--clay);color:#fff;width:100%;
     border-radius:8px;padding:18px;font-size:23px;margin-top:4px;
   }
@@ -277,7 +277,7 @@
   #home{min-height:100vh;display:flex;flex-direction:column;}
 
   .topbar{display:flex;align-items:center;justify-content:center;
-    padding:clamp(12px,2.6vh,30px) 20px clamp(8px,1.8vh,20px);flex:0 0 auto;}
+    padding:clamp(26px,5.4vh,58px) 20px clamp(8px,1.8vh,20px);flex:0 0 auto;}
   .home-logo{
     width:clamp(96px,16vh,140px);height:clamp(96px,16vh,140px);
     border-radius:50%;margin:0 auto;
@@ -325,6 +325,26 @@
   .tile.small .tile-label{font-size:clamp(12.5px,1.95vh,16px);font-weight:600;}
 
   #home .footer{flex:0 0 auto;}
+  /* ---------- menu-type screens: search / settings / help / slideshow menu ---------- */
+  #search .field, #settings .field, #help .field, #slideMenu .field{margin-bottom:15px;}
+  #search .field label, #settings .field label, #help .field label{
+    display:block;font-family:'Varela Round',sans-serif;font-size:17px;font-weight:700;
+    color:var(--teal);margin-bottom:6px;}
+  #search .field input, #search .field select,
+  #settings .field input, #help .field input{
+    width:100%;background:#FBF8F1;border:1px solid rgba(36,79,94,.28);
+    border-radius:10px;padding:11px 13px;font-family:inherit;
+    font-size:16px;font-weight:600;color:var(--teal);min-height:auto;}
+
+  /* every screen fills the viewport, content starts at the top */
+  .screen.active{display:flex;flex-direction:column;min-height:100vh;}
+  #slideMenu .add-form, #settings .add-form, #help .add-form,
+  #search .add-form, #addCard .add-form, #cardEdit .add-form{flex:1 1 auto;}
+
+  /* the slideshow chooser: roomy, centred buttons */
+  #slideMenu .add-form{display:flex;flex-direction:column;justify-content:center;
+    padding-bottom:60px;}
+  #slideMenu .btn{padding:18px;font-size:21px;margin-bottom:16px;}
   .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--teal);color:var(--cream);padding:11px 20px;border-radius:30px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;box-shadow:0 6px 18px rgba(0,0,0,.25);z-index:50;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
   .edit-btn{margin-inline-start:auto;background:none;border:none;cursor:pointer;padding:6px;display:flex;}
@@ -765,7 +785,7 @@ if ('serviceWorker' in navigator) {
 /* ============ DATA (loaded from data/data.json) ============ */
 let DATA = {books:[], cards:[]};
 
-const APP_VERSION = 'v48';
+const APP_VERSION = 'v50';
 const BOOK_COLORS=['#C0673B','#244F5E','#D9A441','#8A5A44','#3E6E5E','#B0443B','#6E5A8A','#4A7C8C','#C98A3B','#5E7A44','#A84B6B','#3B5468'];
 let books=[];
 const SUITS=["ועדה","קהילה","בני לוויה","מועצה - ארכיטיפים"];
