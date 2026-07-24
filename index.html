@@ -274,7 +274,7 @@
   }
 
   /* ================= HOME (block-aligned, full height) ================= */
-  #home{min-height:100vh;display:flex;flex-direction:column;}
+  #home{min-height:100vh;}
 
   .topbar{display:flex;align-items:center;justify-content:center;
     padding:clamp(26px,5.4vh,58px) 20px clamp(8px,1.8vh,20px);flex:0 0 auto;}
@@ -785,7 +785,7 @@ if ('serviceWorker' in navigator) {
 /* ============ DATA (loaded from data/data.json) ============ */
 let DATA = {books:[], cards:[]};
 
-const APP_VERSION = 'v50';
+const APP_VERSION = 'v51';
 const BOOK_COLORS=['#C0673B','#244F5E','#D9A441','#8A5A44','#3E6E5E','#B0443B','#6E5A8A','#4A7C8C','#C98A3B','#5E7A44','#A84B6B','#3B5468'];
 let books=[];
 const SUITS=["ועדה","קהילה","בני לוויה","מועצה - ארכיטיפים"];
