@@ -105,8 +105,6 @@
 
   /* --- individual key colours --- */
 
-  .tile:active .disc{transform:scale(.95);}
-  .disc svg{width:46%;height:46%;}
   .badge{position:absolute;top:14%;left:14%;background:var(--cream);color:var(--ink);width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Varela Round',sans-serif;font-weight:900;font-size:16px;box-shadow:0 2px 5px var(--card-shadow);}
 
 
@@ -274,33 +272,40 @@
     background:var(--clay);color:#fff;width:100%;
     border-radius:8px;padding:18px;font-size:23px;margin-top:4px;
   }
-  /* ================= HOME (clean, frameless) ================= */
-  #home{min-height:100vh;justify-content:flex-start;}
+
+  /* ================= HOME (block-aligned, full height) ================= */
+  #home{min-height:100vh;display:flex;flex-direction:column;}
 
   .topbar{display:flex;align-items:center;justify-content:center;
-    padding:clamp(16px,3.4vh,40px) 20px clamp(14px,3vh,34px);}
+    padding:clamp(12px,2.6vh,30px) 20px clamp(8px,1.8vh,20px);flex:0 0 auto;}
   .home-logo{
-    width:clamp(92px,15.5vh,132px);height:clamp(92px,15.5vh,132px);
+    width:clamp(96px,16vh,140px);height:clamp(96px,16vh,140px);
     border-radius:50%;margin:0 auto;
     background:url('logo.png') center/cover no-repeat;
     box-shadow:0 4px 14px var(--card-shadow);
   }
 
-  /* no frames at all - just rows with air between them */
-  .group{margin:0 0 clamp(22px,4.6vh,46px);border:none;border-radius:0;
-    padding:0;background:transparent;position:static;}
+  /* every row shares one 3-column grid so the buttons line up */
+  .group{margin:0;border:none;border-radius:0;padding:0;background:transparent;
+    position:static;flex:1 1 0;display:flex;align-items:center;}
   .group-title{display:none;}
-  .group-row{display:grid;gap:0;padding:0 clamp(14px,5vw,26px);}
-  .group-row.two{grid-template-columns:1fr 1fr;}
-  .group-row.three{grid-template-columns:1fr 1fr 1fr;}
-  .bottom-row{margin:0 0 clamp(16px,3vh,32px);}
+  .group-row{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:0;width:100%;
+    padding:0 clamp(10px,4vw,22px);
+  }
+  /* rows of two use the outer columns, middle stays empty */
+  .group-row.two > .tile:nth-child(1){grid-column:1;}
+  .group-row.two > .tile:nth-child(2){grid-column:3;}
+  .bottom-row{margin:0;flex:1 1 0;display:grid;align-content:center;}
 
   .tile{display:flex;flex-direction:column;align-items:center;
-    gap:clamp(7px,1.4vh,13px);background:none;border:none;cursor:pointer;font-family:inherit;}
+    gap:clamp(6px,1.2vh,12px);background:none;border:none;cursor:pointer;font-family:inherit;}
 
   .disc{
-    width:clamp(50px,8.2vh,66px);height:clamp(50px,8.2vh,66px);max-width:66px;
-    border-radius:22%;
+    width:clamp(52px,8.6vh,70px);height:clamp(52px,8.6vh,70px);max-width:70px;
+    border-radius:24%;
     background:linear-gradient(180deg,var(--key-hi) 0%,var(--key-base) 55%,var(--key-lo) 100%);
     display:flex;align-items:center;justify-content:center;
     position:relative;overflow:hidden;margin:0 auto;
@@ -312,12 +317,14 @@
     pointer-events:none;}
   .tile:active .disc{transform:translateY(3px);box-shadow:0 2px 6px rgba(42,58,71,.30);}
   .disc svg{position:relative;z-index:2;width:48%;height:48%;}
-  .tile.small .disc{width:clamp(50px,8.2vh,66px);height:clamp(50px,8.2vh,66px);border-radius:22%;}
+  .tile.small .disc{width:clamp(52px,8.6vh,70px);height:clamp(52px,8.6vh,70px);border-radius:24%;}
 
   .tile-label{font-family:'Varela Round',sans-serif;font-weight:600;
     font-size:clamp(12.5px,1.95vh,16px);color:var(--teal);
     text-align:center;line-height:1.25;}
   .tile.small .tile-label{font-size:clamp(12.5px,1.95vh,16px);font-weight:600;}
+
+  #home .footer{flex:0 0 auto;}
   .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--teal);color:var(--cream);padding:11px 20px;border-radius:30px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;box-shadow:0 6px 18px rgba(0,0,0,.25);z-index:50;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
   .edit-btn{margin-inline-start:auto;background:none;border:none;cursor:pointer;padding:6px;display:flex;}
@@ -397,13 +404,10 @@
 
   /* screen titles */
   .subhead h2{font-size:25px;}
-  .group-title{font-size:15px;font-weight:700;}
   .detail-section-label{font-size:16px;font-weight:700;opacity:1;}
   .sub-count{font-size:16px;font-weight:600;}
 
   /* home buttons */
-  .tile-label{font-size:clamp(11px,1.75vh,15px);font-weight:600;}
-  .tile.small .tile-label{font-size:clamp(11px,1.75vh,15px);font-weight:600;}
   .counter{font-size:12px;font-weight:600;}
   .counter b{font-size:17px;font-weight:800;}
 
@@ -761,7 +765,7 @@ if ('serviceWorker' in navigator) {
 /* ============ DATA (loaded from data/data.json) ============ */
 let DATA = {books:[], cards:[]};
 
-const APP_VERSION = 'v47';
+const APP_VERSION = 'v48';
 const BOOK_COLORS=['#C0673B','#244F5E','#D9A441','#8A5A44','#3E6E5E','#B0443B','#6E5A8A','#4A7C8C','#C98A3B','#5E7A44','#A84B6B','#3B5468'];
 let books=[];
 const SUITS=["ועדה","קהילה","בני לוויה","מועצה - ארכיטיפים"];
