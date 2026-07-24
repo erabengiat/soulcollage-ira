@@ -344,9 +344,12 @@
   #search .add-form, #addCard .add-form, #cardEdit .add-form{flex:1 1 auto;}
 
   /* the slideshow chooser: roomy, centred buttons */
-  #slideMenu .add-form{display:flex;flex-direction:column;justify-content:center;
-    padding-bottom:60px;}
-  #slideMenu .btn{padding:20px;font-size:22px;margin-bottom:16px;}
+  #slideMenu{display:flex;flex-direction:column;flex:1;}
+  #slideMenu .subhead{flex:0 0 auto;}
+  #slideMenu .add-form{display:flex;flex-direction:column;justify-content:center;align-items:stretch;
+    padding:20px 16px 60px;flex:1;}
+  #slideMenu .note-box{width:100%;font-size:16px;margin-bottom:24px;}
+  #slideMenu .btn{padding:30px 20px;font-size:24px;margin-bottom:20px;width:100%;}
   .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--teal);color:var(--cream);padding:11px 20px;border-radius:30px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;box-shadow:0 6px 18px rgba(0,0,0,.25);z-index:50;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
   .edit-btn{margin-inline-start:auto;background:none;border:none;cursor:pointer;padding:6px;display:flex;}
