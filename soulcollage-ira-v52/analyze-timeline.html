@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ניתוח האוסף בזמן - סול קולאז' של עירא</title>
+<style>
+  :root {
+    --cream: #F3EAD8;
+    --cream-deep: #E9DBC0;
+    --ink: #2A3A47;
+    --teal: #244F5E;
+    --clay: #C0673B;
+    --clay-soft: #D98A5E;
+    --gold: #D9A441;
+  }
+  
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; width: 100%; }
+  
+  body {
+    font-family: 'Assistant', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    display: flex;
+    overflow: hidden;
+  }
+  
+  .container {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    gap: 0;
+  }
+  
+  .timeline-sidebar {
+    width: 240px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.6) 100%);
+    border-inline-end: 2px solid var(--teal);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 16px 12px;
+    gap: 12px;
+  }
+  
+  .header {
+    text-align: center;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--teal);
+  }
+  
+  .header h1 {
+    font-size: 16px;
+    color: var(--teal);
+    margin-bottom: 4px;
+  }
+  
+  .header p {
+    font-size: 11px;
+    color: var(--ink);
+    opacity: 0.7;
+  }
+  
+  .controls {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+  }
+  
+  .btn-control {
+    background: var(--teal);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex: 1;
+  }
+  
+  .btn-control:hover {
+    background: var(--clay);
+    transform: scale(1.05);
+  }
+  
+  .btn-control:active {
+    transform: scale(0.95);
+  }
+  
+  .timeline-list {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .timeline-item {
+    padding: 10px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(36, 79, 94, 0.2);
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+    font-size: 11px;
+    line-height: 1.3;
+  }
+  
+  .timeline-item:hover {
+    background: rgba(255, 255, 255, 0.8);
+    transform: translateX(-4px);
+  }
+  
+  .timeline-item.active {
+    background: var(--clay);
+    color: white;
+    border-color: var(--clay);
+    box-shadow: 0 4px 12px rgba(192, 103, 59, 0.3);
+    font-weight: 600;
+  }
+  
+  .timeline-item-num {
+    font-weight: 700;
+    font-size: 12px;
+    display: block;
+  }
+  
+  .timeline-item-name {
+    font-size: 10px;
+    opacity: 0.7;
+    display: block;
+  }
+  
+  .timeline-item.active .timeline-item-name {
+    opacity: 1;
+  }
+  
+  .timeline-item-count {
+    font-size: 9px;
+    opacity: 0.6;
+    margin-top: 2px;
+    display: block;
+  }
+  
+  .canvas-area {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #F7F0E1 0%, var(--cream) 50%, var(--cream-deep) 100%);
+  }
+  
+  canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .progress-bar {
+    position: absolute;
+    top: 0;
+    inset-inline-start: 0;
+    height: 3px;
+    background: var(--clay);
+    transition: width 0.1s linear;
+    z-index: 100;
+  }
+  
+  .book-title {
+    position: absolute;
+    top: 16px;
+    inset-inline-end: 16px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--teal);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    min-width: 180px;
+    text-align: center;
+  }
+  
+  .book-title .num {
+    display: block;
+    font-size: 18px;
+    color: var(--clay);
+    margin-bottom: 4px;
+  }
+  
+  .book-title .name {
+    display: block;
+    font-size: 12px;
+    opacity: 0.8;
+  }
+  
+  .book-title .count {
+    display: block;
+    font-size: 10px;
+    opacity: 0.6;
+    margin-top: 4px;
+  }
+  
+  .tooltip {
+    position: absolute;
+    background: rgba(36, 79, 94, 0.95);
+    color: white;
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    pointer-events: none;
+    max-width: 180px;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  .legend {
+    position: absolute;
+    bottom: 16px;
+    inset-inline-start: 16px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 10px;
+    line-height: 1.5;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+  
+  .legend-item:last-child {
+    margin-bottom: 0;
+  }
+  
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  
+  .loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    font-size: 16px;
+    color: var(--teal);
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(36, 79, 94, 0.1);
+    border-top-color: var(--clay);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  
+  /* Fullscreen mode */
+  .container.fullscreen {
+    flex-direction: row;
+  }
+  
+  .container.fullscreen .timeline-sidebar {
+    width: 200px;
+    max-width: 25%;
+  }
+  
+  .container.fullscreen .canvas-area {
+    flex: 1;
+  }
+  
+  @media (max-width: 1200px) {
+    .container.fullscreen .timeline-sidebar {
+      width: 160px;
+    }
+  }
+  
+  @media (max-width: 900px) {
+    .timeline-sidebar {
+      width: 180px;
+      padding: 12px 8px;
+    }
+    
+    .header h1 {
+      font-size: 14px;
+    }
+    
+    .book-title {
+      font-size: 12px;
+    }
+  }
+  
+  @media (max-width: 600px) {
+    .container {
+      flex-direction: column;
+    }
+    
+    .timeline-sidebar {
+      width: 100%;
+      max-height: 120px;
+      border-inline-end: none;
+      border-bottom: 2px solid var(--teal);
+      flex-direction: row;
+      overflow-x: auto;
+      overflow-y: hidden;
+      gap: 6px;
+    }
+    
+    .header {
+      display: none;
+    }
+    
+    .timeline-list {
+      flex-direction: row;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+    
+    .timeline-item {
+      flex-shrink: 0;
+      width: 60px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="timeline-sidebar">
+    <div class="header">
+      <h1>יומנים בזמן</h1>
+      <p>ניתוח אוסף בתנועה</p>
+    </div>
+    
+    <div class="controls">
+      <button class="btn-control" id="playBtn" onclick="togglePlay()">▶ הפעל</button>
+      <button class="btn-control" onclick="resetPlayback()">⟳ אפס</button>
+      <button class="btn-control" id="fullscreenBtn" onclick="toggleFullscreen()">⛶ מלא</button>
+    </div>
+    
+    <div class="timeline-list" id="timelineList"></div>
+  </div>
+  
+  <div class="canvas-area" id="canvasArea">
+    <div class="progress-bar" id="progressBar"></div>
+    <div class="book-title" id="bookTitle"></div>
+    <canvas id="canvas"></canvas>
+    <div class="legend" id="legend"></div>
+    <div class="tooltip" id="tooltip" style="display: none;"></div>
+  </div>
+</div>
+
+<script>
+// ============ Configuration ============
+const SUITS = ["ועדה", "קהילה", "בני לוויה", "מועצה - ארכיטיפים"];
+const SUIT_COLORS = {
+  "ועדה": "#FF1493",
+  "קהילה": "#00D9FF",
+  "בני לוויה": "#00FF41",
+  "מועצה - ארכיטיפים": "#FFB700"
+};
+
+// ============ State ============
+let allCards = [];
+let books = [];
+let currentBookIndex = 0;
+let isPlaying = false;
+let playbackProgress = 0;
+const BOOK_DURATION = 800; // 0.8 seconds per book (MUCH faster!)
+let playbackStartTime = 0;
+let pausedTime = 0;
+let transitionAlpha = 0;
+
+let nodes = [];
+let links = [];
+let canvas, ctx;
+
+// ============ Initialize ============
+async function init() {
+  try {
+    const response = await fetch('../data/data.json');
+    if (response.ok) {
+      const data = await response.json();
+      processData(data);
+    } else {
+      loadSampleData();
+    }
+  } catch (e) {
+    console.log('Using sample data');
+    loadSampleData();
+  }
+  
+  if (allCards.length === 0) {
+    loadSampleData();
+  }
+  
+  setupBooks();
+  setupCanvas();
+  buildTimelineUI();
+  updateVisualization();
+  animate();
+}
+
+function processData(data) {
+  if (data && data.cards && data.cards.length > 0) {
+    allCards = data.cards.map(card => ({
+      no: card.no,
+      name: card.name,
+      note: card.note || '',
+      suit: card.suit || "ועדה",
+      book: card.book,
+      keywords: extractKeywords(card.name + ' ' + (card.note || ''))
+    }));
+  }
+}
+
+function loadSampleData() {
+  // Create many cards with varied attributes
+  const cardNames = [
+    "שורשים", "אור", "ציפור", "חיבור", "ריפוי", "שמש",
+    "ים", "רוח", "אדם", "אנושיות", "חוכמה", "קוראות",
+    "רקדנית", "חלומות", "כוח", "רגישות", "תקווה", "משחק",
+    "ריקוד", "דממה", "תנועה", "נשמה", "גבורה", "טבע",
+    "פרח", "כוכב", "מים", "אש", "אדמה", "חלל",
+    "שלום", "משפחה", "קהילה", "חברות", "שיתוף", "יחד"
+  ];
+  
+  const cardNotes = [
+    "עומק וביסוד", "תקווה וחשיפה", "חרות וזריזות", "קשרים עם אחרים",
+    "התחדשות וריפוי", "אנרגיה חיובית", "רגישות עמוקה", "תנועה דינמית",
+    "זהות עצמית", "קשר אנושי", "ידע וחכמה", "הנחיה ערטילאית",
+    "שמחה והבעה", "דמיון ויצירה", "עוצמה פנימית", "עדינות רוחנית",
+    "ראיית עתידות", "שמחה וחופש", "פרצי רגש", "דממה מעמיקה"
+  ];
+  
+  let cardNo = 1;
+  const suits = ["ועדה", "קהילה", "בני לוויה", "מועצה - ארכיטיפים"];
+  
+  // Create 80-120 cards spread across 12 books
+  for (let book = 1; book <= 12; book++) {
+    const cardsPerBook = 8 + Math.floor(Math.random() * 6); // 8-13 cards per book
+    
+    for (let i = 0; i < cardsPerBook; i++) {
+      const name = cardNames[Math.floor(Math.random() * cardNames.length)];
+      const note = cardNotes[Math.floor(Math.random() * cardNotes.length)];
+      const suit = suits[Math.floor(Math.random() * suits.length)];
+      
+      allCards.push({
+        no: cardNo,
+        name: name + (Math.random() > 0.6 ? ' ' + (book + i) : ''),
+        note: note,
+        suit: suit,
+        book: book,
+        keywords: extractKeywords(name + ' ' + note)
+      });
+      cardNo++;
+    }
+  }
+}
+
+function extractKeywords(text) {
+  return text.split(/\s+/).filter(w => w.length > 2).slice(0, 10);
+}
+
+function setupBooks() {
+  books = [];
+  for (let i = 1; i <= 12; i++) {
+    const cardsInBook = allCards.filter(c => c.book === i);
+    books.push({
+      id: i,
+      name: `יומן ${i}`,
+      cards: cardsInBook,
+      color: getBookColor(i)
+    });
+  }
+}
+
+function getBookColor(bookNum) {
+  const colors = ['#FF1493','#00D9FF','#00FF41','#FFB700','#FF69B4','#00FFFF','#FFFF00','#FF6B35','#FF00FF','#00FF88','#FF4500','#7FFF00'];
+  return colors[bookNum - 1] || colors[0];
+}
+
+// ============ Timeline UI ============
+function buildTimelineUI() {
+  const list = document.getElementById('timelineList');
+  list.innerHTML = '';
+  
+  books.forEach((book, idx) => {
+    const item = document.createElement('div');
+    item.className = 'timeline-item';
+    if (idx === 0) item.classList.add('active');
+    item.innerHTML = `
+      <span class="timeline-item-num">${book.id}</span>
+      <span class="timeline-item-name">${book.name}</span>
+      <span class="timeline-item-count">${book.cards.length} קלפים</span>
+    `;
+    item.onclick = () => jumpToBook(idx);
+    list.appendChild(item);
+  });
+}
+
+function jumpToBook(index) {
+  currentBookIndex = index;
+  playbackProgress = 0;
+  updateTimelineUI();
+  updateVisualization();
+  resetPlaybackTimer();
+}
+
+function updateTimelineUI() {
+  document.querySelectorAll('.timeline-item').forEach((item, idx) => {
+    if (idx === currentBookIndex) {
+      item.classList.add('active');
+    } else {
+      item.classList.remove('active');
+    }
+  });
+}
+
+// ============ Playback Control ============
+function togglePlay() {
+  isPlaying = !isPlaying;
+  const btn = document.getElementById('playBtn');
+  
+  if (isPlaying) {
+    btn.textContent = '⏸ עצור';
+    playbackStartTime = performance.now() - pausedTime;
+  } else {
+    btn.textContent = '▶ הפעל';
+  }
+}
+
+function resetPlayback() {
+  isPlaying = false;
+  currentBookIndex = 0;
+  playbackProgress = 0;
+  pausedTime = 0;
+  playbackStartTime = 0;
+  
+  const btn = document.getElementById('playBtn');
+  btn.textContent = '▶ הפעל';
+  
+  updateTimelineUI();
+  updateVisualization();
+}
+
+function toggleFullscreen() {
+  const container = document.querySelector('.container');
+  const btn = document.getElementById('fullscreenBtn');
+  const sidebar = document.querySelector('.timeline-sidebar');
+  const canvasArea = document.querySelector('.canvas-area');
+  
+  container.classList.toggle('fullscreen');
+  
+  if (container.classList.contains('fullscreen')) {
+    btn.textContent = '⛶ רגיל';
+    sidebar.style.display = 'flex';
+  } else {
+    btn.textContent = '⛶ מלא';
+  }
+  
+  // Trigger canvas resize
+  setTimeout(() => {
+    resizeCanvas();
+  }, 50);
+}
+
+function resetPlaybackTimer() {
+  playbackStartTime = performance.now();
+  pausedTime = 0;
+}
+
+// ============ Visualization ============
+function updateVisualization() {
+  const currentBook = books[currentBookIndex];
+  
+  // Update book title
+  const titleEl = document.getElementById('bookTitle');
+  titleEl.innerHTML = `
+    <span class="num">#${currentBook.id}</span>
+    <span class="name">${currentBook.name}</span>
+    <span class="count">${currentBook.cards.length} קלפים</span>
+  `;
+  
+  buildGraph(currentBook.cards);
+}
+
+function buildGraph(cardsInBook) {
+  nodes = cardsInBook.map((card, i) => {
+    const angle = (i / cardsInBook.length) * Math.PI * 2;
+    const speed = 3 + Math.random() * 2;
+    return {
+      id: card.no,
+      card: card,
+      x: Math.random() * 600,
+      y: Math.random() * 600,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      radius: 6 + Math.random() * 4
+    };
+  });
+  
+  links = [];
+  
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = i + 1; j < nodes.length; j++) {
+      const card1 = nodes[i].card;
+      const card2 = nodes[j].card;
+      
+      const keywords1 = card1.keywords || [];
+      const keywords2 = card2.keywords || [];
+      const common = keywords1.filter(k => keywords2.includes(k)).length;
+      
+      if (card1.suit === card2.suit || common > 0) {
+        links.push({
+          source: nodes[i],
+          target: nodes[j],
+          strength: 0.08 + (common * 0.04)
+        });
+      }
+    }
+  }
+}
+
+// ============ Physics ============
+function simulate() {
+  nodes.forEach(n1 => {
+    nodes.forEach(n2 => {
+      if (n1 === n2) return;
+      
+      const dx = n2.x - n1.x;
+      const dy = n2.y - n1.y;
+      const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+      const force = 100 / (dist * dist); // Increased from 60
+      
+      n1.vx -= (dx / dist) * force * 0.15; // Increased from 0.08
+      n1.vy -= (dy / dist) * force * 0.15;
+    });
+  });
+  
+  links.forEach(link => {
+    const dx = link.target.x - link.source.x;
+    const dy = link.target.y - link.source.y;
+    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    const force = (dist - 80) * link.strength;
+    
+    link.source.vx += (dx / dist) * force * 0.15; // Increased from 0.08
+    link.source.vy += (dy / dist) * force * 0.15;
+    link.target.vx -= (dx / dist) * force * 0.15;
+    link.target.vy -= (dy / dist) * force * 0.15;
+  });
+  
+  const bounds = canvas.getBoundingClientRect();
+  nodes.forEach(n => {
+    n.vx *= 0.85; // Reduced damping from 0.8 for more movement
+    n.vy *= 0.85;
+    n.x += n.vx;
+    n.y += n.vy;
+    
+    n.x = Math.max(20, Math.min(bounds.width - 20, n.x));
+    n.y = Math.max(20, Math.min(bounds.height - 20, n.y));
+  });
+}
+
+// ============ Rendering ============
+function setupCanvas() {
+  canvas = document.getElementById('canvas');
+  ctx = canvas.getContext('2d');
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+  canvas.addEventListener('mousemove', handleMouseMove);
+  canvas.addEventListener('mouseleave', () => {
+    document.getElementById('tooltip').style.display = 'none';
+  });
+}
+
+function resizeCanvas() {
+  const area = document.getElementById('canvasArea');
+  canvas.width = area.offsetWidth;
+  canvas.height = area.offsetHeight;
+}
+
+let hoveredNode = null;
+
+function handleMouseMove(e) {
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  
+  hoveredNode = null;
+  nodes.forEach(node => {
+    const dx = node.x - mx;
+    const dy = node.y - my;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist < node.radius + 6) {
+      hoveredNode = node;
+    }
+  });
+  
+  const tooltip = document.getElementById('tooltip');
+  if (hoveredNode) {
+    tooltip.innerHTML = `<b>קלף ${hoveredNode.card.no}</b><br>${hoveredNode.card.name}`;
+    tooltip.style.display = 'block';
+    tooltip.style.left = mx + 10 + 'px';
+    tooltip.style.top = my + 10 + 'px';
+  } else {
+    tooltip.style.display = 'none';
+  }
+}
+
+function render() {
+  ctx.fillStyle = '#F3EAD8';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+  // Calculate transition alpha (fade in/out effect)
+  const transitionPhase = (playbackProgress % 100) / 100;
+  const alpha = Math.sin(transitionPhase * Math.PI) * 0.8; // Smooth pulse
+  
+  // Draw links with varying opacity
+  ctx.strokeStyle = `rgba(255, 255, 255, ${0.15 + alpha * 0.1})`;
+  ctx.lineWidth = 1 + alpha * 1;
+  links.forEach(link => {
+    ctx.beginPath();
+    ctx.moveTo(link.source.x, link.source.y);
+    ctx.lineTo(link.target.x, link.target.y);
+    ctx.stroke();
+  });
+  
+  // Draw nodes with animated scale and glow
+  const currentBook = books[currentBookIndex];
+  nodes.forEach((node, idx) => {
+    const color = SUIT_COLORS[node.card.suit] || '#999';
+    const isHovered = hoveredNode === node;
+    
+    // Staggered animation for each node
+    const nodeDelay = (idx / nodes.length) * 0.3;
+    const nodePhase = (transitionPhase + nodeDelay) % 1;
+    const nodeScale = 1 + Math.sin(nodePhase * Math.PI * 2) * 0.15;
+    const radius = node.radius * (isHovered ? 1.8 : 1.2) * nodeScale;
+    
+    // Add pulsing glow effect
+    const glowIntensity = 8 + alpha * 8;
+    ctx.shadowColor = color;
+    ctx.shadowBlur = glowIntensity;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+    
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(node.x, node.y, radius, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.shadowBlur = 0;
+    
+    if (isHovered) {
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, radius * 1.8, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+  });
+  
+  // Draw progress bar
+  const progress = document.getElementById('progressBar');
+  const percent = (playbackProgress % 100);
+  progress.style.width = percent + '%';
+}
+
+// ============ Animation Loop ============
+function animate() {
+  // Update playback
+  if (isPlaying) {
+    const now = performance.now();
+    pausedTime = now - playbackStartTime;
+    playbackProgress = (pausedTime % (BOOK_DURATION * 12)) / (BOOK_DURATION * 12) * 100;
+    
+    const newBookIndex = Math.floor((pausedTime / BOOK_DURATION) % 12);
+    if (newBookIndex !== currentBookIndex) {
+      currentBookIndex = newBookIndex;
+      updateTimelineUI();
+      updateVisualization();
+    }
+  }
+  
+  simulate();
+  render();
+  requestAnimationFrame(animate);
+}
+
+// ============ Startup ============
+init();
+</script>
+
+</body>
+</html>

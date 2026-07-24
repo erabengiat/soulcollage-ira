@@ -1,0 +1,1781 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+<title>סול קולאז' של עירא</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Varela+Round&family=Assistant:wght@400;500;600;700;800&display=swap');
+
+  /* ===== FORCE correct small thumbnails (works on ALL Android, no aspect-ratio) ===== */
+  #thumbsGrid, #searchGrid{
+    display:grid !important;
+    grid-template-columns:1fr 1fr 1fr !important;
+    gap:10px !important;
+    padding:12px !important;
+  }
+  #thumbsGrid .thumb, #searchGrid .thumb{
+    display:block !important; width:100% !important; min-width:0 !important; cursor:pointer !important;
+  }
+  /* 3:4 box using padding-bottom hack (universally supported) */
+  #thumbsGrid .thumb-img, #searchGrid .thumb-img{
+    position:relative !important;
+    width:100% !important;
+    height:0 !important;
+    padding-bottom:133% !important;   /* 4/3 = 1.333 -> 3:4 portrait box */
+    border-radius:0 !important; overflow:hidden !important; background:#ddd !important;
+    box-shadow:0 3px 8px rgba(42,58,71,.18) !important;
+  }
+  #thumbsGrid .thumb-img img, #searchGrid .thumb-img img{
+    position:absolute !important; top:0 !important; left:0 !important;
+    width:100% !important; height:100% !important; object-fit:cover !important;
+    display:block !important;
+  }
+  #thumbsGrid .thumb-name, #searchGrid .thumb-name{
+    font-size:10px !important; line-height:1.15 !important; text-align:center !important;
+    color:#244F5E !important; margin-top:4px !important; overflow:hidden !important;
+  }
+  :root{--cream:#F3EAD8;--cream-deep:#E9DBC0;--ink:#2A3A47;--teal:#244F5E;--clay:#C0673B;--clay-soft:#D98A5E;--gold:#D9A441;--card-shadow:rgba(42,58,71,.18);}
+
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{font-family:'Assistant',sans-serif;background:var(--cream);color:var(--ink);display:flex;justify-content:center;min-height:100vh;}
+  html{scroll-behavior:smooth;}
+  .app{width:100%;max-width:430px;min-height:100vh;background:radial-gradient(120% 80% at 50% -10%,#F7F0E1 0%,var(--cream) 55%,var(--cream-deep) 130%);display:flex;flex-direction:column;position:relative;overflow:visible;}
+  .screen{display:none;flex-direction:column;flex:1 0 auto;animation:fade .25s ease;}
+  .screen.active{display:flex;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  .brand{display:flex;align-items:center;justify-content:center;gap:10px;}
+  .brand-mark{width:40px;height:40px;border-radius:50%;background:url('logo.png') center/cover no-repeat;box-shadow:0 2px 8px var(--card-shadow);flex:0 0 auto;}
+  .brand-name{display:flex;flex-direction:column;line-height:1.05;align-items:center;text-align:center;}
+  .brand-name .he{font-family:'Varela Round',sans-serif;font-size:19px;letter-spacing:0;color:var(--teal);}
+  .brand-name .en{font-family:'Varela Round',sans-serif;font-size:12px;letter-spacing:.05em;color:var(--clay);margin-top:2px;}
+  .counter{position:absolute;top:14px;inset-inline-end:18px;font-family:'Varela Round',sans-serif;font-size:11px;color:var(--teal);text-align:center;opacity:.75;line-height:1.1;}
+  .counter b{font-size:15px;display:block;font-weight:700;}
+  .subhead{display:flex;align-items:center;gap:14px;padding:20px 20px 8px;}
+  .back{background:none;border:none;cursor:pointer;padding:6px;display:flex;}
+  .back svg{width:24px;height:24px;stroke:var(--teal);}
+  .subhead h2{font-family:'Varela Round',sans-serif;font-weight:700;font-size:22px;color:var(--teal);flex:1;text-align:center;}
+  #cardDetail .subhead{position:relative;}
+  #cardDetail .back{position:absolute;inset-inline-start:14px;top:50%;transform:translateY(-50%);}
+  .subhead .sub-count{margin-inline-start:auto;font-family:'Varela Round',sans-serif;font-size:14px;color:var(--clay);}
+
+
+
+  /* --- key colours --- */
+  .g-view  .tile:nth-child(1) .disc{--key-base:#C0673B;--key-hi:#E08A5C;--key-lo:#9E4E28;--key-edge:#7A3A1C;}
+  .g-view  .tile:nth-child(2) .disc{--key-base:#12262E;--key-hi:#25454F;--key-lo:#0A171C;--key-edge:#050D10;}
+  .g-read  .tile:nth-child(1) .disc{--key-base:#D9A441;--key-hi:#F0C56B;--key-lo:#B5842C;--key-edge:#8C641F;}
+  .g-read  .tile:nth-child(2) .disc{--key-base:#6E5A8A;--key-hi:#9481AE;--key-lo:#54426B;--key-edge:#3E3050;}
+  /* third frame - dark keys */
+  .g-cards .tile:nth-child(1) .disc{--key-base:#22414D;--key-hi:#3A6472;--key-lo:#152A33;--key-edge:#0D1B21;}
+  .g-cards .tile:nth-child(2) .disc{--key-base:#6E4A18;--key-hi:#96692A;--key-lo:#4E3410;--key-edge:#38250A;}
+  .g-cards .tile:nth-child(3) .disc{--key-base:#31441F;--key-hi:#4C6634;--key-lo:#212F13;--key-edge:#16200C;}
+  .bottom-row .tile:nth-child(1) .disc{--key-base:#3E6E5E;--key-hi:#5E9483;--key-lo:#2C5245;--key-edge:#1F3D33;}
+  .bottom-row .tile:nth-child(2) .disc{--key-base:#A84B6B;--key-hi:#C77190;--key-lo:#853A53;--key-edge:#642A3E;}
+  #cover{align-items:center;justify-content:center;min-height:100vh;padding:0;}
+  .cover-wrap{display:flex;flex-direction:column;align-items:center;text-align:center;justify-content:space-between;padding:clamp(14px,3vh,26px) 18px clamp(16px,3.4vh,30px);max-width:430px;margin:auto;width:100%;min-height:100vh;}
+  .cover-mark{width:clamp(96px,22vh,150px);height:clamp(96px,22vh,150px);border-radius:50%;margin-bottom:0;background:url('logo.png') center/cover no-repeat;box-shadow:0 5px 16px var(--card-shadow);flex:0 0 auto;}
+  .cover-title{font-family:'Varela Round',sans-serif;font-size:clamp(20px,5vh,27px);line-height:1.18;color:var(--teal);margin:0;}
+  .cover-title span{color:var(--clay);font-size:clamp(14px,3.4vh,18px);}
+  .cover-thanks{width:100%;background:rgba(255,255,255,.55);border:1px solid rgba(36,79,94,.18);border-radius:14px;padding:clamp(12px,2.2vh,20px) clamp(12px,4vw,18px);text-align:center;}
+  .cover-thanks-h{font-family:'Varela Round',sans-serif;
+    font-size:clamp(15px,3.2vh,18px);color:var(--clay);
+    margin-bottom:clamp(6px,1.2vh,10px);}
+  .cover-thanks p{font-size:clamp(13.5px,1.95vh,16px);line-height:1.45;color:var(--ink);
+    margin-bottom:clamp(5px,1vh,9px);}
+  .cover-thanks p:last-child{margin-bottom:0;}
+  .cover-count{font-family:'Varela Round',sans-serif;font-size:clamp(16px,2.6vh,19px);
+    color:var(--teal);margin-top:clamp(8px,1.8vh,14px);}
+  .cover-count b{font-weight:800;font-size:clamp(18px,3vh,22px);}
+  .cover-enter{margin-top:clamp(10px,2.2vh,20px);background:var(--teal);color:var(--cream);
+    border:none;border-radius:12px;
+    padding:clamp(10px,1.7vh,14px) clamp(26px,9vw,40px);
+    font-family:'Varela Round',sans-serif;font-size:clamp(15px,2.4vh,18px);cursor:pointer;
+    box-shadow:0 4px 12px var(--card-shadow);transition:transform .1s;flex:0 0 auto;}
+  .cover-enter:active{transform:scale(.97);}
+  /* very short screens: trim a little more */
+  @media (max-height:620px){
+    .cover-thanks p{line-height:1.35;}
+    .cover-mark{margin-bottom:5px;}
+  }
+  .grid{flex:0 0 auto;display:grid;grid-template-columns:1fr 1fr;gap:12px 12px;padding:14px 22px 12px;align-content:center;}
+  /* glossy highlight across the top of the key */
+  /* pressed state: key travels down */
+
+  /* --- individual key colours --- */
+
+  .badge{position:absolute;top:14%;left:14%;background:var(--cream);color:var(--ink);width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Varela Round',sans-serif;font-weight:900;font-size:16px;box-shadow:0 2px 5px var(--card-shadow);}
+
+
+  .card-actions{margin:4px 20px 10px;border:2px solid rgba(36,79,94,.35);border-radius:16px;padding:14px 10px 12px;position:relative;background:rgba(255,255,255,.35);}
+  .card-actions-title{position:absolute;top:-11px;inset-inline-start:18px;background:var(--cream);padding:0 8px;font-family:'Varela Round',sans-serif;font-size:13px;color:var(--clay);}
+  .card-actions-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+  .grid-bottom{flex:0 0 auto;padding-top:6px;padding-bottom:10px;}
+  .books{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:14px 20px 30px;align-content:start;}
+  .book{cursor:pointer;display:flex;flex-direction:column;gap:8px;}
+  .book-cover{position:relative;width:100%;height:0;padding-bottom:133%;border-radius:8px 3px 3px 8px;box-shadow:0 5px 14px var(--card-shadow);overflow:hidden;transition:transform .15s;border-inline-end:5px solid rgba(0,0,0,.14);}
+  .book:active .book-cover{transform:scale(.96);}
+  .book-num{position:absolute;top:10px;inset-inline-end:12px;font-family:'Varela Round',sans-serif;font-size:40px;font-weight:900;color:rgba(255,255,255,.85);text-shadow:0 2px 6px rgba(0,0,0,.35);z-index:2;}
+  .book-cover span.name{position:absolute;bottom:0;left:0;width:100%;background:linear-gradient(transparent,rgba(0,0,0,.55));color:#fff;font-family:'Varela Round',sans-serif;font-weight:500;font-size:15px;padding:22px 12px 10px;z-index:2;}
+  .book-cover img.cover-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;}
+  .book-meta{font-size:12px;color:var(--teal);opacity:.7;text-align:center;}
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:12px 16px 30px;align-content:start;}
+  .thumb{cursor:pointer;display:flex;flex-direction:column;gap:5px;}
+  .thumb-img{position:relative;width:100%;height:0;padding-bottom:133%;border-radius:0;box-shadow:0 3px 8px var(--card-shadow);overflow:hidden;background:#ddd;}
+  .thumb:active .thumb-img{transform:scale(.94);}
+  .thumb-img img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;}
+  .thumb-name{font-size:11px;color:var(--teal);text-align:center;line-height:1.2;font-weight:500;}
+  .thumb-no{position:absolute;top:4px;inset-inline-start:4px;background:rgba(36,79,94,.85);color:#fff;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:700;z-index:2;}
+  .detail{padding:0 20px 60px;}
+  .detail-img{max-height:34vh;width:auto;max-width:70%;border-radius:0;box-shadow:0 8px 24px var(--card-shadow);margin:0 auto 16px;display:block;}
+  .detail-name{font-family:'Varela Round',sans-serif;font-weight:700;font-size:26px;color:var(--teal);text-align:center;margin-bottom:6px;}
+  .detail-meta{text-align:center;color:var(--clay);font-size:11px;margin-top:2px;margin-bottom:14px;opacity:.85;}
+  .cs-field{display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(36,79,94,.12);padding:11px 2px;}
+  .cs-label{font-family:'Varela Round',sans-serif;font-size:14px;color:var(--clay);min-width:100px;}
+  .cs-value{font-size:15px;color:var(--ink);flex:1;}
+  .cs-value.cs-name{font-family:'Varela Round',sans-serif;font-size:19px;font-weight:700;color:var(--teal);}
+  .edit-btn-inline{background:none;border:none;cursor:pointer;padding:4px;display:flex;margin-inline-start:auto;}
+  .edit-btn-inline svg{width:22px;height:22px;}
+  .edit-btn-inline:active{transform:scale(.9);}
+  .status-pill{display:inline-block;padding:3px 12px;border-radius:20px;font-size:13px;font-weight:500;}
+  .status-pill.active{background:rgba(62,110,94,.18);color:#3E6E5E;}
+  .status-pill.retired{background:rgba(120,120,120,.18);color:#666;}
+  .cs-field .suit-select{max-width:200px;}
+  .suit-row{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.5);border:1px solid rgba(36,79,94,.15);border-radius:10px;padding:10px 14px;margin-bottom:18px;}
+  .suit-label{font-family:'Varela Round',sans-serif;font-size:15px;color:var(--teal);}
+  .suit-select{flex:1;border:1.5px solid rgba(192,103,59,.4);border-radius:8px;padding:8px 10px;font-family:inherit;font-size:15px;color:var(--clay);background:var(--cream);cursor:pointer;}
+  .detail-section-label{font-family:'Varela Round',sans-serif;font-size:14px;color:var(--clay);margin-bottom:8px;opacity:.85;}
+  .g-row{display:flex;gap:12px;align-items:flex-start;background:rgba(255,255,255,.6);border:1px solid rgba(36,79,94,.15);border-radius:12px;padding:12px 14px;margin-bottom:10px;}
+  .g-ico{flex:0 0 auto;width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 5px rgba(42,58,71,.25);}
+  .g-ico svg{width:20px;height:20px;}
+  .g-txt{font-size:14px;line-height:1.65;color:var(--ink);}
+  .g-txt b{color:var(--clay);font-family:'Varela Round',sans-serif;font-size:15px;}
+  .note-box{background:rgba(255,255,255,.55);border:1px solid rgba(36,79,94,.15);border-radius:12px;padding:18px 20px;font-size:16px;line-height:1.85;color:var(--ink);white-space:pre-wrap;margin-bottom:30px;height:auto;max-height:none;overflow:visible;}
+  .note-empty{opacity:.5;font-style:italic;text-align:center;}
+  .footer{text-align:center;padding:0 0 16px;font-size:11px;color:var(--teal);opacity:.5;}
+  #homeFab{position:fixed;bottom:18px;inset-inline-start:18px;width:31px;height:31px;border-radius:50%;background:var(--teal);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.3);z-index:150;}
+  #homeFab svg{width:14px;height:14px;}
+  #bigView{display:none;position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;background:#000;z-index:99999;align-items:center;justify-content:center;padding:8px;cursor:pointer;}
+  #bigView.show{display:flex;}
+  #bigImg{max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);width:auto;height:auto;display:block;margin:auto;}
+  body.readonly .edit-btn-inline{display:none !important;}
+  body.readonly #roBanner{position:fixed;top:0;left:0;right:0;background:var(--teal);color:var(--cream);
+    font-family:'Varela Round',sans-serif;font-size:12px;text-align:center;padding:5px 8px;z-index:400;letter-spacing:.02em;}
+  body.readonly .app{padding-top:24px;}
+  .share-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+  .share-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:13px 8px;border-radius:10px;border:none;cursor:pointer;font-family:'Varela Round',sans-serif;font-size:14px;color:#fff;transition:transform .1s;}
+  .share-btn:active{transform:scale(.97);}
+  .share-btn svg{width:20px;height:20px;}
+  .share-btn.wa{background:#25925a;}
+  .share-btn.cp{background:var(--teal);}
+  /* ---- text fitting: never let text spill off the screen ---- */
+  .app, .screen, .add-form, .detail, .reading-area, .reading-list{
+    max-width:100%;
+    overflow-x:hidden;
+  }
+  .note-box, .g-txt, .cs-value, .detail-name, .tile-label,
+  .detail-section-label, .cover-thanks p, .q-label, .field label,
+  .subhead h2, .ri-q, .thumb-name{
+    overflow-wrap:anywhere;
+    word-break:break-word;
+    hyphens:auto;
+  }
+  #viewerLinkBox{
+    overflow-wrap:anywhere;
+    word-break:break-all;
+    font-size:11px;
+    line-height:1.6;
+    padding:12px 14px;
+  }
+  #logBox{
+    overflow-wrap:anywhere;
+    word-break:break-word;
+    font-size:13px;
+    line-height:1.7;
+    padding:14px 16px;
+  }
+  #aboutBox{
+    overflow-wrap:anywhere;
+    font-size:14px;
+    line-height:1.8;
+    padding:14px 16px;
+  }
+  /* roomier note box on small screens */
+  .note-box{padding:14px 16px;font-size:15px;}
+  .add-form{padding:8px 16px 40px;}
+  .g-row{padding:12px 12px;}
+  /* share buttons: let the label wrap, keep the icon steady */
+  .share-btn{padding:12px 6px;font-size:13px;line-height:1.3;text-align:center;min-width:0;}
+  .share-btn svg{flex:0 0 auto;}
+  .share-btn span{min-width:0;overflow-wrap:anywhere;}
+  /* inputs must not push the layout wider */
+  .field input, .field textarea, .field select{max-width:100%;}
+  @media (max-width:360px){
+    .share-row{grid-template-columns:1fr;}
+    .note-box{font-size:14px;}
+    .g-txt{font-size:13px;}
+  }
+  .fld{padding:14px 4px 12px;border-bottom:1px solid rgba(36,79,94,.16);}
+  .fld-top{display:flex;align-items:center;justify-content:space-between;}
+  .fld-label{font-family:'Varela Round',sans-serif;font-size:17px;color:var(--clay);}
+  .fld-name{font-family:'Varela Round',sans-serif;font-size:24px;color:var(--teal);
+    margin-top:10px;text-align:center;overflow-wrap:anywhere;}
+  .fld-row{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .fld-row .suit-select{max-width:210px;flex:1;}
+  .fld-suit-txt{font-size:17px;color:var(--teal);}
+  .fld-note-label{display:block;margin:16px 4px 10px;}
+  #cardDetail .subhead h2{font-family:'Varela Round',sans-serif;font-size:20px;color:var(--clay);}
+  #cardDetail .detail-img{max-height:38vh;max-width:62%;border-radius:0;}
+  /* ---------- form styling (Add / Edit card) ---------- */
+  #addCard .field, #cardEdit .field{margin-bottom:20px;}
+  #addCard .field label, #cardEdit .field label{
+    display:block;font-family:'Varela Round',sans-serif;
+    font-size:21px;font-weight:700;color:var(--teal);
+    margin-bottom:9px;text-align:right;
+  }
+  #addCard .field label.lbl-mark, #cardEdit .field label.lbl-mark{
+    background:rgba(255,255,255,.55);
+    padding:1px 8px;border-radius:5px;display:inline-block;
+  }
+  #addCard .field input[type="text"], #cardEdit .field input[type="text"],
+  #addCard .field input[type="email"], #cardEdit .field input[type="email"],
+  #addCard .field select, #cardEdit .field select,
+  #addCard .field textarea, #cardEdit .field textarea{
+    width:100%;background:#FBF8F1;
+    border:1px solid rgba(36,79,94,.30);border-radius:12px;
+    padding:14px 16px;font-family:inherit;font-size:19px;font-weight:600;
+    color:var(--teal);text-align:right;
+  }
+  #addCard .field input[type="text"], #cardEdit .field input[type="text"],
+  #addCard .field input[type="email"], #cardEdit .field input[type="email"]{min-height:62px;}
+  #addCard .field select, #cardEdit .field select{min-height:62px;}
+  #addCard .field textarea, #cardEdit .field textarea{min-height:130px;line-height:1.6;resize:vertical;}
+
+  /* image-source buttons */
+  .src-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:12px;}
+  .src-btn{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;
+    padding:20px 6px;background:#FBF8F1;
+    border:1px solid rgba(36,79,94,.30);border-radius:14px;
+    color:var(--teal);font-family:'Varela Round',sans-serif;
+    font-size:16px;line-height:1.25;text-align:center;cursor:pointer;
+    min-height:118px;
+  }
+  .src-btn:active{transform:scale(.97);}
+  .src-btn svg{width:34px;height:34px;stroke-width:1.5;}
+  .src-hint{font-size:15px;font-weight:600;color:#6d7c86;text-align:center;
+    line-height:1.5;margin-bottom:20px;}
+
+  /* save button */
+  #addCard .btn.clay, #cardEdit .btn.clay{
+    background:var(--clay);color:#fff;width:100%;
+    border-radius:8px;padding:18px;font-size:23px;margin-top:4px;
+  }
+
+  /* ================= HOME (block-aligned, full height) ================= */
+  #home{min-height:100vh;}
+
+  .topbar{display:flex;align-items:center;justify-content:center;
+    padding:clamp(26px,5.4vh,58px) 20px clamp(8px,1.8vh,20px);flex:0 0 auto;}
+  .home-logo{
+    width:clamp(96px,16vh,140px);height:clamp(96px,16vh,140px);
+    border-radius:50%;margin:0 auto;
+    background:url('logo.png') center/cover no-repeat;
+    box-shadow:0 4px 14px var(--card-shadow);
+  }
+
+  /* every row shares one 3-column grid so the buttons line up */
+  .group{margin:0;border:none;border-radius:0;padding:0;background:transparent;
+    position:static;flex:1 1 0;display:flex;align-items:center;}
+  .group-title{display:none;}
+  .group-row{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:0;width:100%;
+    padding:0 clamp(10px,4vw,22px);
+  }
+  /* rows of two use the outer columns, middle stays empty */
+  .group-row.two > .tile:nth-child(1){grid-column:1;}
+  .group-row.two > .tile:nth-child(2){grid-column:3;}
+  .bottom-row{margin:0;flex:1 1 0;display:grid;align-content:center;}
+
+  .tile{display:flex;flex-direction:column;align-items:center;
+    gap:clamp(6px,1.2vh,12px);background:none;border:none;cursor:pointer;font-family:inherit;}
+
+  .disc{
+    width:clamp(52px,8.6vh,70px);height:clamp(52px,8.6vh,70px);max-width:70px;
+    border-radius:24%;
+    background:linear-gradient(180deg,var(--key-hi) 0%,var(--key-base) 55%,var(--key-lo) 100%);
+    display:flex;align-items:center;justify-content:center;
+    position:relative;overflow:hidden;margin:0 auto;
+    box-shadow:0 5px 12px rgba(42,58,71,.30), inset 0 1px 0 rgba(255,255,255,.35);
+    transition:transform .1s;
+  }
+  .disc::before{content:"";position:absolute;top:0;left:0;right:0;height:48%;
+    background:linear-gradient(180deg,rgba(255,255,255,.28),rgba(255,255,255,0));
+    pointer-events:none;}
+  .tile:active .disc{transform:translateY(3px);box-shadow:0 2px 6px rgba(42,58,71,.30);}
+  .disc svg{position:relative;z-index:2;width:48%;height:48%;}
+  .tile.small .disc{width:clamp(52px,8.6vh,70px);height:clamp(52px,8.6vh,70px);border-radius:24%;}
+
+  .tile-label{font-family:'Varela Round',sans-serif;font-weight:600;
+    font-size:clamp(12.5px,1.95vh,16px);color:var(--teal);
+    text-align:center;line-height:1.25;}
+  .tile.small .tile-label{font-size:clamp(12.5px,1.95vh,16px);font-weight:600;}
+
+  #home .footer{flex:0 0 auto;}
+  /* ---------- menu-type screens: search / settings / help / slideshow menu ---------- */
+  #search .field, #settings .field, #help .field, #slideMenu .field{margin-bottom:15px;}
+  #search .field label, #settings .field label, #help .field label{
+    display:block;font-family:'Varela Round',sans-serif;font-size:17px;font-weight:700;
+    color:var(--teal);margin-bottom:6px;}
+  #search .field input, #search .field select,
+  #settings .field input, #help .field input{
+    width:100%;background:#FBF8F1;border:1px solid rgba(36,79,94,.28);
+    border-radius:10px;padding:11px 13px;font-family:inherit;
+    font-size:16px;font-weight:600;color:var(--teal);min-height:auto;}
+
+  /* every screen fills the viewport, content starts at the top */
+  .screen.active{display:flex;flex-direction:column;min-height:100vh;}
+  #slideMenu .add-form, #settings .add-form, #help .add-form,
+  #search .add-form, #addCard .add-form, #cardEdit .add-form{flex:1 1 auto;}
+
+  /* the slideshow chooser: roomy, centred buttons */
+  #slideMenu .add-form{display:flex;flex-direction:column;justify-content:center;
+    padding-bottom:60px;}
+  #slideMenu .btn{padding:18px;font-size:21px;margin-bottom:16px;}
+  .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--teal);color:var(--cream);padding:11px 20px;border-radius:30px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;box-shadow:0 6px 18px rgba(0,0,0,.25);z-index:50;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .edit-btn{margin-inline-start:auto;background:none;border:none;cursor:pointer;padding:6px;display:flex;}
+  .edit-btn svg{width:22px;height:22px;}
+  .empty-note{grid-column:1/-1;text-align:center;color:var(--teal);opacity:.6;padding:40px 20px;font-size:14px;line-height:1.6;}
+  .slideshow-body{display:none;}
+  #slideshow.active .slideshow-body{position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;background:#000;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:9999;padding:0;margin:0;}
+  .slide-img{max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);width:auto;height:auto;display:block;margin:auto;}
+  .slide-name{font-family:'Varela Round',sans-serif;font-weight:700;font-size:22px;color:var(--teal);text-align:center;}
+  .slide-sub{color:var(--clay);font-size:14px;text-align:center;margin-bottom:16px;}
+  .slide-controls{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:14px;}
+  .slide-play{width:56px;height:56px;border-radius:50%;background:var(--teal);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 10px var(--card-shadow);}
+  .slide-play svg{width:24px;height:24px;fill:var(--cream);}
+  .slide-nav{width:44px;height:44px;border-radius:50%;background:none;border:1.5px solid rgba(36,79,94,.3);cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .slide-nav svg{width:20px;height:20px;stroke:var(--teal);}
+  .speed-row{display:flex;gap:8px;}
+  .speed-btn{border:1.5px solid rgba(36,79,94,.3);background:var(--cream);border-radius:8px;padding:8px 14px;font-family:inherit;font-size:14px;color:var(--teal);cursor:pointer;display:flex;align-items:center;gap:5px;}
+  .speed-btn.active{background:var(--teal);color:var(--cream);border-color:var(--teal);}
+  .modal-overlay{position:fixed;inset:0;background:rgba(42,58,71,.55);display:none;align-items:center;justify-content:center;z-index:60;padding:24px;}
+  .modal-overlay.show{display:flex;animation:fade .2s ease;}
+  .modal{width:100%;max-width:340px;background:var(--cream);border-radius:16px;padding:20px 20px 22px;box-shadow:0 20px 50px rgba(0,0,0,.35);max-height:86vh;overflow-y:auto;}
+  .modal-head{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(36,79,94,.2);padding-bottom:12px;margin-bottom:16px;}
+  .modal-head span{font-family:'Varela Round',sans-serif;font-weight:700;font-size:24px;color:var(--teal);}
+  .modal-x{background:none;border:none;font-size:26px;color:var(--teal);cursor:pointer;line-height:1;padding:0 4px;}
+  .modal-opt{display:block;width:100%;background:var(--cream);border:1.5px solid rgba(36,79,94,.35);border-radius:10px;padding:15px;margin-bottom:12px;font-family:'Varela Round',sans-serif;font-size:19px;color:var(--teal);cursor:pointer;transition:background .15s,transform .1s;}
+  .modal-opt:active{transform:scale(.97);}
+  .modal-opt.highlight{border-color:var(--clay);color:var(--clay);font-weight:700;}
+  /* reading layouts */
+  .reading-area{padding:8px 20px 40px;}
+  .q-label{font-family:'Varela Round',sans-serif;font-size:17px;color:var(--teal);margin:6px 0 8px;}
+  .q-input{width:100%;border:1.5px solid rgba(36,79,94,.3);border-radius:10px;padding:12px 14px;font-family:inherit;font-size:15px;background:rgba(255,255,255,.6);margin-bottom:16px;resize:vertical;min-height:52px;}
+  .q-mic-wrap{position:relative;}
+  .q-mic-wrap .q-input{padding-inline-end:34px;margin-bottom:6px;}
+  .mic-btn svg{width:12px;height:12px;}
+  .mic-btn{position:absolute;inset-inline-end:8px;bottom:14px;width:21px;height:21px;border-radius:50%;border:none;background:var(--clay);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 5px var(--card-shadow);transition:transform .1s,background .2s;}
+  .mic-btn:active{transform:scale(.9);}
+  .mic-btn.listening{background:#c0392b;animation:pulse 1.2s infinite;}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(192,57,43,.5);}70%{box-shadow:0 0 0 12px rgba(192,57,43,0);}100%{box-shadow:0 0 0 0 rgba(192,57,43,0);}}
+  .mic-status{font-size:13px;color:var(--clay);min-height:18px;margin-bottom:12px;text-align:center;}
+  .btn{display:block;width:100%;background:var(--teal);color:var(--cream);border:none;border-radius:10px;padding:15px;font-family:'Varela Round',sans-serif;font-size:19px;cursor:pointer;transition:transform .1s,background .15s;margin-bottom:12px;}
+  .btn:active{transform:scale(.98);}
+  .btn.secondary{background:none;color:var(--teal);border:1.5px solid rgba(36,79,94,.35);}
+  .btn.clay{background:var(--clay);}
+  .reading-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:6px 0 18px;}
+  .rc{display:flex;flex-direction:column;gap:6px;cursor:pointer;}
+  .rc-img{border-radius:0;overflow:hidden;box-shadow:0 4px 10px var(--card-shadow);position:relative;background:#EDE3D0;display:flex;align-items:center;justify-content:center;}
+  .rc-img img{width:100%;height:auto;display:block;object-fit:contain;}
+  .rc-pos{font-family:'Varela Round',sans-serif;font-size:13px;color:var(--clay);text-align:center;}
+  .rc-name{font-size:12px;color:var(--teal);text-align:center;font-weight:500;}
+  .single-draw{text-align:center;padding:10px 20px 40px;}
+  .single-draw .detail-img{max-height:52vh;width:auto;max-width:100%;margin:0 auto 16px;}
+  .reading-list{padding:8px 20px 40px;}
+  .reading-item{background:rgba(255,255,255,.55);border:1px solid rgba(36,79,94,.15);border-radius:12px;padding:14px 16px;margin-bottom:12px;cursor:pointer;transition:transform .1s;}
+  .reading-item:active{transform:scale(.99);}
+  .reading-item .ri-date{font-size:12px;color:var(--clay);margin-bottom:4px;}
+  .reading-item .ri-q{font-family:'Varela Round',sans-serif;font-size:16px;color:var(--teal);}
+  .reading-item .ri-mini{display:flex;gap:5px;margin-top:8px;}
+  .reading-item .ri-mini div{width:30px;height:40px;border-radius:3px;overflow:hidden;background:#ccc;}
+  .reading-item .ri-mini img{width:100%;height:100%;object-fit:cover;}
+  .add-form{padding:8px 20px 40px;}
+  .src-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:8px;}
+  .src-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:16px 6px;border:1.5px solid rgba(36,79,94,.3);border-radius:12px;background:rgba(255,255,255,.5);color:var(--teal);font-family:inherit;font-size:12px;cursor:pointer;transition:transform .1s,background .15s;}
+  .src-btn:active{transform:scale(.96);}
+  .src-btn svg{width:26px;height:26px;}
+  .src-hint{font-size:11px;color:var(--teal);opacity:.6;margin-bottom:14px;text-align:center;}
+  .add-drop{border:2px dashed rgba(36,79,94,.4);border-radius:12px;padding:34px 20px;text-align:center;color:var(--teal);margin-bottom:16px;cursor:pointer;background:rgba(255,255,255,.4);}
+  .add-drop b{display:block;font-family:'Varela Round',sans-serif;font-size:18px;margin-top:8px;}
+  .add-drop small{opacity:.6;}
+  .add-preview{width:100%;border-radius:0;margin-bottom:16px;display:none;}
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-family:'Varela Round',sans-serif;font-size:15px;color:var(--teal);margin-bottom:6px;}
+  .field input,.field textarea,.field select{width:100%;border:1.5px solid rgba(36,79,94,.3);border-radius:10px;padding:12px 14px;font-family:inherit;font-size:15px;background:rgba(255,255,255,.6);}
+  .field textarea{resize:vertical;min-height:80px;}
+
+  /* ================= TYPOGRAPHY: larger + heavier ================= */
+  body{font-weight:600;}
+
+  /* screen titles */
+  .subhead h2{font-size:25px;}
+  .detail-section-label{font-size:16px;font-weight:700;opacity:1;}
+  .sub-count{font-size:16px;font-weight:600;}
+
+  /* home buttons */
+  .counter{font-size:12px;font-weight:600;}
+  .counter b{font-size:17px;font-weight:800;}
+
+  /* card view */
+  .detail-name{font-size:29px;}
+  .detail-meta{font-size:13px;font-weight:600;}
+  .cs-label{font-size:16px;font-weight:700;}
+  .cs-value{font-size:17px;font-weight:600;}
+  .cs-value.cs-name{font-size:22px;}
+  .note-box{font-size:17px;font-weight:600;line-height:1.8;}
+  .note-empty{font-weight:600;}
+  .suit-select{font-size:16px;font-weight:600;}
+
+  /* lists of cards */
+  .thumb-name{font-size:12px !important;font-weight:600 !important;}
+  .book-meta{font-size:14px;font-weight:600;}
+  .book-cover span.name{font-size:17px;}
+  .book-num{font-size:44px;}
+  .empty-note{font-size:16px;font-weight:600;}
+
+  /* readings */
+  .rc-pos{font-size:15px;font-weight:700;}
+  .rc-name{font-size:14px;font-weight:600;}
+  .ri-date{font-size:14px;font-weight:600;}
+  .ri-q{font-size:18px;}
+  .q-label{font-size:19px;}
+  .q-input{font-size:17px;font-weight:600;}
+  .mic-status{font-size:14px;font-weight:600;}
+
+  /* forms + buttons */
+  .field label{font-size:17px;font-weight:700;}
+  .field input,.field textarea,.field select{font-size:17px;font-weight:600;}
+  .btn{font-size:20px;}
+  .modal-opt{font-size:20px;}
+  .src-btn{font-size:14px;font-weight:600;}
+  .src-hint{font-size:13px;font-weight:600;}
+  .share-btn{font-size:15px;}
+
+  /* help + guides */
+  .g-txt{font-size:16px;font-weight:600;line-height:1.7;}
+  .g-txt b{font-size:17px;}
+  #aboutBox{font-size:16px;font-weight:600;}
+  #logBox{font-size:15px;font-weight:600;}
+  #viewerLinkBox{font-size:13px;font-weight:600;}
+
+  /* cover */
+  .cover-thanks p{font-size:clamp(14.5px,2.05vh,17px);font-weight:600;}
+  .cover-thanks-h{font-size:clamp(16px,3.3vh,19px);}
+
+  /* misc */
+  .toast{font-size:16px;font-weight:600;}
+  .footer{font-size:12px;font-weight:600;padding:2px 0 8px;}
+  #roBanner{font-size:13px;font-weight:600;}
+</style>
+  <meta name="theme-color" content="#244F5E">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="סול קולאז' של עירא">
+  <link rel="apple-touch-icon" href="icon-192.png?v=7">
+  <link rel="manifest" href="manifest.json">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
+<script>
+/* Register service worker (network-first) so Android can install a real app icon */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js')
+      .catch(function (err) { console.warn('SW registration failed', err); });
+  });
+}
+</script>
+</head>
+<body>
+<div class="app">
+
+  <!-- HOME -->
+  
+  <!-- COVER -->
+  <div class="screen active" id="cover">
+    <div class="cover-wrap">
+      <div class="cover-mark"></div>
+      <h1 class="cover-title">סול קולאז'<br><span>של עירא</span></h1>
+
+      <div class="cover-thanks">
+        <div class="cover-thanks-h">תודות</div>
+        <p>תודה לסינה פרוסט מייסדת שיטת סול קולאז' ולמיכל שהם שביב המנחה שלי.</p>
+        <p>תודה לכל האמנים, צלמים, עיתונים, חוברות, ספרים ששימשו אותי ביצירת הקלפים.</p>
+        <p>תודה חמה ומיוחדת לשמי בן זוגי על העידוד להגשים חלום למציאות — ביצירת האפליקציה.</p>
+        <p>תודה לקלוד – הרובוט שעזר לנו בצד הטכני.</p>
+      </div>
+
+      <div class="cover-count"><b id="coverCount">0</b> קלפים</div>
+      <button class="cover-enter" onclick="showScreen('home')">כניסה לאוסף</button>
+    </div>
+  </div>
+
+  <div class="screen" id="home">
+    <div class="topbar"><div class="home-logo"></div></div>
+    <div class="group g-view">
+      <div class="group-title">צפייה</div>
+      <div class="group-row two">
+        <button class="tile" onclick="openSlideshowMenu()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="13" rx="2"/><polygon points="10.5 8 15.5 10.8 10.5 13.6" fill="#F3EAD8" stroke="none"/><line x1="8" y1="20.5" x2="16" y2="20.5"/></svg></span><span class="tile-label">מצגת הקלפים</span></button>
+        <button class="tile" onclick="showScreen('books')"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2z"/><path d="M8 3v18"/></svg></span><span class="tile-label">היומנים</span></button>
+      </div>
+    </div>
+
+    <div class="group g-read">
+      <div class="group-title">קריאת קלפים</div>
+      <div class="group-row two">
+        <button class="tile" onclick="startFour()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.4" stroke-linecap="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg></span><span class="tile-label">קריאת 4 קלפים</span></button>
+        <button class="tile" onclick="showPastReadings()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><polyline points="12 7 12 12 15.5 14"/></svg></span><span class="tile-label">קריאות קודמות</span></button>
+        <button class="tile" onclick="openTimeline()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="18" cy="18" r="2"/><path d="M6 8v4h6M12 14v2h6M18 20v-2h-6"/><polyline points="6 6 12 12 18 18"/></svg></span><span class="tile-label">ניתוח בזמן</span></button>
+      </div>
+    </div>
+
+    <div class="group g-cards">
+      <div class="group-title">קלפים</div>
+      <div class="group-row three">
+        <button class="tile small" onclick="showAddCard()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><rect x="5" y="4" width="14" height="16" rx="1.5"/><line x1="12" y1="9" x2="12" y2="15"/><line x1="9" y1="12" x2="15" y2="12"/></svg></span><span class="tile-label">הוספת קלף</span></button>
+        <button class="tile small" onclick="openSearch()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.7" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="21" y1="21" x2="15.2" y2="15.2"/></svg></span><span class="tile-label">חיפוש קלף</span></button>
+        <button class="tile small" onclick="drawOne()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><rect x="6" y="3.5" width="12" height="17" rx="1.5"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/></svg></span><span class="tile-label">שליפת קלף</span></button>
+      </div>
+    </div>
+
+    <div class="group-row two bottom-row">
+      <button class="tile small" onclick="openSettings()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 9 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 9a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg></span><span class="tile-label">הגדרות</span></button>
+      <button class="tile small" onclick="openHelp()"><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.6" stroke-linecap="round"><line x1="5" y1="6" x2="16" y2="6"/><line x1="5" y1="10" x2="16" y2="10"/><line x1="5" y1="14" x2="13" y2="14"/><line x1="5" y1="18" x2="13" y2="18"/></svg></span><span class="tile-label">עזרה וגיבוי</span></button>
+    </div>
+  </div>
+    <div class="footer" id="appVersion"></div>
+
+  <!-- BOOKS -->
+  <div class="screen" id="books">
+    <div class="subhead"><button class="back" onclick="showScreen('home')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button><h2>היומנים</h2><span class="sub-count">12 יומנים</span></div>
+    <div class="books" id="booksGrid"></div>
+    <div class="footer">בחרו יומן כדי לצפות בקלפים שבו</div>
+  </div>
+
+  <!-- CARDS IN BOOK -->
+  <div class="screen" id="bookCards">
+    <div class="subhead"><button class="back" onclick="showScreen('books')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button><h2 id="bookTitle">ספר</h2><span class="sub-count" id="bookCardCount"></span></div>
+    <div class="cards" id="cardsGrid"></div>
+  </div>
+
+  <!-- CARD DETAIL -->
+  <div class="screen" id="cardDetail">
+    <div class="subhead"><button class="back" id="detailBack" title="חזרה"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button><h2 id="detailHead"></h2></div>
+    <div class="detail" id="detailBody"></div>
+  </div>
+  <!-- CARD EDIT -->
+  <div class="screen" id="cardEdit">
+    <div class="subhead"><button class="back" id="editBack"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button><h2>עריכת קלף</h2></div>
+    <div class="add-form">
+      <img id="editImg" class="add-preview" style="display:block">
+      <button class="btn secondary" style="margin-bottom:16px" onclick="document.getElementById('editFile').click()">החלפת תמונה</button>
+      <input type="file" id="editFile" accept="image/*" style="display:none" onchange="editReplaceImg(event)">
+      <div class="field"><label>שם הקלף</label><input type="text" id="editName"></div>
+      <div class="field"><label>יומן</label><select id="editBook"></select></div>
+      <div class="field"><label>סדרה</label><select id="editSuit"></select></div>
+      <div class="field" id="editSuitCustomWrap" style="display:none"><label>שם הסדרה</label><input type="text" id="editSuitCustom" placeholder="כתבו שם סדרה חדש..."></div>
+
+      <div class="field"><label class="lbl-mark">תאור הקלף</label><textarea id="editNote" style="min-height:160px"></textarea></div>
+      <button class="btn clay" onclick="saveEdit()">שמירת השינויים</button>
+      <button class="btn secondary" onclick="showScreen('cardDetail')">ביטול</button>
+    </div>
+  </div>
+
+
+  <!-- SINGLE DRAW -->
+  <div class="screen" id="singleDraw">
+    <div class="subhead"></div>
+    <div class="single-draw" id="singleBody"></div>
+  </div>
+
+  <!-- FOUR CARD READING -->
+  <div class="screen" id="fourReading">
+    <div class="subhead"><button class="back" onclick="showScreen('home')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button><h2>קריאת 4 קלפים</h2></div>
+    <div class="reading-area" id="fourBody"></div>
+  </div>
+
+  <!-- PAST READINGS -->
+  <div class="screen" id="pastReadings">
+    <div class="subhead"><h2>קריאות קודמות</h2><span class="sub-count" id="pastCount"></span></div>
+    <div class="reading-list" id="pastBody"></div>
+  </div>
+
+  <!-- ADD CARD -->
+  <div class="screen" id="addCard">
+    <div class="subhead"><h2>הוספת קלף חדש</h2></div>
+    <div class="add-form">
+      <div class="src-grid">
+        <button type="button" class="src-btn" onclick="pickCamera()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          <span>מצלמה</span>
+        </button>
+        <button type="button" class="src-btn" onclick="pickGallery()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 16l-5-5L5 20"/></svg>
+          <span>גלריה /<br>תמונות</span>
+        </button>
+        <button type="button" class="src-btn" onclick="pickFiles()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          <span>קבצים /<br>Drive</span>
+        </button>
+      </div>
+      <div class="src-hint">בגלריה/קבצים יופיעו גם Google Photos ו-Drive אם הם מותקנים</div>
+      <input type="file" id="addFileCamera" accept="image/*" capture="environment" style="display:none" onchange="previewAdd(event)">
+      <input type="file" id="addFileGallery" accept="image/*" style="display:none" onchange="previewAdd(event)">
+      <input type="file" id="addFileAny" accept="image/*,.heic,.heif" style="display:none" onchange="previewAdd(event)">
+      <img id="addPreview" class="add-preview">
+      <div class="field"><label>שם הקלף</label><input type="text" id="addName" placeholder=""></div>
+      <div class="field"><label>יומן</label><select id="addBook"></select></div>
+      <div class="field" id="addBookNewWrap" style="display:none"><label>שם היומן החדש</label><input type="text" id="addBookNew" placeholder="שם היומן..."></div>
+      <div class="field"><label>סדרה</label><select id="addSuit"></select></div>
+      <div class="field" id="addSuitCustomWrap" style="display:none"><label>שם הסדרה</label><input type="text" id="addSuitCustom" placeholder="כתבו שם סדרה חדש..."></div>
+      <div class="field"><label class="lbl-mark">תאור הקלף</label><textarea id="addNote" placeholder=""></textarea></div>
+      <button class="btn clay" onclick="saveNewCard()">שמירת הקלף</button>
+    </div>
+  </div>
+
+</div>
+<div id="installBar" style="display:none;position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--teal);color:var(--cream);padding:14px 18px;align-items:center;justify-content:space-between;gap:12px;z-index:100;box-shadow:0 -4px 16px rgba(0,0,0,.25);">
+  <span style="font-family:'Varela Round',sans-serif;font-size:15px;">להתקין את האפליקציה על המסך?</span>
+  <span style="display:flex;gap:8px;">
+    <button onclick="installApp()" style="background:var(--clay);color:#fff;border:none;border-radius:8px;padding:9px 16px;font-family:inherit;font-size:14px;cursor:pointer;">התקנה</button>
+    <button onclick="dismissInstall()" style="background:none;color:var(--cream);border:1px solid rgba(243,234,216,.4);border-radius:8px;padding:9px 12px;font-family:inherit;font-size:14px;cursor:pointer;">לא עכשיו</button>
+  </span>
+</div>
+
+  <!-- THUMBNAILS -->
+  <div class="screen" id="thumbs">
+    <div class="subhead"><button class="back" onclick="showScreen('home')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button><h2>תמונות ממוזערות</h2><span class="sub-count" id="thumbsCount"></span></div>
+    <div class="cards" id="thumbsGrid"></div>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="screen" id="search">
+    <div class="subhead"><button class="back" onclick="showScreen('home')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button><h2>חיפוש קלף</h2></div>
+    <div class="add-form">
+      <div class="field"><label>סוג החיפוש</label>
+        <select id="searchMode" onchange="searchModeChanged()">
+          <option value="key">לפי מילת מפתח (שם + הערה)</option>
+          <option value="name">לפי שם הקלף</option>
+          <option value="num">לפי מספר קלף</option>
+          <option value="recent">נוסף לאחרונה</option>
+        </select>
+      </div>
+      <div class="field"><label>טקסט לחיפוש</label><input type="text" id="searchName" placeholder="הקלידו מילה..." oninput="runSearch()"></div>
+      <div class="field"><label>לפי יומן</label><select id="searchBook" onchange="runSearch()"><option value="">כל היומנים</option></select></div>
+      <div class="field"><label>לפי סדרה (Suit)</label><select id="searchSuit" onchange="runSearch()"><option value="">כל הסדרות</option></select></div>
+      <div class="sub-count" id="searchCount" style="margin:4px 2px 10px;"></div>
+      <div id="searchGrid"></div>
+    </div>
+  </div>
+
+  <!-- SLIDESHOW (full screen, tap to exit) -->
+  <div class="screen" id="slideshow">
+    <div class="slideshow-body" id="slideBody" onclick="exitSlideshow()"></div>
+  </div>
+
+<button id="homeFab" onclick="showScreen('home')" title="מסך הבית">
+  <svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+</button>
+<div id="bigView" onclick="closeBig()"><img id="bigImg" src=""></div>
+
+  <!-- SETTINGS -->
+  <div class="screen" id="settings">
+    <div class="subhead"><h2>הגדרות</h2></div>
+    <div class="add-form">
+
+      <div class="field"><label>הוספת יומן חדש</label>
+        <input type="text" id="newBookName" placeholder="שם היומן החדש...">
+      </div>
+      <button class="btn clay" onclick="createBook()">יצירת יומן</button>
+
+      <button class="btn secondary" onclick="undoLast()">ביטול הפעולה האחרונה</button>
+
+      <div class="detail-section-label" style="margin-top:22px">זמן שימוש באפליקציה</div>
+      <div class="note-box" id="usageBox" style="margin-bottom:18px"></div>
+
+      <div class="detail-section-label">לוג פעילות</div>
+      <div class="note-box" id="logBox" style="max-height:300px;overflow:auto"></div>
+    </div>
+  </div>
+
+
+  <!-- HELP & BACKUP -->
+  <div class="screen" id="help">
+    <div class="subhead"><h2>עזרה וגיבוי</h2></div>
+    <div class="add-form">
+
+      <div class="detail-section-label">מדריכים</div>
+      <button class="btn secondary" onclick="showGuide('short')">מדריך מקוצר</button>
+      <button class="btn secondary" onclick="showGuide('full')">מדריך מפורט</button>
+
+      <div class="detail-section-label" style="margin-top:22px">גיבוי</div>
+      <div class="note-box" style="font-size:14px;margin-bottom:12px">
+        הגיבוי שומר את מה שנוסף באפליקציה: יומנים חדשים, קלפים שהוספתם, עריכות, קריאות שמורות ולוג הפעילות.
+      </div>
+      <button class="btn clay" onclick="exportBackup()">שמירת גיבוי לקובץ</button>
+      <button class="btn secondary" onclick="document.getElementById('restoreFile').click()">שחזור מגיבוי</button>
+      <input type="file" id="restoreFile" accept=".json,application/json" style="display:none" onchange="importBackup(event)">
+
+
+      <div class="detail-section-label" style="margin-top:22px">שיתוף לצפייה בלבד</div>
+      <div class="note-box" style="font-size:14px;margin-bottom:12px">
+        הקישור הזה מאפשר לחברים לצפות באוסף של עירא — בלי אפשרות לערוך, להוסיף או לשנות.
+      </div>
+
+      <button class="btn clay" onclick="shareViewer()">שיתוף הקישור</button>
+
+      <div class="share-row">
+        <button class="share-btn wa" onclick="shareWhatsApp()">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2Zm5.8 14.2c-.2.7-1.4 1.3-2 1.4-.5.1-1.1.1-1.8-.1-.4-.1-1-.3-1.7-.6-3-1.3-4.9-4.3-5-4.5-.2-.2-1.2-1.6-1.2-3s.7-2.1 1-2.4c.2-.3.5-.4.7-.4h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.3.4c-.1.1-.3.3-.1.6.1.3.6 1.1 1.4 1.8 1 .9 1.8 1.1 2 1.2.3.1.4.1.6-.1l.8-1c.2-.2.4-.2.6-.1l2 1c.2.1.4.2.4.3.1.1.1.6-.1 1.3Z"/></svg>
+          <span>וואטסאפ</span>
+        </button>
+        <button class="share-btn cp" onclick="copyViewerLink()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+          <span>העתקת קישור</span>
+        </button>
+      </div>
+
+      <div class="field" style="margin-top:14px"><label>שליחה במייל</label>
+        <input type="email" id="shareEmail" placeholder="כתובת המייל של החבר/ה (לא חובה)">
+      </div>
+      <button class="btn secondary" onclick="shareEmail()">פתיחת מייל עם הקישור</button>
+
+      <div class="note-box" id="viewerLinkBox" style="font-size:12px;margin-top:12px;direction:ltr;text-align:left"></div>
+
+      <div class="detail-section-label" style="margin-top:22px">מידע</div>
+      <div class="note-box" id="aboutBox" style="font-size:14px"></div>
+
+      <div id="guideBox" style="display:none;margin-top:20px"></div>
+    </div>
+  </div>
+
+
+  <!-- SLIDESHOW ORDER CHOOSER -->
+  <div class="screen" id="slideMenu">
+    <div class="subhead"><h2>מצגת הקלפים</h2></div>
+    <div class="add-form">
+      <div class="note-box" style="font-size:14px;margin-bottom:16px">בחרו את סדר הקלפים במצגת</div>
+
+      <button class="btn clay" onclick="startSlides('desc')">מהאחרון לראשון</button>
+      <button class="btn secondary" onclick="startSlides('asc')">מהראשון לאחרון</button>
+      <button class="btn secondary" onclick="startSlides('random')">אקראי</button>
+    </div>
+  </div>
+
+<div class="toast" id="toast"></div>
+
+
+
+<script>
+/* ============ DATA (loaded from data/data.json) ============ */
+let DATA = {books:[], cards:[]};
+
+const APP_VERSION = 'v51';
+const BOOK_COLORS=['#C0673B','#244F5E','#D9A441','#8A5A44','#3E6E5E','#B0443B','#6E5A8A','#4A7C8C','#C98A3B','#5E7A44','#A84B6B','#3B5468'];
+let books=[];
+const SUITS=["ועדה","קהילה","בני לוויה","מועצה - ארכיטיפים"];
+const DEFAULT_SUIT="ועדה";
+
+function imgURL(no){ return 'images/'+no+'.jpg'; }
+
+async function loadData(){
+  try{
+    // Resolve base path robustly (works with or without trailing slash, or /index.html)
+    let base = location.pathname;
+    if(/\.[a-z]+$/i.test(base)) base = base.replace(/[^/]*$/, '');
+    else if(!base.endsWith('/')) base = base + '/';
+    const candidates = [base+'data/data.json', './data/data.json', 'data/data.json', base+'data/data.json?v='+Date.now()];
+    let res=null, lastErr='';
+    for(const url of candidates){
+      try{
+        const r = await fetch(url, {cache:'no-store'});
+        if(r.ok){ res=r; break; }
+        lastErr = 'HTTP '+r.status+' → '+url;
+      }catch(err){ lastErr = err.message+' → '+url; }
+    }
+    if(!res) throw new Error(lastErr||'לא נמצא data/data.json');
+    DATA = await res.json();
+    if(!DATA || !DATA.cards || !DATA.cards.length) throw new Error('קובץ הנתונים ריק');
+  }catch(e){
+    document.body.insertAdjacentHTML('afterbegin','<div style="padding:16px;margin:10px;background:#fff;border:2px solid #a33;border-radius:10px;color:#a33;font-size:14px;line-height:1.6;direction:rtl">שגיאה בטעינת הנתונים:<br><b>'+e.message+'</b><br>נתיב: data/data.json</div>');
+    return;
+  }
+  // Build all 12 book slots
+  books = [];
+  for(let i=1;i<=12;i++){
+    const meta = DATA.books.find(b=>b.id===i);
+    books.push({id:i, name: meta?meta.name:('יומן '+i), color:BOOK_COLORS[i-1], cards:[]});
+  }
+  // Fill cards
+  DATA.cards.forEach(c=>{
+    const b = books.find(x=>x.id===c.book);
+    if(b) b.cards.push({no:c.no, name:c.name, note:c.note, suit:c.suit||DEFAULT_SUIT, img:imgURL(c.no)});
+  });
+  // sort each book's cards by number
+  books.forEach(b=>b.cards.sort((x,y)=>x.no-y.no));
+  restoreCustomBooks();
+  const _ver=document.getElementById('appVersion'); if(_ver) _ver.textContent='גרסה '+APP_VERSION;
+  const _cc=document.getElementById('coverCount'); if(_cc) _cc.textContent=totalCards();
+  applyReadOnly();
+  renderCounter();
+}
+
+
+
+// in-memory readings store (prototype; resets on reload)
+let pastReadingsStore = [];
+let fourState = {question:'', picks:[]};
+
+function allCardsWithImg(){const p=[];books.forEach(b=>b.cards.forEach(c=>{if(c.img)p.push({bookId:b.id,book:b.name,no:c.no,name:c.name,note:c.note,suit:c.suit,img:c.img});}));return p;}
+function totalCards(){return books.reduce((s,b)=>s+b.cards.length,0);}
+function renderCounter(){
+  const t=totalCards();
+  const a=document.getElementById('cardCount'); if(a) a.textContent=t;
+  const b=document.getElementById('coverCount'); if(b) b.textContent=t;
+}
+function shade(hex,pct){const n=parseInt(hex.slice(1),16);let r=(n>>16)+pct,g=((n>>8)&255)+pct,b=(n&255)+pct;r=Math.max(0,Math.min(255,r));g=Math.max(0,Math.min(255,g));b=Math.max(0,Math.min(255,b));return '#'+((r<<16)|(g<<8)|b).toString(16).padStart(6,'0');}
+function today(){const d=new Date();return d.toISOString().slice(0,10);}
+
+/* ---- BOOKS + CARDS ---- */
+function renderBooks(){
+  const g=document.getElementById('booksGrid');g.innerHTML='';
+  books.forEach(b=>{
+    const el=document.createElement('div');el.className='book';el.onclick=()=>openBook(b.id);
+    const cover=b.cards.length&&b.cards[0].img?`<img class="cover-img" src="${b.cards[0].img}">`:'';
+    el.innerHTML=`<div class="book-cover" style="background:linear-gradient(150deg,${b.color},${shade(b.color,-18)});">${cover}<span class="book-num">${b.id}</span><span class="name">${b.name}</span></div><div class="book-meta">${b.cards.length} קלפים</div>`;
+    g.appendChild(el);
+  });
+}
+function openBook(id){
+  const b=books.find(x=>x.id===id);
+  document.getElementById('bookTitle').textContent=b.name;
+  document.getElementById('bookCardCount').textContent=b.cards.length+' קלפים';
+
+  const g=document.getElementById('cardsGrid');
+  g.innerHTML='';
+  g.style.display='block';
+  g.style.padding='10px 14px 30px';
+
+  if(!b.cards.length){
+    g.innerHTML='<div class="empty-note">אין עדיין קלפים ביומן זה.</div>';
+    showScreen('bookCards');
+    return;
+  }
+
+  // --- two sections: portrait (לאורך) and wide (לרוחב) ---
+  const tallWrap=document.createElement('div');
+
+  const wideTitle=document.createElement('div');
+  wideTitle.textContent='קלפים לרוחב';
+  wideTitle.style.cssText="font-family:'Varela Round',sans-serif;font-size:16px;color:#C0673B;margin:26px 2px 12px;padding-top:14px;border-top:1px solid rgba(36,79,94,.18);";
+  wideTitle.style.display='none';
+
+  const wideWrap=document.createElement('div');
+
+  g.appendChild(tallWrap);
+  g.appendChild(wideTitle);
+  g.appendChild(wideWrap);
+
+  function makeTile(c){
+    const el=document.createElement('div');
+    el.style.cssText='width:100%;margin-bottom:16px;cursor:pointer;';
+    el.innerHTML=
+      '<div style="width:100%;height:30vh;min-height:190px;background:#EDE3D0;border-radius:0;'+
+      'box-shadow:0 3px 10px rgba(42,58,71,.18);display:flex;align-items:center;justify-content:center;overflow:hidden;">'+
+        (c.img?'<img src="'+c.img+'" style="max-width:100%;max-height:100%;width:auto;height:auto;display:block;">':'')+
+      '</div>'+
+      '<div style="font-family:\'Varela Round\',sans-serif;font-size:14px;text-align:center;color:#244F5E;margin-top:7px;">'+c.name+'</div>';
+
+    // one tap opens the card straight away (with its note)
+    el.onclick=function(){ openCard(id,c.no,'bookCards'); };
+    return el;
+  }
+
+  b.cards.forEach(function(c){
+    const el=makeTile(c);
+    tallWrap.appendChild(el);
+    if(c.img){
+      const probe=new Image();
+      probe.onload=function(){
+        if(probe.naturalWidth > probe.naturalHeight){
+          wideWrap.appendChild(el);          // move to the wide group
+          wideTitle.style.display='block';
+        }
+      };
+      probe.src=c.img;
+    }
+  });
+
+  showScreen('bookCards');
+}
+let currentCard=null; // {bookId,no}
+function goBackFromCard(){ showScreen((currentCard&&currentCard.from)||'books'); }
+function openCard(bookId,no,fromScreen){
+  const b=books.find(x=>x.id===bookId);const c=b.cards.find(x=>x.no===no);
+  currentCard={bookId,no,from:fromScreen||'bookCards'};
+  const noteHtml=c.note?`<div class="note-box">${c.note}</div>`:`<div class="note-box note-empty">אין עדיין הערה לקלף זה</div>`;
+  const imgHtml=c.img?`<img class="detail-img" src="${c.img}" ondblclick="openBig('${c.img}')" style="cursor:pointer">`:'';
+  document.getElementById('detailBody').innerHTML=`${imgHtml}
+    <div class="fld">
+      <div class="fld-top"><span class="fld-label">שם הקלף</span>${READONLY?'':`<button class="edit-btn-inline" id="editBtn" title="עריכה"><svg viewBox="0 0 24 24" fill="none" stroke="#C0673B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>`}</div>
+      <div class="fld-name">${c.name||"—"}</div>
+    </div>
+    <div class="fld fld-row">
+      <span class="fld-label">סדרה</span>
+      ${READONLY
+        ? `<span class="fld-suit-txt">${c.suit||'—'}</span>`
+        : `<select class="suit-select" id="detailSuit" onchange="changeSuitInline(this.value)">${SUITS.map(s=>`<option value="${s}" ${c.suit===s?'selected':''}>${s}</option>`).join('')}</select>`}
+    </div>
+    <div class="fld-label fld-note-label">תאור הקלף</div>
+    ${noteHtml}`;
+  const _db=document.getElementById('detailBack'); if(_db) _db.onclick=()=>showScreen(fromScreen||'bookCards');
+  const _dh=document.getElementById('detailHead'); if(_dh) _dh.textContent=b.id+'- '+c.no;
+  showScreen('cardDetail');
+  const _eb=document.getElementById('editBtn'); if(_eb) _eb.onclick=openEdit;
+}
+
+function changeSuitInline(val){
+  if(!currentCard)return;
+  const b=books.find(x=>x.id===currentCard.bookId);
+  const c=b.cards.find(x=>x.no===currentCard.no);
+  c.suit=val;
+  tap(val?('הסדרה עודכנה: '+val):'הסדרה הוסרה');
+}
+
+/* ---- EDIT CARD ---- */
+let editImgData=null;
+function openEdit(){
+  if(!currentCard)return;
+  const b=books.find(x=>x.id===currentCard.bookId);
+  const c=b.cards.find(x=>x.no===currentCard.no);
+  editImgData=c.img||null;
+  document.getElementById('editImg').src=c.img||'';
+  document.getElementById('editImg').style.display=c.img?'block':'none';
+  document.getElementById('editName').value=c.name||'';
+  document.getElementById('editNote').value=c.note||'';
+  const sel=document.getElementById('editBook');sel.innerHTML='';
+  books.forEach(bb=>{const o=document.createElement('option');o.value=bb.id;o.textContent=bb.name;if(bb.id===currentCard.bookId)o.selected=true;sel.appendChild(o);});
+  const ss=document.getElementById('editSuit');ss.innerHTML='';
+  SUITS.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;if(c.suit===s)o.selected=true;ss.appendChild(o);});
+  const oOther=document.createElement('option');oOther.value='__custom__';oOther.textContent='סדרה אחרת (כתיבה ידנית)…';ss.appendChild(oOther);
+  const known=SUITS.indexOf(c.suit)!==-1;
+  if(!known && c.suit){ oOther.selected=true; }
+  ss.onchange=function(){document.getElementById('editSuitCustomWrap').style.display=(ss.value==='__custom__')?'block':'none';};
+  document.getElementById('editSuitCustomWrap').style.display=(!known && c.suit)?'block':'none';
+  document.getElementById('editSuitCustom').value=(!known && c.suit)?c.suit:'';
+  showScreen('cardEdit');
+}
+function editReplaceImg(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{editImgData=ev.target.result;const im=document.getElementById('editImg');im.src=editImgData;im.style.display='block';};
+  r.readAsDataURL(f);
+}
+function saveEdit(){
+  const name=document.getElementById('editName').value.trim();
+  if(!name){tap('נא להזין שם לקלף');return;}
+  const oldBook=books.find(x=>x.id===currentCard.bookId);
+  const c=oldBook.cards.find(x=>x.no===currentCard.no);
+  const newBookId=parseInt(document.getElementById('editBook').value);
+  c.name=name;
+  c.note=document.getElementById('editNote').value.trim();
+  c.suit=(document.getElementById('editSuit').value==='__custom__')?(document.getElementById('editSuitCustom').value.trim()||DEFAULT_SUIT):document.getElementById('editSuit').value;
+  c.img=editImgData;
+  // if book changed, move the card
+  if(newBookId!==currentCard.bookId){
+    oldBook.cards=oldBook.cards.filter(x=>x.no!==currentCard.no);
+    const nb=books.find(x=>x.id===newBookId);
+    const maxNo=nb.cards.reduce((m,cc)=>Math.max(m,cc.no),0);
+    c.no=maxNo+1;
+    nb.cards.push(c);
+    currentCard={bookId:newBookId,no:c.no,from:currentCard.from};
+  }
+  renderCounter();
+  tap('השינויים נשמרו');
+  openCard(currentCard.bookId,currentCard.no,currentCard.from);
+}
+
+/* ---- DRAW ONE ---- */
+function drawOne(){
+  const pool=allCardsWithImg();if(!pool.length){tap('אין קלפים לשליפה');return;}
+  const c=pool[Math.floor(Math.random()*pool.length)];
+  const noteHtml=c.note?`<div class="note-box" style="text-align:right">${c.note}</div>`:`<div class="note-box note-empty">אין הערה</div>`;
+  document.getElementById('singleBody').innerHTML=`<img class="detail-img" src="${c.img}" ondblclick="openBig('${c.img}')" style="cursor:pointer"><div class="detail-name">${c.name}</div><div class="detail-meta">${c.bookId}- ${c.no}</div>${noteHtml}<button class="btn secondary" style="margin-top:16px" onclick="drawOne()">שליפה נוספת</button>`;
+  showScreen('singleDraw');
+}
+
+/* ---- FOUR CARD READING ---- */
+function startFour(){
+  fourState={question:'',picks:[]};
+  const pool=allCardsWithImg();
+  if(pool.length<4){tap('צריך לפחות 4 קלפים לקריאה');return;}
+  renderFourStart();
+  showScreen('fourReading');
+}
+function renderFourStart(){
+  document.getElementById('fourBody').innerHTML=`
+    <div class="q-label">מהי השאלה או הכוונה שלך?</div>
+    <div class="q-mic-wrap">
+      <textarea class="q-input" id="fourQ" placeholder="כתבו כאן את השאלה, או הקישו על המיקרופון כדי להכתיב..."></textarea>
+      <button class="mic-btn" id="micBtn" onclick="toggleMic()" title="הכתבה קולית">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg>
+      </button>
+    </div>
+    <div class="mic-status" id="micStatus"></div>
+    <button class="btn" onclick="doFourDraw()">שליפת ארבעה קלפים</button>
+    <button class="btn secondary" onclick="showScreen('home')">ביטול</button>`;
+}
+const FOUR_POSITIONS=['מי אני','מה המצב','מה עוזר לי','לאן אני הולכת'];
+function doFourDraw(){
+  fourState.question=document.getElementById('fourQ').value.trim();
+  const pool=allCardsWithImg();
+  const picks=[];const used=new Set();
+  while(picks.length<4){const i=Math.floor(Math.random()*pool.length);if(used.has(i))continue;used.add(i);picks.push(pool[i]);}
+  fourState.picks=picks;
+  renderFourResult();
+}
+function renderFourResult(){
+  const q=fourState.question?`<div class="note-box" style="margin-bottom:16px"><b>השאלה:</b> ${fourState.question}</div>`:'';
+  let cardsHtml='<div class="reading-cards">';
+  fourState.picks.forEach((c,i)=>{
+    cardsHtml+=`<div class="rc" onclick="openReadingCard(${i})"><div class="rc-img"><img src="${c.img}"></div><div class="rc-pos">${FOUR_POSITIONS[i]}</div><div class="rc-name">${c.name}</div></div>`;
+  });
+  cardsHtml+='</div>';
+  document.getElementById('fourBody').innerHTML=`${q}${cardsHtml}<button class="btn clay" onclick="saveFourReading()">שמירת הקריאה</button><button class="btn secondary" onclick="startFour()">קריאה חדשה</button>`;
+}
+function openReadingCard(i){
+  const c=fourState.picks[i];
+  const noteHtml=c.note?`<div class="note-box">${c.note}</div>`:`<div class="note-box note-empty">אין הערה</div>`;
+  document.getElementById('detailBody').innerHTML=`<img class="detail-img" src="${c.img}" ondblclick="openBig('${c.img}')" style="cursor:pointer"><div class="detail-name">${c.name}</div><div class="detail-meta">${FOUR_POSITIONS[i]} · ${c.book}</div>${noteHtml}`;
+  const _db2=document.getElementById('detailBack'); if(_db2) _db2.onclick=()=>showScreen('fourReading');
+  showScreen('cardDetail');
+}
+function saveFourReading(){
+  pastReadingsStore.unshift({date:today(),question:fourState.question,picks:fourState.picks.map(c=>({name:c.name,img:c.img,no:c.no,book:c.book,note:c.note}))});
+  tap('הקריאה נשמרה');
+  showScreen('home');
+}
+
+/* ---- PAST READINGS ---- */
+function showPastReadings(){
+  const g=document.getElementById('pastBody');
+  document.getElementById('pastCount').textContent=pastReadingsStore.length+' קריאות';
+  if(!pastReadingsStore.length){g.innerHTML=`<div class="empty-note">עדיין אין קריאות שמורות.<br>בצעו קריאת 4 קלפים ושמרו אותה.</div>`;}
+  else{
+    g.innerHTML='';
+    pastReadingsStore.forEach((r,idx)=>{
+      const mini=r.picks.map(p=>`<div><img src="${p.img}"></div>`).join('');
+      const el=document.createElement('div');el.className='reading-item';el.onclick=()=>openPastReading(idx);
+      el.innerHTML=`<div class="ri-date">${r.date}</div><div class="ri-q">${r.question||'קריאה ללא שאלה'}</div><div class="ri-mini">${mini}</div>`;
+      g.appendChild(el);
+    });
+  }
+  showScreen('pastReadings');
+}
+function openPastReading(idx){
+  const r=pastReadingsStore[idx];
+  fourState={question:r.question,picks:r.picks};
+  renderFourResult();
+  // change back button target
+  document.querySelector('#fourReading .back').onclick=()=>showScreen('pastReadings');
+  showScreen('fourReading');
+}
+
+/* ---- ADD CARD ---- */
+let addImgData=null;
+function showAddCard(){
+  addImgData=null;
+  document.getElementById('addPreview').style.display='none';
+  document.getElementById('addName').value='';
+  document.getElementById('addNote').value='';
+  
+  const sel=document.getElementById('addBook');sel.innerHTML='';
+  books.forEach(b=>{const o=document.createElement('option');o.value=b.id;o.textContent=b.name;sel.appendChild(o);});
+  const oNew=document.createElement('option');oNew.value='__new__';oNew.textContent='+ יצירת יומן חדש…';sel.appendChild(oNew);
+  sel.onchange=function(){document.getElementById('addBookNewWrap').style.display=(sel.value==='__new__')?'block':'none';};
+  document.getElementById('addBookNewWrap').style.display='none';
+  document.getElementById('addBookNew').value='';
+  const ss=document.getElementById('addSuit');ss.innerHTML='';
+  SUITS.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;if(s===DEFAULT_SUIT)o.selected=true;ss.appendChild(o);});
+  const oOther=document.createElement('option');oOther.value='__custom__';oOther.textContent='סדרה אחרת (כתיבה ידנית)…';ss.appendChild(oOther);
+  ss.onchange=function(){document.getElementById('addSuitCustomWrap').style.display=(ss.value==='__custom__')?'block':'none';};
+  document.getElementById('addSuitCustomWrap').style.display='none';
+  document.getElementById('addSuitCustom').value='';
+  showScreen('addCard');
+}
+
+/* ---- IMAGE SOURCES for Add Card ---- */
+function pickCamera(){ document.getElementById('addFileCamera').click(); }
+function pickGallery(){ document.getElementById('addFileGallery').click(); }
+function pickFiles(){ document.getElementById('addFileAny').click(); }
+
+function previewAdd(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{addImgData=ev.target.result;const p=document.getElementById('addPreview');p.src=addImgData;p.style.display='block';};
+  r.readAsDataURL(f);
+}
+function saveNewCard(){
+  const name=document.getElementById('addName').value.trim();
+  if(!name){tap('נא להזין שם לקלף');return;}
+  let bookId, b;
+  if(document.getElementById('addBook').value==='__new__'){
+    const nm=(document.getElementById('addBookNew').value||'').trim();
+    if(!nm){ tap('נא להזין שם ליומן החדש'); return; }
+    bookId=books.reduce((m,x)=>Math.max(m,x.id),0)+1;
+    const colors=['#C0673B','#244F5E','#D9A441','#8A5A44','#3E6E5E','#B0443B','#6E5A8A','#4A7C8C','#C98A3B','#5E7A44','#A84B6B','#3B5468'];
+    b={id:bookId,name:nm,color:colors[(bookId-1)%colors.length],cards:[]};
+    books.push(b);
+    try{ const cb=JSON.parse(localStorage.getItem(BOOKS_KEY)||'[]'); cb.push({id:bookId,name:nm}); localStorage.setItem(BOOKS_KEY, JSON.stringify(cb)); }catch(e){}
+    logAction('נוצר יומן חדש: '+nm);
+  }else{
+    bookId=parseInt(document.getElementById('addBook').value);
+    b=books.find(x=>x.id===bookId);
+  }
+  const maxNo=b.cards.reduce((m,c)=>Math.max(m,c.no),0);
+  b.cards.push({no:maxNo+1,name:name,note:document.getElementById('addNote').value.trim(),suit:((document.getElementById('addSuit').value==='__custom__')?(document.getElementById('addSuitCustom').value.trim()||DEFAULT_SUIT):document.getElementById('addSuit').value),img:addImgData});
+  undoStack.push({type:'addCard', bookId:b.id, no:maxNo+1});
+  logAction('נוסף קלף: '+name+' ('+b.name+')');
+  renderCounter();
+  tap('הקלף נוסף ליומן '+b.name);
+  showScreen('home');
+}
+
+
+/* ---- VOICE DICTATION (Web Speech API) ---- */
+let recognition=null, listening=false;
+function toggleMic(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const status=document.getElementById('micStatus');
+  const btn=document.getElementById('micBtn');
+  if(!SR){ status.textContent='הדפדפן לא תומך בהכתבה קולית. נסו Chrome.'; return; }
+  if(listening){ recognition && recognition.stop(); return; }
+  recognition = new SR();
+  recognition.lang='he-IL';
+  recognition.interimResults=true;
+  recognition.continuous=true;
+  const ta=document.getElementById('fourQ');
+  const base=ta.value?ta.value+' ':'';
+  recognition.onstart=()=>{listening=true;btn.classList.add('listening');status.textContent='מקשיב... דברו עכשיו';};
+  recognition.onerror=(e)=>{status.textContent='שגיאה בהכתבה: '+e.error;listening=false;btn.classList.remove('listening');};
+  recognition.onend=()=>{listening=false;btn.classList.remove('listening');if(status.textContent==='מקשיב... דברו עכשיו')status.textContent='';};
+  recognition.onresult=(ev)=>{
+    let interim='',final='';
+    for(let i=ev.resultIndex;i<ev.results.length;i++){
+      const tr=ev.results[i];
+      if(tr.isFinal) final+=tr[0].transcript;
+      else interim+=tr[0].transcript;
+    }
+    ta.value=base+final+interim;
+  };
+  recognition.start();
+}
+
+
+/* ---- THUMBNAILS ---- */
+function openThumbs(){
+  const all = allCardsWithImg();
+  document.getElementById('thumbsCount').textContent = all.length + ' קלפים';
+  const g = document.getElementById('thumbsGrid'); g.innerHTML=''; forceGrid(g);
+  all.forEach(c=>{
+    const el=document.createElement('div'); el.className='thumb';
+    el.onclick=()=>openCard(c.bookId,c.no,'thumbs');
+    el.innerHTML='<div style="display:block;width:100%;"><div style="position:relative;width:100%;height:0;padding-bottom:133%;border-radius:0;overflow:hidden;background:#ddd;box-shadow:0 3px 8px rgba(42,58,71,.18);"><img src="'+c.img+'" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;"></div><div style="font-size:10px;line-height:1.15;text-align:center;color:#244F5E;margin-top:4px;">'+c.name+'</div></div>';
+    g.appendChild(el);
+  });
+  showScreen('thumbs');
+}
+
+/* ---- SEARCH ---- */
+function openSearch(){
+  const sb=document.getElementById('searchBook');
+  if(sb.options.length<=1){ books.forEach(b=>{ if(b.cards.length){ const o=document.createElement('option'); o.value=b.id; o.textContent=b.name; sb.appendChild(o);} }); }
+  const ss=document.getElementById('searchSuit');
+  if(ss.options.length<=1){ SUITS.forEach(s=>{ const o=document.createElement('option'); o.value=s; o.textContent=s; ss.appendChild(o);}); }
+  runSearch();
+  showScreen('search');
+}
+
+function searchModeChanged(){
+  const m=document.getElementById('searchMode').value;
+  const inp=document.getElementById('searchName');
+  if(m==='num'){ inp.placeholder='הקלידו מספר קלף, למשל 218'; inp.setAttribute('inputmode','numeric'); }
+  else if(m==='recent'){ inp.placeholder='(לא נדרש טקסט)'; inp.removeAttribute('inputmode'); }
+  else if(m==='name'){ inp.placeholder='הקלידו חלק משם הקלף...'; inp.removeAttribute('inputmode'); }
+  else { inp.placeholder='הקלידו מילה...'; inp.removeAttribute('inputmode'); }
+  runSearch();
+}
+
+function runSearch(){
+  const q=(document.getElementById('searchName').value||'').trim();
+  const mode=(document.getElementById('searchMode')||{value:'key'}).value;
+  const book=document.getElementById('searchBook').value;
+  const suit=document.getElementById('searchSuit').value;
+  let all=allCardsWithImg();
+
+  if(mode==='recent'){
+    all=all.slice().sort((a,b)=>b.no-a.no).slice(0,60);
+  }else if(mode==='num'){
+    if(q){
+      const exact=all.filter(c=>String(c.no)===q);
+      all = exact.length ? exact : all.filter(c=>String(c.no).indexOf(q)!==-1);
+    }
+    all=all.slice().sort((a,b)=>a.no-b.no);
+  }else if(q){
+    if(mode==='name') all=all.filter(c=>c.name && c.name.indexOf(q)!==-1);
+    else all=all.filter(c=>((c.name||'')+' '+(c.note||'')).indexOf(q)!==-1);
+  }
+  if(book) all=all.filter(c=>String(c.bookId)===String(book));
+  if(suit) all=all.filter(c=>c.suit===suit);
+
+  document.getElementById('searchCount').textContent=all.length+' תוצאות';
+  const g=document.getElementById('searchGrid'); g.innerHTML=''; forceGrid(g);
+  all.forEach(c=>{
+    const el=document.createElement('div');el.className='thumb';
+    el.onclick=()=>openCard(c.bookId,c.no,'search');
+    el.innerHTML='<div style="display:block;width:100%;"><div style="position:relative;width:100%;height:0;padding-bottom:133%;border-radius:0;overflow:hidden;background:#ddd;box-shadow:0 3px 8px rgba(42,58,71,.18);"><img src="'+c.img+'" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;"><span style="position:absolute;top:4px;inset-inline-start:4px;background:rgba(36,79,94,.85);color:#fff;font-size:11px;font-weight:700;padding:1px 6px;border-radius:9px;">'+c.no+'</span></div><div style="font-size:12px;font-weight:600;line-height:1.15;text-align:center;color:#244F5E;margin-top:4px;">'+c.name+'</div></div>';
+    g.appendChild(el);
+  });
+}
+
+/* ---- SLIDESHOW ---- */
+function exitSlideshow(){ stopSlideshow(); showScreen('slideMenu'); }
+let slideOrder=[], slideIdx=0, slideTimer=null, slideDelay=4000, slidePlaying=false;
+const SLIDE_SPEEDS={slow:7000, medium:4000, fast:2000};
+function openSlideshowMenu(){
+  const pool=allCardsWithImg();
+  if(!pool.length){ tap('אין קלפים'); return; }
+  showScreen('slideMenu');
+}
+
+/* order: 'desc' (last->first, default) | 'asc' (first->last) | 'random' */
+function startSlides(order){
+  const pool=allCardsWithImg();
+  if(!pool.length){ tap('אין קלפים'); return; }
+  let list = pool.slice();
+  if(order==='random')      list = shuffle(list);
+  else if(order==='asc')    list.sort(function(a,b){ return a.no-b.no; });
+  else                      list.sort(function(a,b){ return b.no-a.no; });   // desc = default
+  slideOrder = list;
+  slideIdx = 0;
+  slideDelay = 2000;
+  renderSlide();
+  showScreen('slideshow');
+  startSlideshow();
+}
+
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function renderSlide(){
+  const c=slideOrder[slideIdx];
+  document.getElementById('slideBody').innerHTML = '<img class="slide-img" src="'+c.img+'">';
+}
+function playIcon(){ return '<svg viewBox="0 0 24 24"><polygon points="7 5 19 12 7 19"/></svg>'; }
+function pauseIcon(){ return '<svg viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>'; }
+function startSlideshow(){ slidePlaying=true; updatePlayBtn(); clearInterval(slideTimer); slideTimer=setInterval(slideNext, slideDelay); }
+function stopSlideshow(){ slidePlaying=false; clearInterval(slideTimer); slideTimer=null; updatePlayBtn(); }
+function toggleSlide(){ slidePlaying?stopSlideshow():startSlideshow(); }
+function updatePlayBtn(){ const b=document.getElementById('slidePlayBtn'); if(b) b.innerHTML = slidePlaying?pauseIcon():playIcon(); }
+function slideNext(){ slideIdx=(slideIdx+1)%slideOrder.length; renderSlide(); }
+function slidePrev(){ slideIdx=(slideIdx-1+slideOrder.length)%slideOrder.length; renderSlide(); }
+function setSpeed(s){ slideDelay=SLIDE_SPEEDS[s]; if(slidePlaying) startSlideshow(); renderSlide(); }
+
+
+
+
+
+
+
+/* ---- FULLSCREEN CARD VIEW: one tap opens, one tap closes ---- */
+function openBig(src){
+  var v=document.getElementById('bigView'), im=document.getElementById('bigImg');
+  if(!v||!im||!src) return;
+  im.src=src;
+  v.classList.add('show');
+}
+function closeBig(){
+  var v=document.getElementById('bigView');
+  if(v) v.classList.remove('show');
+}
+
+
+function forceGrid(el){
+  if(!el) return;
+  el.style.display='grid';
+  el.style.gridTemplateColumns='1fr 1fr 1fr';
+  el.style.gap='10px';
+  el.style.padding='12px';
+}
+
+
+/* ================= SETTINGS: journals, undo, log, usage ================= */
+const LOG_KEY='activityLog', USE_KEY='usageLog', BOOKS_KEY='customBooks';
+let undoStack=[];
+
+function nowISO(){ return new Date().toISOString(); }
+function todayKey(){ return new Date().toISOString().slice(0,10); }
+
+function logAction(text){
+  try{
+    const arr=JSON.parse(localStorage.getItem(LOG_KEY)||'[]');
+    arr.unshift({t:nowISO(), text:text});
+    localStorage.setItem(LOG_KEY, JSON.stringify(arr.slice(0,300)));
+  }catch(e){}
+}
+
+/* --- usage time --- */
+let sessionStart=Date.now();
+function saveUsage(){
+  try{
+    const mins=Math.round((Date.now()-sessionStart)/60000);
+    if(mins<=0) return;
+    const u=JSON.parse(localStorage.getItem(USE_KEY)||'{}');
+    const k=todayKey();
+    u[k]=(u[k]||0)+mins;
+    localStorage.setItem(USE_KEY, JSON.stringify(u));
+    sessionStart=Date.now();
+  }catch(e){}
+}
+window.addEventListener('beforeunload', saveUsage);
+setInterval(saveUsage, 60000);
+
+function usageSummary(){
+  let u={};
+  try{ u=JSON.parse(localStorage.getItem(USE_KEY)||'{}'); }catch(e){}
+  const today=todayKey();
+  const month=today.slice(0,7);
+  const year=today.slice(0,4);
+  let d=0,m=0,y=0;
+  Object.keys(u).forEach(function(k){
+    const v=u[k]||0;
+    if(k===today) d+=v;
+    if(k.slice(0,7)===month) m+=v;
+    if(k.slice(0,4)===year) y+=v;
+  });
+  function fmt(mins){
+    const h=Math.floor(mins/60), mm=mins%60;
+    return h? (h+' שעות ו-'+mm+' דקות') : (mm+' דקות');
+  }
+  return 'היום: '+fmt(d)+'\nהחודש: '+fmt(m)+'\nהשנה: '+fmt(y);
+}
+
+/* --- create a new journal --- */
+function createBook(){
+  const name=(document.getElementById('newBookName').value||'').trim();
+  if(!name){ tap('נא להזין שם ליומן'); return; }
+  const id=books.reduce((m,b)=>Math.max(m,b.id),0)+1;
+  const colors=['#C0673B','#244F5E','#D9A441','#8A5A44','#3E6E5E','#B0443B','#6E5A8A','#4A7C8C','#C98A3B','#5E7A44','#A84B6B','#3B5468'];
+  books.push({id:id, name:name, color:colors[(id-1)%colors.length], cards:[]});
+  try{
+    const cb=JSON.parse(localStorage.getItem(BOOKS_KEY)||'[]');
+    cb.push({id:id,name:name});
+    localStorage.setItem(BOOKS_KEY, JSON.stringify(cb));
+  }catch(e){}
+  undoStack.push({type:'createBook', id:id});
+  logAction('נוצר יומן חדש: '+name);
+  document.getElementById('newBookName').value='';
+  renderCounter();
+  tap('היומן "'+name+'" נוצר');
+  renderSettings();
+}
+
+/* --- undo last action --- */
+function undoLast(){
+  const a=undoStack.pop();
+  if(!a){ tap('אין פעולה לביטול'); return; }
+  if(a.type==='createBook'){
+    books=books.filter(b=>b.id!==a.id);
+    try{
+      const cb=JSON.parse(localStorage.getItem(BOOKS_KEY)||'[]').filter(x=>x.id!==a.id);
+      localStorage.setItem(BOOKS_KEY, JSON.stringify(cb));
+    }catch(e){}
+    logAction('בוטלה יצירת יומן');
+  }else if(a.type==='addCard'){
+    const b=books.find(x=>x.id===a.bookId);
+    if(b) b.cards=b.cards.filter(c=>c.no!==a.no);
+    logAction('בוטלה הוספת קלף');
+  }else if(a.type==='editCard'){
+    const b=books.find(x=>x.id===a.bookId);
+    const c=b&&b.cards.find(x=>x.no===a.no);
+    if(c){ c.name=a.prev.name; c.note=a.prev.note; c.suit=a.prev.suit; }
+    logAction('בוטל שינוי בקלף');
+  }
+  renderCounter();
+  tap('הפעולה האחרונה בוטלה');
+  renderSettings();
+}
+
+function clearLog(){
+  try{ localStorage.removeItem(LOG_KEY); }catch(e){}
+  renderSettings();
+  tap('הלוג נוקה');
+}
+
+function renderSettings(){
+  document.getElementById('usageBox').textContent = usageSummary();
+  let arr=[];
+  try{ arr=JSON.parse(localStorage.getItem(LOG_KEY)||'[]'); }catch(e){}
+  const box=document.getElementById('logBox');
+  if(!arr.length){ box.textContent='אין עדיין פעילות רשומה.'; return; }
+  box.textContent = arr.map(function(x){
+    const d=new Date(x.t);
+    const p=n=>String(n).padStart(2,'0');
+    return p(d.getDate())+'/'+p(d.getMonth()+1)+' '+p(d.getHours())+':'+p(d.getMinutes())+' — '+x.text;
+  }).join('\n');
+}
+
+function openSettings(){ renderSettings(); showScreen('settings'); }
+
+function openTimeline(){
+  // Open the timeline analysis in a new tab/window
+  const timelineURL = 'analyze-timeline.html';
+  window.open(timelineURL, '_self');
+}
+
+/* restore custom journals on load */
+function restoreCustomBooks(){
+  try{
+    const cb=JSON.parse(localStorage.getItem(BOOKS_KEY)||'[]');
+    cb.forEach(function(x){
+      if(!books.find(b=>b.id===x.id)){
+        const colors=['#C0673B','#244F5E','#D9A441','#8A5A44','#3E6E5E','#B0443B','#6E5A8A','#4A7C8C','#C98A3B','#5E7A44','#A84B6B','#3B5468'];
+        books.push({id:x.id,name:x.name,color:colors[(x.id-1)%colors.length],cards:[]});
+      }
+    });
+  }catch(e){}
+}
+
+
+/* ================= HELP & BACKUP ================= */
+function openHelp(){
+  const n = books.reduce((s,b)=>s+b.cards.length,0);
+  const withNotes = books.reduce((s,b)=>s+b.cards.filter(c=>c.note).length,0);
+  document.getElementById('aboutBox').textContent =
+    'סול קולאז\' של עירא\n' +
+    'סה"כ קלפים: ' + n + '\n' +
+    'קלפים עם הערה: ' + withNotes + '\n' +
+    'יומנים: ' + books.filter(b=>b.cards.length).length + '\n' +
+    'גרסה: ' + APP_VERSION;
+  document.getElementById('guideBox').style.display='none';
+  const vb=document.getElementById('viewerLinkBox'); if(vb) vb.textContent=viewerURL();
+  showScreen('help');
+}
+
+/* icons used inside the guides - same shapes as the home buttons */
+const GUIDE_ICONS = {
+  slideshow:['#C0673B','<rect x="2.5" y="4" width="19" height="13" rx="2"/><polygon points="10.5 8 15.5 10.8 10.5 13.6" fill="currentColor" stroke="none"/><line x1="8" y1="20.5" x2="16" y2="20.5"/>'],
+  four:['#D9A441','<rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/>'],
+  past:['#6E5A8A','<circle cx="12" cy="12" r="8.5"/><polyline points="12 7 12 12 15.5 14"/>'],
+  books:['#12262E','<path d="M4 5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2z"/><path d="M8 3v18"/>'],
+  add:['#4A7C8C','<rect x="5" y="4" width="14" height="16" rx="1.5"/><line x1="12" y1="9" x2="12" y2="15"/><line x1="9" y1="12" x2="15" y2="12"/>'],
+  search:['#C98A3B','<circle cx="10.5" cy="10.5" r="6.5"/><line x1="21" y1="21" x2="15.2" y2="15.2"/>'],
+  draw:['#5E7A44','<rect x="6" y="3.5" width="12" height="17" rx="1.5"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/>'],
+  settings:['#3E6E5E','<circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 9 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 9a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/>'],
+  help:['#A84B6B','<line x1="5" y1="6" x2="16" y2="6"/><line x1="5" y1="10" x2="16" y2="10"/><line x1="5" y1="14" x2="13" y2="14"/><line x1="5" y1="18" x2="13" y2="18"/>'],
+  card:['#244F5E','<rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="13" y2="16"/>'],
+  edit:['#C0673B','<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>'],
+  home:['#244F5E','<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>'],
+  suit:['#6E5A8A','<path d="M20.6 13.4 11 3.8H4v7l9.6 9.6a2 2 0 0 0 2.8 0l4.2-4.2a2 2 0 0 0 0-2.8Z"/><circle cx="7.5" cy="7.5" r="1.2"/>'],
+  backup:['#3E6E5E','<path d="M12 3v12"/><polyline points="7.5 10.5 12 15 16.5 10.5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>'],
+  update:['#4A7C8C','<polyline points="21 4 21 10 15 10"/><path d="M20.5 14a8.5 8.5 0 1 1-2-8.4L21 8"/>'],
+  info:['#244F5E','<circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16.5"/><circle cx="12" cy="7.8" r="1.1" fill="currentColor" stroke="none"/>']
+};
+
+function guideIcon(key){
+  const it = GUIDE_ICONS[key] || GUIDE_ICONS.info;
+  return '<span class="g-ico" style="background:'+it[0]+'">'
+       + '<svg viewBox="0 0 24 24" fill="none" stroke="#F3EAD8" stroke-width="1.7" '
+       + 'stroke-linecap="round" stroke-linejoin="round" style="color:#F3EAD8">'
+       + it[1] + '</svg></span>';
+}
+
+const GUIDE_SHORT = [
+  ['home','פתיחה','האפליקציה נפתחת בכתובת שלה. כדי שתהיה על מסך הבית: תפריט Chrome ⋮ ← הוסף למסך הבית.'],
+  ['slideshow','מצגת הקלפים','הקלפים מתחלפים כל 2 שניות באקראי, על מסך מלא. לחיצה יוצאת.'],
+  ['books','היומנים','כל היומנים. בתוך יומן — קודם הקלפים לאורך, ואז קבוצה נפרדת של קלפים לרוחב.'],
+  ['card','לראות קלף','לחיצה אחת פותחת קלף. לחיצה כפולה על התמונה מגדילה למסך מלא.'],
+  ['edit','לערוך קלף','פתחו קלף ← האייקון שליד השם ← שנו ← שמירה.'],
+  ['four','קריאת 4 קלפים','כתבו שאלה או הכתיבו בקול ← שליפה ← לחיצה על קלף מציגה את ההערה ← שמירת הקריאה.'],
+  ['add','הוספת קלף','בחרו מקור (מצלמה / גלריה / קבצים), שם, יומן, סדרה והערה.'],
+  ['search','חיפוש קלף','לפי מילת מפתח, לפי שם, או "נוסף לאחרונה". אפשר לסנן לפי יומן וסדרה.'],
+  ['draw','שליפת קלף','שולף קלף אקראי אחד מכל האוסף.'],
+  ['settings','הגדרות','יצירת יומן חדש, ביטול הפעולה האחרונה, לוג פעילות וזמן שימוש.'],
+  ['home','כפתור הבית','העיגול הקטן בפינה מחזיר תמיד למסך הבית.']
+];
+
+const GUIDE_FULL = [
+  ['info','מהי האפליקציה','הבית הדיגיטלי של אוסף הקולאז\'ים של עירא. כל קלף הוא יצירה, ולצידה השם וההערה שעירא כתבה. האוסף מחולק ליומנים, והמספור רציף על פני כל האוסף.'],
+  ['suit','הסדרות (Suits)','ועדה — חלקים פנימיים (ברירת מחדל).\nקהילה — אנשים אמיתיים.\nבני לוויה — בעלי חיים.\nמועצה - ארכיטיפים — דמויות מנחות.\nאפשר גם לכתוב שם סדרה משלכם.'],
+  ['slideshow','מצגת הקלפים','מסך מלא, מסגרת שחורה, החלפה כל 2 שניות בסדר אקראי. כל קלף מוצג בשלמותו בלי חיתוך. לחיצה יוצאת.'],
+  ['books','היומנים','כל יומן מציג כריכה, שם ומספר קלפים. בתוך יומן הקלפים גדולים — כשלושה במסך. קודם הקלפים לאורך, ואז "קלפים לרוחב" בקבוצה נפרדת, כדי שייראו בשלמותם.'],
+  ['card','תצוגת קלף','תמונה, שם, יומן, בורר סדרה (ניתן לשינוי במקום), וההערה המלאה. לחיצה כפולה על התמונה — מסך מלא.'],
+  ['edit','עריכת קלף','האייקון שליד שם הקלף פותח עריכה: תמונה, שם, יומן, סדרה והערה.'],
+  ['draw','שליפת קלף','שולף קלף אקראי מכל האוסף. "שליפה נוספת" שולף אחר.'],
+  ['four','קריאת 4 קלפים','שאלה (בכתיבה או בהכתבה קולית) ← 4 קלפים בעמדות: מי אני / מה המצב / מה עוזר לי / לאן אני הולכת. לחיצה על קלף מציגה את ההערה. ניתן לשמור.'],
+  ['past','קריאות קודמות','כל הקריאות ששמרתם, עם תאריך, שאלה ותמונות. לחיצה פותחת קריאה מלאה.'],
+  ['add','הוספת קלף','מקור: מצלמה (לצלם קולאז\' חדש), גלריה, או קבצים (כולל Google Photos ו-Drive). אחר כך: שם, יומן (או יצירת יומן חדש), סדרה והערה.'],
+  ['search','חיפוש קלף','שלושה מצבים: מילת מפתח (שם + הערה), שם הקלף בלבד, או נוסף לאחרונה. סינון נוסף לפי יומן וסדרה. התוצאות מתעדכנות תוך כדי הקלדה.'],
+  ['settings','הגדרות','הוספת יומן חדש · ביטול הפעולה האחרונה · לוג פעילות עם תאריך ושעה · זמן שימוש מצטבר (יומי, חודשי, שנתי).'],
+  ['backup','גיבוי ושחזור','שמירת גיבוי יוצרת קובץ עם כל מה שהוספתם באפליקציה. שחזור טוען אותו בחזרה. מומלץ לגבות מדי פעם.'],
+  ['update','עדכונים','האפליקציה מתעדכנת אוטומטית. אם מוצגת גרסה ישנה — סגרו לגמרי ופתחו מחדש.']
+];
+
+function showGuide(kind){
+  const data = (kind==='short') ? GUIDE_SHORT : GUIDE_FULL;
+  const title = (kind==='short') ? 'מדריך מקוצר' : 'מדריך מפורט';
+  let h = '<div class="detail-section-label" style="margin-bottom:10px">'+title+'</div>';
+  data.forEach(function(row){
+    h += '<div class="g-row">'
+       +   guideIcon(row[0])
+       +   '<div class="g-txt"><b>'+row[1]+'</b><br>'+row[2].replace(/\n/g,'<br>')+'</div>'
+       + '</div>';
+  });
+  const box = document.getElementById('guideBox');
+  box.innerHTML = h;
+  box.style.display = 'block';
+  box.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function collectBackup(){
+  const custom = [];
+  books.forEach(function(b){
+    const added = b.cards.filter(function(c){ return c.img && c.img.indexOf('data:')===0; });
+    const edits = b.cards.filter(function(c){ return c.img && c.img.indexOf('data:')!==0; })
+                         .map(function(c){ return {no:c.no, name:c.name, note:c.note, suit:c.suit}; });
+    custom.push({id:b.id, name:b.name, added:added, edits:edits});
+  });
+  let log=[], usage={}, cbooks=[];
+  try{ log=JSON.parse(localStorage.getItem(LOG_KEY)||'[]'); }catch(e){}
+  try{ usage=JSON.parse(localStorage.getItem(USE_KEY)||'{}'); }catch(e){}
+  try{ cbooks=JSON.parse(localStorage.getItem(BOOKS_KEY)||'[]'); }catch(e){}
+  return {
+    app:'sole-collage-era',
+    date:new Date().toISOString(),
+    books:custom,
+    readings:pastReadingsStore,
+    log:log,
+    usage:usage,
+    customBooks:cbooks
+  };
+}
+
+function exportBackup(){
+  try{
+    const data = JSON.stringify(collectBackup());
+    const blob = new Blob([data], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const d = new Date();
+    const pad = function(n){ return String(n).padStart(2,'0'); };
+    a.href = url;
+    a.download = 'soulcollage-backup-' + d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate()) + '.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+    logAction('נשמר גיבוי');
+    tap('הגיבוי נשמר');
+  }catch(e){ tap('שגיאה בשמירת הגיבוי'); }
+}
+
+function importBackup(ev){
+  const f = ev.target.files[0];
+  if(!f) return;
+  const r = new FileReader();
+  r.onload = function(e){
+    try{
+      const d = JSON.parse(e.target.result);
+      if(d.app!=='sole-collage-era'){ tap('קובץ גיבוי לא מתאים'); return; }
+
+      if(d.customBooks){
+        try{ localStorage.setItem(BOOKS_KEY, JSON.stringify(d.customBooks)); }catch(x){}
+        restoreCustomBooks();
+      }
+      if(d.books){
+        d.books.forEach(function(bb){
+          let b = books.find(function(x){ return x.id===bb.id; });
+          if(!b) return;
+          (bb.added||[]).forEach(function(c){
+            if(!b.cards.find(function(x){ return x.no===c.no; })) b.cards.push(c);
+          });
+          (bb.edits||[]).forEach(function(ed){
+            const c = b.cards.find(function(x){ return x.no===ed.no; });
+            if(c){ c.name=ed.name; c.note=ed.note; c.suit=ed.suit; }
+          });
+          b.cards.sort(function(x,y){ return x.no-y.no; });
+        });
+      }
+      if(d.readings) pastReadingsStore = d.readings;
+      if(d.log){ try{ localStorage.setItem(LOG_KEY, JSON.stringify(d.log)); }catch(x){} }
+      if(d.usage){ try{ localStorage.setItem(USE_KEY, JSON.stringify(d.usage)); }catch(x){} }
+
+      renderCounter();
+      logAction('שוחזר גיבוי');
+      tap('הגיבוי שוחזר');
+      openHelp();
+    }catch(err){ tap('שגיאה בקריאת הגיבוי'); }
+  };
+  r.readAsText(f);
+}
+
+
+/* ================= READ-ONLY (viewer) MODE ================= */
+const READONLY = (function(){
+  try{
+    if (window.__VIEW_ONLY__ === true) return true;
+    return /[?&]view=1/.test(location.search);
+  }catch(e){ return false; }
+})();
+
+function applyReadOnly(){
+  if(!READONLY) return;
+
+  // hide the buttons that change data
+  const hideLabels = ['הוספת קלף','הגדרות'];
+  document.querySelectorAll('.tile').forEach(function(t){
+    const lab = t.querySelector('.tile-label');
+    if(lab && hideLabels.indexOf(lab.textContent.trim())!==-1) t.style.display='none';
+  });
+
+  // re-balance every button row so the remaining buttons stay symmetric
+  document.querySelectorAll('.group-row').forEach(function(row){
+    const visible = Array.prototype.filter.call(row.children, function(c){
+      return c.style.display !== 'none';
+    });
+    if(!visible.length){ row.style.display='none'; return; }
+    row.style.gridTemplateColumns = '1fr '.repeat(visible.length).trim();
+    if(visible.length === 1){
+      row.style.maxWidth = '52%';
+      row.style.marginInlineStart = 'auto';
+      row.style.marginInlineEnd = 'auto';
+    }
+  });
+
+  // if a whole frame ended up empty, drop it
+  document.querySelectorAll('.group').forEach(function(g){
+    const row = g.querySelector('.group-row');
+    if(row && row.style.display === 'none') g.style.display = 'none';
+  });
+
+  // mark the app so CSS can hide edit affordances
+  document.body.classList.add('readonly');
+
+  // a small banner so the viewer knows what this is
+  const b = document.createElement('div');
+  b.id = 'roBanner';
+  b.textContent = 'תצוגה בלבד — האוסף של עירא';
+  document.body.appendChild(b);
+}
+
+
+
+/* ================= SHARE (view-only link) ================= */
+function viewerURL(){
+  let base = location.origin + location.pathname;
+  base = base.replace(/[^/]*$/, '');      // drop any filename
+  return base + 'view.html';
+}
+
+function shareText(){
+  return 'סול קולאז\' של עירא — אוסף הקולאז\'ים\n' + viewerURL();
+}
+
+async function shareViewer(){
+  const url = viewerURL();
+  if (navigator.share) {
+    try{
+      await navigator.share({
+        title: 'סול קולאז\' של עירא',
+        text: 'האוסף של עירא — לצפייה',
+        url: url
+      });
+      logAction('שותף קישור לצפייה');
+      return;
+    }catch(e){ /* user cancelled - fall through */ return; }
+  }
+  copyViewerLink();
+}
+
+function shareWhatsApp(){
+  const u = 'https://wa.me/?text=' + encodeURIComponent(shareText());
+  window.open(u, '_blank');
+  logAction('שותף בוואטסאפ');
+}
+
+function shareEmail(){
+  const to = (document.getElementById('shareEmail').value || '').trim();
+  const subject = encodeURIComponent('סול קולאז\' של עירא');
+  const body = encodeURIComponent(
+    'שלום,\n\nמזמינה אותך לצפות באוסף הקולאז\'ים של עירא:\n\n' + viewerURL() + '\n\n'
+  );
+  window.location.href = 'mailto:' + encodeURIComponent(to) + '?subject=' + subject + '&body=' + body;
+  logAction('שותף במייל');
+}
+
+function copyViewerLink(){
+  const url = viewerURL();
+  const done = function(){ tap('הקישור הועתק'); logAction('הועתק קישור לצפייה'); };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(done).catch(function(){ showLinkFallback(url); });
+  } else {
+    showLinkFallback(url);
+  }
+}
+
+function showLinkFallback(url){
+  const box = document.getElementById('viewerLinkBox');
+  if(box){ box.textContent = url; }
+  tap('העתיקו את הקישור המוצג למטה');
+}
+
+/* ---- MENU + NAV ---- */
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(id==='books')renderBooks();window.scrollTo({top:0});var _fab=document.getElementById('homeFab');if(_fab)_fab.style.display=(id==='slideshow')?'none':'flex';}
+function tap(name){const t=document.getElementById('toast');t.textContent=name;t.classList.add('show');clearTimeout(window._tt);window._tt=setTimeout(()=>t.classList.remove('show'),1800);}
+function _bind(id, handler){ const el=document.getElementById(id); if(el) el.onclick=handler; }
+_bind('editBack', ()=>showScreen('cardDetail'));
+window.addEventListener('load', function(){ try{ loadData(); }catch(e){ document.body.insertAdjacentHTML('afterbegin','<div style="padding:16px;color:#a33;direction:rtl">שגיאה: '+e.message+'</div>'); } });
+</script>
+
+<script>
+/* ---- PWA: installable + offline (single-file friendly) ---- */
+(function(){
+    // Custom install prompt
+  let deferredPrompt=null;
+  function alreadyInstalled(){
+    return window.matchMedia('(display-mode: standalone)').matches
+        || window.navigator.standalone === true;
+  }
+  function installDismissed(){
+    try{ return localStorage.getItem('installDismissed')==='1'; }catch(e){ return false; }
+  }
+  window.addEventListener('beforeinstallprompt', (e)=>{
+    e.preventDefault(); deferredPrompt=e;
+    // don't nag: hide if already installed, or if the user dismissed it before
+    if(alreadyInstalled() || installDismissed()) return;
+    const bar=document.getElementById('installBar');
+    if(bar) bar.style.display='flex';
+  });
+  window.addEventListener('appinstalled', function(){ const bar=document.getElementById('installBar'); if(bar) bar.style.display='none'; try{ localStorage.setItem('installDismissed','1'); }catch(e){} });
+  window.installApp=function(){
+    if(!deferredPrompt) return;
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.finally(()=>{ deferredPrompt=null; const bar=document.getElementById('installBar'); if(bar) bar.style.display='none'; });
+  };
+  window.dismissInstall=function(){ try{ localStorage.setItem('installDismissed','1'); }catch(e){} const bar=document.getElementById('installBar'); if(bar) bar.style.display='none'; };
+})();
+</script>
+</body>
+</html>
