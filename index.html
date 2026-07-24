@@ -128,9 +128,9 @@
   .thumb-name{font-size:11px;color:var(--teal);text-align:center;line-height:1.2;font-weight:500;}
   .thumb-no{position:absolute;top:4px;inset-inline-start:4px;background:rgba(36,79,94,.85);color:#fff;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:700;z-index:2;}
   .detail{padding:0 20px 60px;}
-  .detail.fullscreen{position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;background:var(--cream);padding:0;overflow-y:auto;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-  .detail.fullscreen .detail-img{max-height:90vh;max-width:95vw;width:auto;}
-  .detail-img{max-height:34vh;width:auto;max-width:70%;border-radius:0;box-shadow:0 8px 24px var(--card-shadow);margin:0 auto 16px;display:block;}
+  .detail.fullscreen{position:fixed;top:0;left:0;width:100%;height:100%;background:var(--cream);z-index:200;overflow:auto;padding:60px 20px;}
+  .detail-img{max-height:34vh;width:auto;max-width:70%;border-radius:0;box-shadow:0 8px 24px var(--card-shadow);margin:0 auto 16px;display:block;cursor:pointer;}
+  .detail.fullscreen .detail-img{max-height:90vh;max-width:95%;}
   .detail-name{font-family:'Varela Round',sans-serif;font-weight:700;font-size:26px;color:var(--teal);text-align:center;margin-bottom:6px;}
   .detail-meta{text-align:center;color:var(--clay);font-size:11px;margin-top:2px;margin-bottom:14px;opacity:.85;}
   .cs-field{display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(36,79,94,.12);padding:11px 2px;}
@@ -344,12 +344,9 @@
   #search .add-form, #addCard .add-form, #cardEdit .add-form{flex:1 1 auto;}
 
   /* the slideshow chooser: roomy, centred buttons */
-  #slideMenu{display:flex;flex-direction:column;flex:1;}
-  #slideMenu .subhead{flex:0 0 auto;}
-  #slideMenu .add-form{display:flex;flex-direction:column;justify-content:center;align-items:stretch;
-    padding:20px 16px 60px;flex:1;}
-  #slideMenu .note-box{width:100%;font-size:16px;margin-bottom:24px;}
-  #slideMenu .btn{padding:30px 20px;font-size:24px;margin-bottom:20px;width:100%;}
+  #slideMenu .add-form{display:flex;flex-direction:column;justify-content:center;
+    padding-bottom:60px;}
+  #slideMenu .btn{padding:18px;font-size:21px;margin-bottom:16px;}
   .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--teal);color:var(--cream);padding:11px 20px;border-radius:30px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;box-shadow:0 6px 18px rgba(0,0,0,.25);z-index:50;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
   .edit-btn{margin-inline-start:auto;background:none;border:none;cursor:pointer;padding:6px;display:flex;}
@@ -580,7 +577,7 @@ if ('serviceWorker' in navigator) {
 
   <!-- CARD DETAIL -->
   <div class="screen" id="cardDetail">
-    <div class="subhead"><button class="back" id="detailBack" title="חזרה"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button><h2 id="detailHead"></h2><button class="back" id="detailFullscreen" title="מסך מלא" style="margin-inline-start:auto;position:relative;inset:auto;" onclick="toggleDetailFullscreen()"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg></button></div>
+    <div class="subhead"><button class="back" id="detailBack" title="חזרה"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button><h2 id="detailHead"></h2></div>
     <div class="detail" id="detailBody"></div>
   </div>
   <!-- CARD EDIT -->
@@ -790,7 +787,7 @@ if ('serviceWorker' in navigator) {
 /* ============ DATA (loaded from data/data.json) ============ */
 let DATA = {books:[], cards:[]};
 
-const APP_VERSION = 'v52';
+const APP_VERSION = 'v54';
 const BOOK_COLORS=['#C0673B','#244F5E','#D9A441','#8A5A44','#3E6E5E','#B0443B','#6E5A8A','#4A7C8C','#C98A3B','#5E7A44','#A84B6B','#3B5468'];
 let books=[];
 const SUITS=["ועדה","קהילה","בני לוויה","מועצה - ארכיטיפים"];
@@ -1740,12 +1737,12 @@ function showLinkFallback(url){
 }
 
 /* ---- MENU + NAV ---- */
-function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(id==='books')renderBooks();window.scrollTo({top:0});var _fab=document.getElementById('homeFab');if(_fab)_fab.style.display=(id==='slideshow')?'none':'flex';}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(id==='books')renderBooks();window.scrollTo({top:0});var _fab=document.getElementById('homeFab');if(_fab)_fab.style.display=(id==='slideshow')?'none':'flex';if(id==='cardDetail'){setTimeout(attachCardImageListener,100);}}
 
-function toggleDetailFullscreen(){
-  const detail = document.getElementById('detailBody');
-  if(detail) detail.classList.toggle('fullscreen');
-}
+function attachCardImageListener(){
+  const img=document.querySelector('.detail-img');
+  if(img){img.onclick=()=>{document.getElementById('detailBody').classList.toggle('fullscreen');};}}
+
 function tap(name){const t=document.getElementById('toast');t.textContent=name;t.classList.add('show');clearTimeout(window._tt);window._tt=setTimeout(()=>t.classList.remove('show'),1800);}
 function _bind(id, handler){ const el=document.getElementById(id); if(el) el.onclick=handler; }
 _bind('editBack', ()=>showScreen('cardDetail'));
