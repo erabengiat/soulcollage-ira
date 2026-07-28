@@ -52,11 +52,15 @@
   .brand-name .en{font-family:'Varela Round',sans-serif;font-size:12px;letter-spacing:.05em;color:var(--clay);margin-top:2px;}
   .counter{position:absolute;top:14px;inset-inline-end:18px;font-family:'Varela Round',sans-serif;font-size:11px;color:var(--teal);text-align:center;opacity:.75;line-height:1.1;}
   .counter b{font-size:15px;display:block;font-weight:700;}
-  .subhead{display:flex;align-items:center;gap:14px;padding:20px 20px 8px;}
+  .subhead{display:flex;align-items:center;gap:14px;padding:20px 20px 8px;
+    position:-webkit-sticky;position:sticky;top:0;z-index:40;
+    background:rgba(243,234,216,.94);
+    -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+    box-shadow:0 2px 10px rgba(42,58,71,.06);}
   .back{background:none;border:none;cursor:pointer;padding:6px;display:flex;}
   .back svg{width:24px;height:24px;stroke:var(--teal);}
   .subhead h2{font-family:'Varela Round',sans-serif;font-weight:700;font-size:22px;color:var(--teal);flex:1;text-align:center;}
-  #cardDetail .subhead{position:relative;}
+  #cardDetail .subhead{position:-webkit-sticky;position:sticky;top:0;}
   #cardDetail .back{position:absolute;inset-inline-start:14px;top:50%;transform:translateY(-50%);}
   .subhead .sub-count{margin-inline-start:auto;font-family:'Varela Round',sans-serif;font-size:14px;color:var(--clay);}
 
@@ -1766,7 +1770,21 @@ function showLinkFallback(url){
 }
 
 /* ---- MENU + NAV ---- */
-function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(id==='books')renderBooks();window.scrollTo({top:0});var _fab=document.getElementById('homeFab');if(_fab)_fab.style.display=(id==='slideshow')?'none':'flex';if(id==='cardDetail'){setTimeout(attachCardImageListener,100);}}
+function scrollTopNow(){
+  var de=document.documentElement, prev=de.style.scrollBehavior;
+  de.style.scrollBehavior='auto';           // beat the global smooth-scroll
+  try{ window.scrollTo(0,0); }catch(e){}
+  de.scrollTop=0;
+  if(document.body) document.body.scrollTop=0;
+  de.style.scrollBehavior=prev;
+}
+function resetScroll(){
+  scrollTopNow();                                        // now
+  requestAnimationFrame(scrollTopNow);                   // after the browser paints
+  setTimeout(scrollTopNow,0);                            // after the grid is built
+  setTimeout(scrollTopNow,120);                          // after the fade animation
+}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(id==='books')renderBooks();resetScroll();var _fab=document.getElementById('homeFab');if(_fab)_fab.style.display=(id==='slideshow')?'none':'flex';if(id==='cardDetail'){setTimeout(attachCardImageListener,100);}}
 
 function attachCardImageListener(){
   const img=document.querySelector('.detail-img');
