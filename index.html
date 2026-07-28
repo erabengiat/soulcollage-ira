@@ -44,7 +44,7 @@
   .app{width:100%;max-width:430px;min-height:100vh;background:radial-gradient(120% 80% at 50% -10%,#F7F0E1 0%,var(--cream) 55%,var(--cream-deep) 130%);display:flex;flex-direction:column;position:relative;overflow:visible;}
   .screen{display:none;flex-direction:column;flex:1 0 auto;animation:fade .25s ease;}
   .screen.active{display:flex;}
-  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  @keyframes fade{from{opacity:0;}to{opacity:1;}}
   .brand{display:flex;align-items:center;justify-content:center;gap:10px;}
   .brand-mark{width:40px;height:40px;border-radius:50%;background:url('logo.png') center/cover no-repeat;box-shadow:0 2px 8px var(--card-shadow);flex:0 0 auto;}
   .brand-name{display:flex;flex-direction:column;line-height:1.05;align-items:center;text-align:center;}
@@ -180,6 +180,9 @@
   .app, .screen, .add-form, .detail, .reading-area, .reading-list{
     max-width:100%;
     overflow-x:hidden;
+    overflow-x:clip;   /* 'clip' still hides sideways spill but, unlike 'hidden',
+                          does NOT turn these into scroll containers - which is
+                          what was stopping the sticky header from sticking */
   }
   .note-box, .g-txt, .cs-value, .detail-name, .tile-label,
   .detail-section-label, .cover-thanks p, .q-label, .field label,
@@ -792,7 +795,7 @@ if ('serviceWorker' in navigator) {
 /* ============ DATA (loaded from data/data.json) ============ */
 let DATA = {books:[], cards:[]};
 
-const APP_VERSION = 'v57';
+const APP_VERSION = 'v58';
 const BOOK_COLORS=['#C0673B','#244F5E','#D9A441','#8A5A44','#3E6E5E','#B0443B','#6E5A8A','#4A7C8C','#C98A3B','#5E7A44','#A84B6B','#3B5468'];
 let books=[];
 const SUITS=["ועדה","קהילה","בני לוויה","מועצה - ארכיטיפים"];
@@ -1776,6 +1779,9 @@ function scrollTopNow(){
   try{ window.scrollTo(0,0); }catch(e){}
   de.scrollTop=0;
   if(document.body) document.body.scrollTop=0;
+  // on older browsers .app / .screen can be the real scroller - reset those too
+  var app=document.querySelector('.app'); if(app) app.scrollTop=0;
+  var sc=document.querySelector('.screen.active'); if(sc) sc.scrollTop=0;
   de.style.scrollBehavior=prev;
 }
 function resetScroll(){
