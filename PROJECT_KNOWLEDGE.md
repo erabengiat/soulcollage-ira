@@ -1,12 +1,209 @@
-# סול קולאז' של עירא — Project Knowledge
+# סול קולאז' של עירא — ידע הפרויקט / Project Knowledge
 
-**Last updated:** 28 July 2026 · **App version:** v58 · **Status:** fully working ✅
+**עודכן / Last updated:** 10 באוגוסט 2026 · **גרסת אפליקציה / App version:** v62
 
-This document is the single source of truth for the project. Anyone (or any new
-chat) starting from zero should be able to read this file and continue the work
-without asking the owner to re-explain anything.
+מסמך זה הוא מקור האמת היחיד לפרויקט. החלק הראשון בעברית, החלק השני באנגלית —
+שני החלקים מכסים את אותו תוכן.
+
+*This document is the single source of truth for the project. Hebrew first,
+English second — both halves cover the same material.*
 
 ---
+---
+
+# 🇮🇱 עברית
+
+## 1. מה זה הפרויקט
+
+אפליקציית סול־קולאז' אישית בעברית. שנים־עשר יומנים של קלפי קולאז'. לכל קלף
+תמונה, שם, והערה בקולה של הבעלים — רובן פותחות ב"אני זו ש…".
+
+זו אפליקציית PWA: קובץ HTML אחד עצמאי, מוגש כאתר סטטי מ־GitHub Pages, וניתן
+להתקנה על מסך הבית באנדרואיד.
+
+- **מאגר:** https://github.com/erabengiat/soulcollage-ira
+- **אתר חי:** https://erabengiat.github.io/soulcollage-ira/
+- המאגר ציבורי, ולכן אפשר לשכפל אותו ישירות:
+  `git clone --depth 1 https://github.com/erabengiat/soulcollage-ira.git`
+  כדאי לעשות זאת בתחילת כל מפגש עבודה — מהיר ואמין יותר מבקשת קבצים, ומבטיח
+  עבודה מול מה שבאמת נמצא באוויר.
+
+## 2. מבנה המאגר
+
+```
+soulcollage-ira/
+├── index.html          ← כל האפליקציה: HTML + CSS + JS בקובץ אחד
+├── view.html           ← תצוגת שיתוף לקריאה בלבד
+├── sw.js               ← service worker (network-first)
+├── manifest.json       ← מניפסט PWA
+├── data/data.json      ← כל נתוני הקלפים
+├── images/<מספר>.jpg   ← תמונה אחת לכל קלף, בשם המספר שלו
+├── logo.png, icon-*.png
+└── README.md, PROJECT_KNOWLEDGE.md, PROJECT_INSTRUCTIONS.md
+```
+
+## 3. מודל הנתונים
+
+ל־`data/data.json` יש בדיוק שני מפתחות עליונים: `books` ו־`cards`.
+
+```json
+{
+  "no":   283,
+  "book": 3,
+  "name": "אני הלוטרה שמוצאת שלווה",
+  "note": "אני הלוטרה שמוצאת שלווה\nאני זו הלוטרה שהייתה חייבת לעצור…",
+  "suit": "ועדה"
+}
+```
+
+כללים שחייבים להישמר:
+
+- **`no` ייחודי בכל האוסף**, לא לכל יומן בנפרד.
+- **`cards` ממוין לפי `no` בסדר עולה.**
+- **לכל קלף חמישה מפתחות** — `no`, `book`, `name`, `note`, `suit`.
+- **`note` מכיל את השם כשורה ראשונה ואז את הגוף.** הכפילות מכוונת — זו המוסכמה
+  לאורך כל האוסף, אין "לתקן" אותה.
+- **`img` אינו נשמר.** האפליקציה מחשבת אותו: `images/<no>.jpg`. קלף יוצג רק אם
+  הקובץ קיים.
+- **`suit`** הוא אחד מ: `ועדה` (ברירת מחדל), `קהילה`, `בני לוויה`, `שקט`,
+  `מועצה`.
+
+### מונים אוטומטיים
+סך הקלפים, הספירה לכל יומן ומספר הקלפים עם הערה מחושבים בזמן ריצה מתוך
+`data.json`. **אין להצמיד מספרים קבועים בקוד** — הוספת קלפים מעדכנת הכול מעצמה.
+
+## 4. מצב נוכחי (v62)
+
+1,314 קלפים ב־12 יומנים, 1,288 עם הערה. לכל קלף יש תמונה ולכל תמונה יש קלף.
+
+חלוקת הסדרות: ועדה 1,043 · בני לוויה 114 · שקט 81 · קהילה 68 · מועצה 8.
+
+**סדרת בני לוויה** נקבעת לפי התמונה ולא לפי הטקסט: רק אם בקולאז' יש בעלי חיים
+ותו לא. נוף מותר, כמה חיות יחד מותר, אדם או חפץ מעשה ידי אדם — פוסלים.
+
+### הערות ריקות ידועות
+יומן 1: 49, 76, 89, 103, 111, 113, 137 · יומן 2: 218, 228, 243, 262 ·
+יומן 3: 350 · יומן 4: 430 · יומן 5: 563 · יומן 7: 788 · יומן 8: 901 ·
+יומן 10: 1134, 1135, 1137, 1149, 1150, 1154 · יומן 11: 1222, 1253, 1258, 1268.
+
+### מספרי קלפים שאינם קיימים בכוונה
+132, 135, 138, 161, 165, 177, 215, 220, 272, 324, 391–399, 408–409, 625, 688, 730.
+
+פערים במספור הם תקינים. **לעולם לא לחדש מספור כדי לסגור פער** — המספרים קשורים
+לשמות קבצי התמונות וליומנים הפיזיים של הבעלים.
+
+### עבודה פתוחה
+- יומן 12 עתיד לקבל כ־30 קלפים חדשים.
+- ההערות של יומנים 7–9 יושבות ב־`index.html` בתוך `CARD_TEXTS_7_9` במקום
+  ב־`data.json` — אי־עקביות שכדאי לתקן.
+- קבצים מיותרים למחיקה מהמאגר: `soulcollage-ira-v52/`,
+  `soulcollage-ira-v55-complete.zip`, `pwa_files_v24.zip`,
+  `soulcollage-index-v55.zip`, `guide-full.md`, `guide-short.md`.
+  התיקייה `הכנת אפליקציה שלי/` מכילה את קובצי המקור של הבעלים — להעתיק החוצה
+  לפני הסרה מהמאגר הציבורי.
+
+## 5. הוספת הערות מקובץ Word
+
+מבנה: טבלה אחת בת שתי עמודות. עמודה 1 — מספר הקלף. עמודה 2 — תא עם כמה פסקאות:
+**הפסקה הראשונה היא השם, השאר הן הגוף.**
+
+אין לפרסר עם `extract-text` — הוא משטח את התא לשורה אחת והגבול בין שם לגוף אובד.
+יש להשתמש ב־`python-docx` ולקרוא פסקאות:
+
+```python
+from docx import Document
+import re
+doc = Document(path)
+for row in doc.tables[0].rows:
+    num = row.cells[0].text.strip()
+    if not re.fullmatch(r'\d+', num):
+        continue
+    paras = [p.text.strip() for p in row.cells[1].paragraphs if p.text.strip()]
+    card['name'] = paras[0]
+    card['note'] = '\n'.join(paras)
+```
+
+**להתאים קלפים לפי `no`, לעולם לא לפי מיקום בקובץ.** בקבצים יש מספרים כפולים,
+שורות ריקות ומספרים חסרים. התאמה לפי מספר הופכת את כל זה לבלתי מזיק. כשמספר
+מופיע פעמיים — לשמור את השורה שיש בה טקסט.
+
+## 6. הוספת תמונות
+
+התמונות במאגר מוקטנות ל־**1400 פיקסל בממד הגדול**. קובצי המקור גדולים בהרבה.
+
+```python
+from PIL import Image, ImageOps
+im = ImageOps.exif_transpose(Image.open(src)).convert('RGB')
+w, h = im.size
+s = 1400 / max(w, h)
+if s < 1:
+    im = im.resize((round(w*s), round(h*s)), Image.LANCZOS)
+im.save(dst, 'JPEG', quality=85, optimize=True, progressive=True)
+```
+
+## 7. מלכודות ב־index.html
+
+### מיכל הגלילה אינו החלון
+יש כלל CSS סביב שורה 180:
+
+```css
+.app, .screen, .add-form, .detail, .reading-area, .reading-list{
+  max-width:100%;
+  overflow-x:hidden;
+  overflow-x:clip;   /* ← השורה השנייה קריטית */
+}
+```
+
+`overflow-x: hidden` הופך אלמנט ל**מיכל גלילה**, וכך `.app` הפך לדבר שנגלל
+והחלון עצמו לא זז — מה ששבר את `window.scrollTo()` וגם את `position: sticky`.
+`overflow-x: clip` מונע גלישה לצדדים בלי ליצור מיכל גלילה. **אין להחזיר ל־hidden.**
+
+### כותרת דביקה
+`.subhead` היא `position: sticky; top: 0; z-index: 40`. חץ החזרה הוא שברון
+המצביע **ימינה** — נכון לממשק מימין לשמאל, אין "לתקן" אותו לשמאל.
+
+### שמירת שינויים
+`saveEdit()` ו־`saveNewCard()` כותבים ל־localStorage תחת `cardEdits` ו־
+`addedCards`. `restoreCardChanges()` מחיל אותם בסוף `loadData()`. `data.json`
+נשאר מקור האמת; האחסון המקומי הוא שכבה מעליו בלבד.
+
+### נקודות ציון
+`APP_VERSION` (~שורה 798) · `imgURL(no)` · `openBook(id)` · `attachImgLoaders()` ·
+`hideBootLoader()` · `CARD_TEXTS_7_9` (~שורה 807).
+
+## 8. גרסאות — בכל שינוי
+
+שני מספרים, שניהם חייבים לעלות:
+
+1. **`APP_VERSION` ב־`index.html`** — מוצג בתחתית מסך הבית. כך הבעלים מוודא
+   שהעדכון הגיע.
+2. **`CACHE` ב־`sw.js`** — מאלץ עותקים מותקנים לזרוק קבצים מהמטמון.
+
+ה־service worker הוא network-first: מי שמחובר לרשת מקבל תמיד את הגרסה החדשה.
+
+## 9. מסירת עבודה
+
+**תמיד קובץ ZIP אחד** שמבנה התיקיות שבתוכו זהה לשורש המאגר, כדי שאפשר יהיה
+לחלץ ולהעתיק ישירות. לכלול רק קבצים שהשתנו.
+
+**לאמת לפני מסירה.** יש דפדפן ללא ממשק, והוא תפס באגים אמיתיים שקריאת ה־CSS
+פספסה. להגיש קובץ סטטי, לפתוח, לחכות ל־`books.length>0`, ולמדוד את התוצאה
+בפועל.
+
+## 10. עבודה מול הבעלים
+
+- הבעלים דובר עברית ולרוב מכתיב בקול, ולכן מגיעים שיבושי תמלול. לקרוא דרכם;
+  לשאול רק כשהמשמעות באמת משתנה.
+- כשהבעלים מתאר התנהגות בממשק — לנסח מחדש במילים פשוטות ולאשר לפני בנייה.
+- הבעלים אינו מפתח ואינו רוצה רשימות הוראות. לעשות את העבודה, לאמת, ולמסור
+  קובץ אחד.
+- להשיב בשפה שבה נכתבה ההודעה.
+
+---
+---
+
+# 🇬🇧 English
+
 
 ## 1. What the project is
 
@@ -77,8 +274,18 @@ Rules that must be preserved:
   convention throughout, do not "clean it up".
 - **`img` is not stored.** The app derives it: `function imgURL(no){ return 'images/'+no+'.jpg'; }`
   So a card only displays if `images/<no>.jpg` exists.
-- **`suit`** is one of: `ועדה` (the default, ~85% of cards), `על-אישי`,
-  `קהילה`, `מלווים`, `מועצה`.
+- **`suit`** is one of: `ועדה` (the default), `קהילה`, `בני לוויה`,
+  `שקט`, `מועצה`. The app's dropdown (`SUITS` in `index.html`) offers
+  `ועדה`, `קהילה`, `בני לוויה`, `מועצה - ארכיטיפים`, `מועצה`, `שקט` — all
+  five values in the data are selectable. Note that `מועצה` and
+  `מועצה - ארכיטיפים` are two separate entries; the owner may want them merged
+  one day.
+
+### The Companions suit (`בני לוויה`)
+Assigned by what the **picture** shows, not what the note says: a card is a
+Companion only if the collage shows animals and nothing else. Landscape and
+any number of animals are fine; a person anywhere in the image, or a man-made
+object as a subject, disqualifies it. 114 cards currently carry it.
 
 ### Counters are automatic
 Total cards, per-journal counts, and the "cards with a note" figure in the
@@ -98,23 +305,29 @@ anywhere.** Adding cards updates every counter by itself.
 | 4 | 104 | 400–505 | 103 | 1 |
 | 5 | 110 | 506–615 | 109 | 1 |
 | 6 | 112 | 616–729 | 112 | 0 |
-| **7** | **120** | **731–850** | **0** | **120** |
-| **8** | **113** | **851–963** | **0** | **113** |
-| **9** | **112** | **964–1075** | **0** | **112** |
+| 7 | 120 | 731–850 | 119 | 1 |
+| 8 | 113 | 851–963 | 112 | 1 |
+| 9 | 112 | 964–1075 | 112 | 0 |
 | 10 | 89 | 1076–1164 | 83 | 6 |
 | 11 | 104 | 1165–1268 | 100 | 4 |
 | 12 | 70 | 1269–1338 | 70 | 0 |
 
-**Total: 1,314 cards — 945 with notes, 369 without.**
+**Total: 1,314 cards — 1,288 with notes, 26 without.**
+
+Journals 7, 8 and 9 now have their notes, but they live in a `CARD_TEXTS_7_9`
+constant inside `index.html` rather than in `data.json` — an inconsistency that
+still wants fixing. `applyCardTexts()` merges them into `DATA` at load time.
 
 Every card has an image, and every image has a card. No orphans in either
 direction.
 
-### The only outstanding work
-**Journals 7, 8 and 9 have no notes at all** (345 cards). Their cards exist with
-placeholder names of the form `קלף 731`, and their images are already in the
-repo. They are waiting on Word files from the owner. When those arrive, the
-process in section 5 handles them.
+### Outstanding work
+- Journal 12 is due ~30 new cards; images and a Word file are coming.
+- Journals 7–9 notes should be migrated from `index.html` into `data.json`.
+- Repo clutter to delete: `soulcollage-ira-v52/`, `soulcollage-ira-v55-complete.zip`,
+  `pwa_files_v24.zip`, `soulcollage-index-v55.zip`, `guide-full.md`,
+  `guide-short.md`. The `הכנת אפליקציה שלי/` folder holds the owner's source
+  Word files — copy it out before removing it from the public repo.
 
 ### Known blank notes in otherwise-finished journals
 These are cards whose Word entry was empty — not errors, just gaps the owner may
@@ -342,3 +555,24 @@ before replacing it.
   seven new images resized and imported. Total 1,305 → 1,314.
 - **28 Jul 2026** — Released as **v58** (service worker cache v24). First
   release the owner considered fully working and fully up to date.
+- **10 Aug 2026** — **v59 / v60.** Fixed `saveEdit()`, which showed a "saved"
+  toast but never persisted: edits and added cards now go to `localStorage`
+  (`cardEdits`, `addedCards`) and are re-applied by `restoreCardChanges()` at
+  the end of `loadData()`. `data.json` stays the source of truth; storage is an
+  overlay. Also: new cards get a globally unique `no` instead of a per-book one
+  (which could collide across journals); moving a card between journals keeps
+  its number instead of renumbering it (renumbering broke the link to
+  `images/<no>.jpg`); replacement photos are downscaled to 1400 px / q85 in the
+  browser before storing.
+- **10 Aug 2026** — Opening hourglass (`#bootLoader`, removed by
+  `hideBootLoader()`) plus a per-image hourglass via `attachImgLoaders()`,
+  called after every grid and detail render.
+- **10 Aug 2026** — All 1,314 card images reviewed by eye; 92 cards set to
+  `בני לוויה`, and the 27 older `מלווים` cards renamed to the same value so
+  there is only one Companions suit. 114 cards total.
+- **10 Aug 2026** — **v62.** The `על-אישי` suit renamed to `שקט` across all 81
+  cards, and the dropdown updated to match. Only the `suit` field changed.
+- **10 Aug 2026** — **v61.** `על-אישי` and `מועצה` added to the `SUITS` list so
+  every suit present in the data can be chosen from the edit screen. No card
+  data changed — before this, opening one of those 89 cards for editing pushed
+  the suit into the free-text "custom" box.

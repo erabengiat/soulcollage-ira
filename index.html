@@ -127,6 +127,73 @@
   .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:12px 16px 30px;align-content:start;}
   .thumb{cursor:pointer;display:flex;flex-direction:column;gap:5px;}
   .thumb-img{position:relative;width:100%;height:0;padding-bottom:133%;border-radius:0;box-shadow:0 3px 8px var(--card-shadow);overflow:hidden;background:#ddd;}
+
+  /* ---- LOADING: hourglass while anything is fetched from the server ---- */
+  @keyframes sc-sand-flip{
+    0%,45%{transform:rotate(0deg);} 55%,100%{transform:rotate(180deg);}
+  }
+  @keyframes sc-sand-top{
+    0%{height:12px;} 45%,100%{height:0;}
+  }
+  @keyframes sc-sand-bottom{
+    0%{height:0;} 45%,100%{height:12px;}
+  }
+  @keyframes sc-sand-drip{
+    0%,45%{opacity:1;} 46%,100%{opacity:0;}
+  }
+  .sc-hourglass{
+    position:relative;width:34px;height:52px;
+    animation:sc-sand-flip 2.4s ease-in-out infinite;
+  }
+  .sc-hourglass .glass{
+    position:absolute;inset:0;
+    border:2.5px solid var(--teal,#244F5E);
+    border-radius:3px;
+    clip-path:polygon(0 0,100% 0,53% 50%,100% 100%,0 100%,47% 50%);
+    opacity:.9;
+  }
+  .sc-hourglass .cap{
+    position:absolute;left:-2px;right:-2px;height:3px;
+    background:var(--teal,#244F5E);border-radius:2px;
+  }
+  .sc-hourglass .cap.t{top:-2px;}
+  .sc-hourglass .cap.b{bottom:-2px;}
+  .sc-hourglass .top{
+    position:absolute;left:6px;right:6px;top:5px;height:12px;background:var(--clay,#C0673B);
+    opacity:.9;clip-path:polygon(0 0,100% 0,54% 100%,46% 100%);
+    animation:sc-sand-top 2.4s ease-in-out infinite;
+  }
+  .sc-hourglass .bottom{
+    position:absolute;left:6px;right:6px;bottom:5px;height:0;background:var(--clay,#C0673B);
+    opacity:.9;clip-path:polygon(46% 0,54% 0,100% 100%,0 100%);
+    animation:sc-sand-bottom 2.4s ease-in-out infinite;
+  }
+  .sc-hourglass .drip{
+    position:absolute;left:50%;top:20px;width:2.5px;height:13px;margin-inline-start:-1.25px;
+    background:var(--clay,#C0673B);opacity:.9;
+    animation:sc-sand-drip 2.4s ease-in-out infinite;
+  }
+  #bootLoader{
+    position:fixed;inset:0;z-index:9999;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
+    background:var(--cream,#F3EAD8);
+    transition:opacity .35s ease;
+  }
+  #bootLoader.hide{opacity:0;pointer-events:none;}
+  #bootLoader .boot-text{
+    font-size:15px;color:var(--teal,#244F5E);font-weight:600;text-align:center;
+    direction:rtl;line-height:1.5;
+  }
+  #bootLoader .boot-sub{font-size:12.5px;opacity:.65;font-weight:500;}
+  /* an image that has not arrived yet shows the hourglass behind it */
+  .sc-loading{position:relative;}
+  .sc-loading::after{
+    content:"";position:absolute;top:50%;left:50%;width:20px;height:30px;
+    margin:-15px 0 0 -10px;pointer-events:none;
+    border:2px solid var(--teal,#244F5E);border-radius:2px;opacity:.5;
+    clip-path:polygon(0 0,100% 0,52% 50%,100% 100%,0 100%,48% 50%);
+    animation:sc-sand-flip 2.4s ease-in-out infinite;
+  }
   .thumb:active .thumb-img{transform:scale(.94);}
   .thumb-img img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;}
   .thumb-name{font-size:11px;color:var(--teal);text-align:center;line-height:1.2;font-weight:500;}
@@ -513,6 +580,10 @@ if ('serviceWorker' in navigator) {
 </script>
 </head>
 <body>
+<div id="bootLoader">
+  <div class="sc-hourglass"><div class="glass"></div><div class="cap t"></div><div class="cap b"></div><div class="top"></div><div class="drip"></div><div class="bottom"></div></div>
+  <div class="boot-text">טוען את האוסף…<div class="boot-sub">רגע אחד, הקלפים בדרך</div></div>
+</div>
 <div class="app">
 
   <!-- HOME -->
@@ -795,10 +866,10 @@ if ('serviceWorker' in navigator) {
 /* ============ DATA (loaded from data/data.json) ============ */
 let DATA = {books:[], cards:[]};
 
-const APP_VERSION = 'v59';
+const APP_VERSION = 'v62';
 const BOOK_COLORS=['#C0673B','#244F5E','#D9A441','#8A5A44','#3E6E5E','#B0443B','#6E5A8A','#4A7C8C','#C98A3B','#5E7A44','#A84B6B','#3B5468'];
 let books=[];
-const SUITS=["ועדה","קהילה","בני לוויה","מועצה - ארכיטיפים"];
+const SUITS=["ועדה","קהילה","בני לוויה","מועצה - ארכיטיפים","מועצה","שקט"];
 const DEFAULT_SUIT="ועדה";
 
 /* ================= PERSISTENCE OF CARD CHANGES =================
@@ -955,6 +1026,7 @@ async function loadData(){
     if(!DATA || !DATA.cards || !DATA.cards.length) throw new Error('קובץ הנתונים ריק');
   }catch(e){
     document.body.insertAdjacentHTML('afterbegin','<div style="padding:16px;margin:10px;background:#fff;border:2px solid #a33;border-radius:10px;color:#a33;font-size:14px;line-height:1.6;direction:rtl">שגיאה בטעינת הנתונים:<br><b>'+e.message+'</b><br>נתיב: data/data.json</div>');
+    hideBootLoader();
     return;
   }
   applyCardTexts();
@@ -977,6 +1049,33 @@ async function loadData(){
   const _cc=document.getElementById('coverCount'); if(_cc) _cc.textContent=totalCards();
   applyReadOnly();
   renderCounter();
+  hideBootLoader();
+}
+
+/* Removes the opening hourglass once the collection is on screen. */function hideBootLoader(){
+  const el = document.getElementById('bootLoader');
+  if(!el || el.classList.contains('hide')) return;
+  el.classList.add('hide');
+  setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); }, 400);
+}
+/* Safety net: never let the hourglass trap the app if something goes wrong. */
+setTimeout(hideBootLoader, 15000);
+
+/* Puts a small hourglass behind every picture inside `root` until it arrives
+   from the server. Call it right after building any grid or detail view. */
+function attachImgLoaders(root){
+  if(!root) return;
+  const imgs = root.querySelectorAll('img');
+  for(let i=0;i<imgs.length;i++){
+    const im = imgs[i], box = im.parentElement;
+    if(!box || box.getAttribute('data-sc-load')==='1') continue;
+    box.setAttribute('data-sc-load','1');
+    if(im.complete && im.naturalWidth>0) continue;
+    box.classList.add('sc-loading');
+    const done = function(){ box.classList.remove('sc-loading'); };
+    im.addEventListener('load', done);
+    im.addEventListener('error', done);
+  }
 }
 
 
@@ -1004,6 +1103,7 @@ function renderBooks(){
     el.innerHTML=`<div class="book-cover" style="background:linear-gradient(150deg,${b.color},${shade(b.color,-18)});">${cover}<span class="book-num">${b.id}</span><span class="name">${b.name}</span></div><div class="book-meta">${b.cards.length} קלפים</div>`;
     g.appendChild(el);
   });
+  attachImgLoaders(g);
 }
 function openBook(id){
   const b=books.find(x=>x.id===id);
@@ -1034,6 +1134,7 @@ function openBook(id){
   g.appendChild(tallWrap);
   g.appendChild(wideTitle);
   g.appendChild(wideWrap);
+  setTimeout(function(){ attachImgLoaders(g); },0);
 
   function makeTile(c){
     const el=document.createElement('div');
@@ -1089,6 +1190,7 @@ function openCard(bookId,no,fromScreen){
     ${noteHtml}`;
   const _db=document.getElementById('detailBack'); if(_db) _db.onclick=()=>showScreen(fromScreen||'bookCards');
   const _dh=document.getElementById('detailHead'); if(_dh) _dh.textContent=b.id+'- '+c.no;
+  attachImgLoaders(document.getElementById('detailBody'));
   showScreen('cardDetail');
   const _eb=document.getElementById('editBtn'); if(_eb) _eb.onclick=openEdit;
 }
@@ -1166,6 +1268,7 @@ function drawOne(){
   const c=pool[Math.floor(Math.random()*pool.length)];
   const noteHtml=c.note?`<div class="note-box" style="text-align:right">${c.note}</div>`:`<div class="note-box note-empty">אין הערה</div>`;
   document.getElementById('singleBody').innerHTML=`<img class="detail-img" src="${c.img}" ondblclick="openBig('${c.img}')" style="cursor:pointer"><div class="detail-name">${c.name}</div><div class="detail-meta">${c.bookId}- ${c.no}</div>${noteHtml}<button class="btn secondary" style="margin-top:16px" onclick="drawOne()">שליפה נוספת</button>`;
+  attachImgLoaders(document.getElementById('singleBody'));
   showScreen('singleDraw');
 }
 
@@ -1212,6 +1315,7 @@ function openReadingCard(i){
   const c=fourState.picks[i];
   const noteHtml=c.note?`<div class="note-box">${c.note}</div>`:`<div class="note-box note-empty">אין הערה</div>`;
   document.getElementById('detailBody').innerHTML=`<img class="detail-img" src="${c.img}" ondblclick="openBig('${c.img}')" style="cursor:pointer"><div class="detail-name">${c.name}</div><div class="detail-meta">${FOUR_POSITIONS[i]} · ${c.book}</div>${noteHtml}`;
+  attachImgLoaders(document.getElementById('detailBody'));
   const _db2=document.getElementById('detailBack'); if(_db2) _db2.onclick=()=>showScreen('fourReading');
   showScreen('cardDetail');
 }
@@ -1352,6 +1456,7 @@ function openThumbs(){
     el.innerHTML='<div style="display:block;width:100%;"><div style="position:relative;width:100%;height:0;padding-bottom:133%;border-radius:0;overflow:hidden;background:#ddd;box-shadow:0 3px 8px rgba(42,58,71,.18);"><img src="'+c.img+'" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;"></div><div style="font-size:10px;line-height:1.15;text-align:center;color:#244F5E;margin-top:4px;">'+c.name+'</div></div>';
     g.appendChild(el);
   });
+  attachImgLoaders(g);
   showScreen('thumbs');
 }
 
@@ -1405,6 +1510,7 @@ function runSearch(){
     el.innerHTML='<div style="display:block;width:100%;"><div style="position:relative;width:100%;height:0;padding-bottom:133%;border-radius:0;overflow:hidden;background:#ddd;box-shadow:0 3px 8px rgba(42,58,71,.18);"><img src="'+c.img+'" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;"><span style="position:absolute;top:4px;inset-inline-start:4px;background:rgba(36,79,94,.85);color:#fff;font-size:11px;font-weight:700;padding:1px 6px;border-radius:9px;">'+c.no+'</span></div><div style="font-size:12px;font-weight:600;line-height:1.15;text-align:center;color:#244F5E;margin-top:4px;">'+c.name+'</div></div>';
     g.appendChild(el);
   });
+  attachImgLoaders(g);
 }
 
 /* ---- SLIDESHOW ---- */

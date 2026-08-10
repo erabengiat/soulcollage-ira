@@ -1,206 +1,220 @@
-# סול קולאז' של עירא — מדריך העלאה ל-GitHub Pages
+# סול קולאז' של עירא — מדריך מרכזי / Central Handout
 
-**SoulCollage of Ira — GitHub Pages Deployment Guide**
+**גרסה / Version:** v62 · **עודכן / Updated:** 10 באוגוסט 2026
+
+*עברית למטה בחלק הראשון · English in the second half*
 
 ---
+---
 
-## 📦 תוכן החבילה | What's Included
+# 🇮🇱 עברית
 
-| קובץ/תיקייה | תיאור |
+## מה זו האפליקציה
+
+בית דיגיטלי לאוסף קלפי הסול־קולאז' של עירא. כל קלף הוא יצירת קולאז' — תמונה, שם,
+והערה שעירא כתבה בקולה שלה. האוסף מחולק ל־12 יומנים.
+
+- **כתובת האפליקציה:** https://erabengiat.github.io/soulcollage-ira/
+- **המאגר בגיטהאב:** https://github.com/erabengiat/soulcollage-ira
+
+זו אפליקציית PWA — אפשר להתקין אותה על מסך הבית של הטלפון, והיא עובדת גם בלי
+אינטרנט (מהזיכרון המקומי).
+
+## מצב האוסף
+
+| | |
 |---|---|
-| `index.html` | האפליקציה הראשית (~40KB) |
-| `data/data.json` | כל הנתונים: מספרים, שמות, הערות, סדרות |
-| `images/` | כל התמונות (קלפים בנפרד) |
-| `manifest.json` | הגדרות PWA (Progressive Web App) |
-| `icon-192.png` | אייקון 192×192 |
-| `icon-512.png` | אייקון 512×512 |
-| `sw.js` | Service Worker (עבודה אופלין) |
-| `.nojekyll` | קובץ GitHub Pages (חשוב!) |
+| סה"כ קלפים | 1,314 |
+| יומנים | 12 |
+| קלפים עם הערה | 1,288 |
+| תמונות | 1,314 — לכל קלף יש תמונה, ולכל תמונה יש קלף |
+
+### קלפים לפי יומן
+
+| יומן | קלפים | טווח מספרים | עם הערה |
+|---|---|---|---|
+| 1 | 139 | 1–142 | 132 |
+| 2 | 134 | 143–282 | 130 |
+| 3 | 107 | 283–390 | 106 |
+| 4 | 104 | 400–505 | 103 |
+| 5 | 110 | 506–615 | 109 |
+| 6 | 112 | 616–729 | 112 |
+| 7 | 120 | 731–850 | 119 |
+| 8 | 113 | 851–963 | 112 |
+| 9 | 112 | 964–1075 | 112 |
+| 10 | 89 | 1076–1164 | 83 |
+| 11 | 104 | 1165–1268 | 100 |
+| 12 | 70 | 1269–1338 | 70 |
+
+### הסדרות (Suits)
+
+| סדרה | קלפים | משמעות |
+|---|---|---|
+| ועדה | 1,043 | ברירת המחדל |
+| בני לוויה | 114 | קלפים שבתמונה שלהם יש **רק בעלי חיים** |
+| שקט | 81 | |
+| קהילה | 68 | |
+| מועצה | 8 | |
+
+**הכלל של בני לוויה:** ההחלטה היא לפי **התמונה**, לא לפי ההערה. קלף שייך לסדרה
+רק אם בקולאז' מופיעים בעלי חיים ותו לא. נוף, ים, עצים ושמיים — בסדר. יותר מחיה
+אחת — בסדר. אדם כלשהו בתמונה, או חפץ מעשה ידי אדם כנושא — מוציא את הקלף מהסדרה.
+
+## מה אפשר לעשות באפליקציה
+
+- **היומנים** — עיון בכל יומן, הקלפים מסודרים לפי מספר
+- **חיפוש קלף** — לפי שם או הערה
+- **שליפת קלף** — שליפה אקראית, כמו קריאה בקלפים
+- **הוספת קלף** — צילום או בחירת תמונה, שם, הערה וסדרה
+- **עריכת קלף** — שינוי שם, הערה, סדרה, יומן או תמונה
+- **קישור לצפייה** — קישור לחברים לצפייה בלבד, בלי אפשרות לערוך
+- **גיבוי** — ייצוא וייבוא של כל השינויים לקובץ
+
+## איפה נשמרים השינויים — חשוב להבין
+
+יש **שתי שכבות**:
+
+1. **`data/data.json` במאגר** — המקור הרשמי של האוסף. משם מגיעים כל 1,314
+   הקלפים. שינוי כאן מגיע לכל מי שפותח את האפליקציה.
+2. **הזיכרון המקומי של המכשיר** — כל עריכה או הוספה שנעשית **בתוך האפליקציה**
+   נשמרת רק במכשיר הזה. היא מוצגת מעל הנתונים מהקובץ, אבל אינה מגיעה לאף אחד
+   אחר, ותיעלם אם מנקים את נתוני האתר בדפדפן.
+
+לכן: עריכות קטנות — בתוך האפליקציה. תוספות גדולות (יומן שלם, עשרות קלפים) —
+דרך עדכון `data.json` ודחיפה לגיטהאב.
+
+**כדאי לייצא גיבוי** (עזרה וגיבוי ← ייצוא) לפני ניקוי נתוני דפדפן או החלפת מכשיר.
+
+## איך מוסיפים קלפים חדשים
+
+1. מכינים קובץ Word עם טבלה של שתי עמודות: מספר הקלף מימין, ובתא השני —
+   פסקה ראשונה = שם הקלף, הפסקאות הבאות = ההערה.
+2. מכינים ZIP של התמונות, כל תמונה בשם מספר הקלף: `1339.jpg`, `1340.jpg`…
+3. שולחים את שניהם. התמונות יוקטנו ל־1400 פיקסל, הנתונים ימוזגו, ותקבלו קובץ
+   ZIP אחד לפריסה על תיקיית המאגר.
+4. פותחים GitHub Desktop → **Commit to main** → **Push origin**.
+
+**שתי הפעולות נחוצות.** בלי Push שום דבר לא מגיע לאוויר.
+
+## איך יודעים שעדכון הצליח
+
+בתחתית מסך הבית מופיע מספר הגרסה. אם כתוב שם המספר החדש — העדכון עלה.
+אם מופיע המספר הישן, כנראה שה־Push לא בוצע.
+
+בדיקה ישירה של מה שבאמת נמצא במאגר:
+`https://raw.githubusercontent.com/erabengiat/soulcollage-ira/main/index.html`
+
+## אם משהו משתבש
+
+כל שינוי הפיך. בגיטהאב, בעמוד הקומיט, יש כפתור **Revert**. לחיצה עליו מחזירה
+את המצב הקודם, והאפליקציה חוזרת לעצמה תוך דקה או שתיים.
 
 ---
-
-## 🚀 שלבי העלאה | Step by Step
-
-### שלב 1️⃣: פתיחת חשבון GitHub
-
-1. גשו ל: **https://github.com**
-2. לחצו **Sign up** (אם אין חשבון)
-3. השלימו את ההרשמה
-
 ---
 
-### שלב 2️⃣: יצירת מאגר חדש (Repository)
+# 🇬🇧 English
 
-1. לחצו על **+** בפינה הימנית העליונה
-2. בחרו **New repository**
-3. המלאו:
-   - **Repository name**: `soulcollage-ira` (או שם אחר)
-   - **Description**: `סול קולאז' של עירא — ארכיון דיגיטלי`
-   - **Public** ✓ (חשוב — לא Private!)
-4. לחצו **Create repository**
+## What this application is
 
----
+A digital home for Ira's SoulCollage card collection. Each card is a collage —
+a picture, a name, and a note written in Ira's own voice. The collection is
+divided into 12 journals.
 
-### שלב 3️⃣: העלאת הקבצים
+- **Live app:** https://erabengiat.github.io/soulcollage-ira/
+- **Repository:** https://github.com/erabengiat/soulcollage-ira
 
-1. במאגר החדש שלכם, לחצו **Add file** → **Upload files**
-2. גררו את כל הקבצים:
-   - `index.html`
-   - `data/` (תיקייה)
-   - `images/` (תיקייה עם כל התמונות)
-   - `manifest.json`
-   - `icon-192.png`, `icon-512.png`
-   - `sw.js`
-   - `.nojekyll`
+It is a Progressive Web App: installable to a phone's home screen, and it works
+offline from its local cache.
 
-3. **חשוב**: שמרו על מבנה התיקיות:
-   ```
-   root/
-   ├── index.html
-   ├── data/
-   │   └── data.json
-   ├── images/
-   │   ├── 1.jpg
-   │   ├── 2.jpg
-   │   └── ... (כל התמונות)
-   ├── manifest.json
-   ├── sw.js
-   ├── .nojekyll
-   └── (אייקונים)
-   ```
+## State of the collection
 
-4. לחצו **Commit changes**
+| | |
+|---|---|
+| Total cards | 1,314 |
+| Journals | 12 |
+| Cards with a note | 1,288 |
+| Images | 1,314 — every card has one, every image has a card |
 
----
+### Cards per journal
 
-### שלב 4️⃣: הפעלת GitHub Pages
+| Journal | Cards | Number range | With notes |
+|---|---|---|---|
+| 1 | 139 | 1–142 | 132 |
+| 2 | 134 | 143–282 | 130 |
+| 3 | 107 | 283–390 | 106 |
+| 4 | 104 | 400–505 | 103 |
+| 5 | 110 | 506–615 | 109 |
+| 6 | 112 | 616–729 | 112 |
+| 7 | 120 | 731–850 | 119 |
+| 8 | 113 | 851–963 | 112 |
+| 9 | 112 | 964–1075 | 112 |
+| 10 | 89 | 1076–1164 | 83 |
+| 11 | 104 | 1165–1268 | 100 |
+| 12 | 70 | 1269–1338 | 70 |
 
-1. במאגר, לחצו **Settings** (בתפריט העליון)
-2. בצד השמאלי בחרו **Pages**
-3. תחת **Source**:
-   - בחרו: **Deploy from a branch**
-   - **Branch**: `main`
-   - **Folder**: `/ (root)`
-4. לחצו **Save**
-5. המתינו 1–2 דקות
+### The suits
 
----
+| Suit | Cards | Meaning |
+|---|---|---|
+| ועדה | 1,043 | the default |
+| בני לוויה | 114 | cards whose picture shows **animals only** |
+| שקט | 81 | |
+| קהילה | 68 | |
+| מועצה | 8 | |
 
-### שלב 5️⃣: קבלת הכתובת
+**The Companions rule:** decided by the **picture**, not the note. A card
+qualifies only if the collage shows animals and nothing else. Landscape — sea,
+trees, sky — is fine. Any number of animals is fine. A person anywhere in the
+image, or a man-made object as a subject, disqualifies it.
 
-GitHub יציג לכם כתובת כמו:
+## What the app does
 
-```
-https://<שם-המשתמש>.github.io/soulcollage-ira/
-```
+- **Journals** — browse each journal, cards ordered by number
+- **Search** — by name or note text
+- **Draw a card** — a random draw, like a reading
+- **Add a card** — photo or gallery image, name, note, suit
+- **Edit a card** — name, note, suit, journal, or picture
+- **Share link** — a view-only link for friends; they cannot edit
+- **Backup** — export and import all local changes as a file
 
-**זו הכתובת של האפליקציה שלכם!**
-- שלחו אותה לכל מי שרוצה לראות את הקלפים
-- הכל עובד בדפדפן — אין צורך בהתקנה
+## Where changes are saved — important
 
----
+There are **two layers**:
 
-### שלב 6️⃣: התקנה על הטלפון (Android)
+1. **`data/data.json` in the repository** — the official source. All 1,314
+   cards come from here. A change here reaches everyone who opens the app.
+2. **The device's local storage** — any edit or addition made **inside the app**
+   is saved on that device only. It is layered on top of the file data, but it
+   never reaches anyone else, and it is lost if browser site data is cleared.
 
-1. פתחו את הכתובת ב-**Chrome** בטלפון
-2. יופיע פס: **"להתקין אפליקציה"** → לחצו **התקנה**
-3. (או: תפריט Chrome ⋮ → **הוסף למסך הבית**)
-4. האפליקציה תופיע כאייקון על מסך הבית
+So: small corrections — inside the app. Large additions (a whole journal, dozens
+of cards) — through a `data.json` update pushed to GitHub.
 
----
+**Export a backup** (Help & Backup → Export) before clearing browser data or
+changing devices.
 
-### שלב 7️⃣: שיתוף
+## Adding new cards
 
-פשוט שלחו את הכתובת:
-- **WhatsApp** / **Telegram** / **Email** / **SMS**
-- כל מי שיפתח אותה יוכל לצפות בקלפים
+1. Prepare a Word file with a two-column table: card number in the first column;
+   in the second cell, the first paragraph is the card's name and the following
+   paragraphs are the note.
+2. Prepare a ZIP of images named by card number: `1339.jpg`, `1340.jpg`…
+3. Send both. Images are downscaled to 1400 px, data is merged, and you get back
+   a single ZIP to extract over the repository folder.
+4. In GitHub Desktop: **Commit to main**, then **Push origin**.
 
----
+**Both steps are required.** Without the push, nothing goes live.
 
-## 🔄 הוספת קלפים חדשים בעתיד
+## Confirming an update landed
 
-כשתיוסיפו קלפים בעתיד:
+The version number appears at the bottom of the home screen. If it shows the new
+number, the update is live. If it still shows the old one, the push probably did
+not happen.
 
-1. **הוסיפו תמונות** ל-`images/` (למשל `1308.jpg`)
-2. **עדכנו את `data/data.json`** עם הנתונים החדשים
-3. **העלו מחדש** את שני הקבצים האלה ל-GitHub
-4. **אין צורך לגעת ב-`index.html`** — הוא טוען הכל אוטומטית
+To check what is genuinely in the repository:
+`https://raw.githubusercontent.com/erabengiat/soulcollage-ira/main/index.html`
 
----
+## If something breaks
 
-## ✅ בדיקה מהירה
-
-אחרי ההעלאה:
-
-- [ ] כתובת GitHub Pages פעילה?
-- [ ] התמונות נטענות?
-- [ ] כפתורים עובדים?
-- [ ] מצגת הקלפים רצה?
-- [ ] חיפוש עובד?
-
-אם משהו לא עובד — אנא בדקו:
-- **את ה-Console** בדפדפן (F12 → Console)
-- **את תיקיית `images/`** — התמונות שם?
-- **את `data/data.json`** — הוא תקין?
-
----
-
-## 🛠️ טיפים שימושיים
-
-### בדיקה לוקלית (לפני העלאה)
-אם רוצים לבדוק ברגע בטרם העלאה:
-```bash
-# בטרמינל, בתיקיית הפרויקט:
-python -m http.server 8000
-# או:
-python3 -m http.server 8000
-```
-ואז גשו ל: `http://localhost:8000`
-
-### עדכון הגרסה
-- בכל שינוי חשוב, עדכנו את `APP_VERSION` ב-`index.html`
-- זה יעזור לזהות באג או שינוי
-
-### בעיה: גרסה ישנה מופיעה?
-1. סגרו Chrome לחלוטין
-2. פתחו מחדש
-3. או: Chrome → Settings → Privacy → Clear Browsing Data
-
----
-
-## 📞 שאלות נפוצות
-
-**שאלה:** האם צריך אינטרנט להפעלה?
-**תשובה:** כן, להתחלה (להנחה את התמונות). אחרי כן, חלקים עובדים אפילו ללא חיבור.
-
----
-
-**שאלה:** האם הקלפים בטוחים ופרטיים?
-**תשובה:** כן! הנתונים שלכם נשמרים בטלפון בלבד. GitHub רק משמש כשרת לתמונות.
-
----
-
-**שאלה:** איך מוסיפים יומן חדש?
-**תשובה:** בתוך האפליקציה → הגדרות → "יומן חדש". או ישירות ב-`data.json`.
-
----
-
-**שאלה:** אפשר לשנות את העיצוב?
-**תשובה:** כן! `index.html` יש הערות בקוד. או אנא בקשו עזרה.
-
----
-
-## 🎉 סיום
-
-אחרי השלבים האלה, יש לכם:
-- ✅ אפליקציה דיגיטלית פעילה
-- ✅ ניתנת לשיתוף עם חברים
-- ✅ קלה להעדכון
-- ✅ ניתנת להתקנה על הטלפון
-- ✅ עובדת אופלין (בחלקה)
-
----
-
-**בהצלחה! 🎴✨**
-
-*עודכן: יולי 2026*
+Every change is reversible. On GitHub, open the commit and press **Revert**. The
+previous state returns and the app follows within a minute or two.
