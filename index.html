@@ -795,11 +795,116 @@ if ('serviceWorker' in navigator) {
 /* ============ DATA (loaded from data/data.json) ============ */
 let DATA = {books:[], cards:[]};
 
-const APP_VERSION = 'v58';
+const APP_VERSION = 'v59';
 const BOOK_COLORS=['#C0673B','#244F5E','#D9A441','#8A5A44','#3E6E5E','#B0443B','#6E5A8A','#4A7C8C','#C98A3B','#5E7A44','#A84B6B','#3B5468'];
 let books=[];
 const SUITS=["ועדה","קהילה","בני לוויה","מועצה - ארכיטיפים"];
 const DEFAULT_SUIT="ועדה";
+
+/* ================= PERSISTENCE OF CARD CHANGES =================
+   Edits made inside the app are kept in localStorage and re-applied
+   on every load, on top of whatever data/data.json currently holds.
+   data.json stays the source of truth; this is only an overlay. */
+const EDITS_KEY='cardEdits', ADDED_KEY='addedCards';
+
+function readStore(key, fallback){
+  try{ const v=localStorage.getItem(key); return v?JSON.parse(v):fallback; }
+  catch(e){ return fallback; }
+}
+function writeStore(key, value){
+  try{ localStorage.setItem(key, JSON.stringify(value)); return true; }
+  catch(e){ return false; }
+}
+
+/* Saves one edited card. Returns true, 'no-image' (text kept, picture
+   too large for device storage) or false (nothing could be saved). */
+function persistCardEdit(c, bookId){
+  const added = readStore(ADDED_KEY, []);
+  const ai = added.findIndex(function(x){ return x.no===c.no; });
+  if(ai>=0){
+    added[ai] = {no:c.no, book:bookId, name:c.name, note:c.note, suit:c.suit, img:c.img};
+    return writeStore(ADDED_KEY, added) ? true : false;
+  }
+  const edits = readStore(EDITS_KEY, {});
+  const rec = {book:bookId, name:c.name, note:c.note, suit:c.suit};
+  if(c.img && c.img.indexOf('data:')===0) rec.img = c.img;
+  edits[String(c.no)] = rec;
+  if(writeStore(EDITS_KEY, edits)) return true;
+  if(rec.img){                       // storage full — keep the text at least
+    delete rec.img;
+    edits[String(c.no)] = rec;
+    if(writeStore(EDITS_KEY, edits)) return 'no-image';
+  }
+  return false;
+}
+
+function persistNewCard(c, bookId){
+  const added = readStore(ADDED_KEY, []);
+  added.push({no:c.no, book:bookId, name:c.name, note:c.note, suit:c.suit, img:c.img});
+  return writeStore(ADDED_KEY, added);
+}
+
+function forgetCard(no){
+  const added = readStore(ADDED_KEY, []).filter(function(x){ return x.no!==no; });
+  writeStore(ADDED_KEY, added);
+  const edits = readStore(EDITS_KEY, {});
+  if(edits[String(no)]){ delete edits[String(no)]; writeStore(EDITS_KEY, edits); }
+}
+
+/* Re-applies everything that was saved. Called once, from loadData(). */
+function restoreCardChanges(){
+  readStore(ADDED_KEY, []).forEach(function(rec){
+    const b = books.find(function(x){ return x.id===rec.book; });
+    if(!b) return;
+    if(b.cards.find(function(c){ return c.no===rec.no; })) return;
+    b.cards.push({no:rec.no, name:rec.name, note:rec.note,
+                  suit:rec.suit||DEFAULT_SUIT, img:rec.img||imgURL(rec.no)});
+  });
+  const edits = readStore(EDITS_KEY, {});
+  Object.keys(edits).forEach(function(k){
+    const no = parseInt(k,10), rec = edits[k];
+    let cur=null, curBook=null;
+    books.forEach(function(b){
+      const c = b.cards.find(function(x){ return x.no===no; });
+      if(c){ cur=c; curBook=b; }
+    });
+    if(!cur) return;                       // card no longer exists in data.json
+    if(rec.name!=null) cur.name = rec.name;
+    if(rec.note!=null) cur.note = rec.note;
+    if(rec.suit)       cur.suit = rec.suit;
+    if(rec.img)        cur.img  = rec.img;
+    if(rec.book && curBook && rec.book!==curBook.id){
+      const nb = books.find(function(x){ return x.id===rec.book; });
+      if(nb){
+        curBook.cards = curBook.cards.filter(function(x){ return x.no!==no; });
+        nb.cards.push(cur);
+      }
+    }
+  });
+  books.forEach(function(b){ b.cards.sort(function(x,y){ return x.no-y.no; }); });
+}
+
+/* Replacement pictures are downscaled to the same 1400 px / q85 convention
+   used for the repo images, so they fit in device storage. */
+function shrinkImage(dataURL, cb){
+  try{
+    const img = new Image();
+    img.onload = function(){
+      try{
+        const MAX = 1400;
+        let w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
+        const s = MAX / Math.max(w,h);
+        if(s < 1){ w = Math.round(w*s); h = Math.round(h*s); }
+        const cv = document.createElement('canvas');
+        cv.width = w; cv.height = h;
+        cv.getContext('2d').drawImage(img, 0, 0, w, h);
+        cb(cv.toDataURL('image/jpeg', 0.85));
+      }catch(e){ cb(dataURL); }
+    };
+    img.onerror = function(){ cb(dataURL); };
+    img.src = dataURL;
+  }catch(e){ cb(dataURL); }
+}
 
 function imgURL(no){ return 'images/'+no+'.jpg'; }
 
@@ -867,6 +972,7 @@ async function loadData(){
   // sort each book's cards by number
   books.forEach(b=>b.cards.sort((x,y)=>x.no-y.no));
   restoreCustomBooks();
+  restoreCardChanges();
   const _ver=document.getElementById('appVersion'); if(_ver) _ver.textContent='גרסה '+APP_VERSION;
   const _cc=document.getElementById('coverCount'); if(_cc) _cc.textContent=totalCards();
   applyReadOnly();
@@ -1021,7 +1127,7 @@ function openEdit(){
 function editReplaceImg(e){
   const f=e.target.files[0];if(!f)return;
   const r=new FileReader();
-  r.onload=ev=>{editImgData=ev.target.result;const im=document.getElementById('editImg');im.src=editImgData;im.style.display='block';};
+  r.onload=ev=>{shrinkImage(ev.target.result,function(small){editImgData=small;const im=document.getElementById('editImg');im.src=editImgData;im.style.display='block';});};
   r.readAsDataURL(f);
 }
 function saveEdit(){
@@ -1030,21 +1136,27 @@ function saveEdit(){
   const oldBook=books.find(x=>x.id===currentCard.bookId);
   const c=oldBook.cards.find(x=>x.no===currentCard.no);
   const newBookId=parseInt(document.getElementById('editBook').value);
+  undoStack.push({type:'editCard', bookId:currentCard.bookId, no:c.no,
+                  prev:{name:c.name, note:c.note, suit:c.suit}});
   c.name=name;
   c.note=document.getElementById('editNote').value.trim();
   c.suit=(document.getElementById('editSuit').value==='__custom__')?(document.getElementById('editSuitCustom').value.trim()||DEFAULT_SUIT):document.getElementById('editSuit').value;
   c.img=editImgData;
-  // if book changed, move the card
+  // if book changed, move the card — the number stays with it, because card
+  // numbers are unique across all journals and tie the card to its image file
   if(newBookId!==currentCard.bookId){
     oldBook.cards=oldBook.cards.filter(x=>x.no!==currentCard.no);
     const nb=books.find(x=>x.id===newBookId);
-    const maxNo=nb.cards.reduce((m,cc)=>Math.max(m,cc.no),0);
-    c.no=maxNo+1;
     nb.cards.push(c);
+    nb.cards.sort((x,y)=>x.no-y.no);
     currentCard={bookId:newBookId,no:c.no,from:currentCard.from};
   }
+  const saved=persistCardEdit(c,newBookId);
   renderCounter();
-  tap('השינויים נשמרו');
+  logAction('נערך קלף: '+c.name);
+  tap(saved===true ? 'השינויים נשמרו'
+    : saved==='no-image' ? 'הטקסט נשמר. התמונה גדולה מדי לשמירה במכשיר'
+    : 'לא ניתן לשמור — אין מקום פנוי במכשיר');
   openCard(currentCard.bookId,currentCard.no,currentCard.from);
 }
 
@@ -1165,7 +1277,7 @@ function pickFiles(){ document.getElementById('addFileAny').click(); }
 function previewAdd(e){
   const f=e.target.files[0];if(!f)return;
   const r=new FileReader();
-  r.onload=ev=>{addImgData=ev.target.result;const p=document.getElementById('addPreview');p.src=addImgData;p.style.display='block';};
+  r.onload=ev=>{shrinkImage(ev.target.result,function(small){addImgData=small;const p=document.getElementById('addPreview');p.src=addImgData;p.style.display='block';});};
   r.readAsDataURL(f);
 }
 function saveNewCard(){
@@ -1185,12 +1297,16 @@ function saveNewCard(){
     bookId=parseInt(document.getElementById('addBook').value);
     b=books.find(x=>x.id===bookId);
   }
-  const maxNo=b.cards.reduce((m,c)=>Math.max(m,c.no),0);
-  b.cards.push({no:maxNo+1,name:name,note:document.getElementById('addNote').value.trim(),suit:((document.getElementById('addSuit').value==='__custom__')?(document.getElementById('addSuitCustom').value.trim()||DEFAULT_SUIT):document.getElementById('addSuit').value),img:addImgData});
-  undoStack.push({type:'addCard', bookId:b.id, no:maxNo+1});
+  // numbers are unique across every journal, not per journal
+  const maxNo=books.reduce((m,bb)=>bb.cards.reduce((n,c)=>Math.max(n,c.no),m),0);
+  const card={no:maxNo+1,name:name,note:document.getElementById('addNote').value.trim(),suit:((document.getElementById('addSuit').value==='__custom__')?(document.getElementById('addSuitCustom').value.trim()||DEFAULT_SUIT):document.getElementById('addSuit').value),img:addImgData};
+  b.cards.push(card);
+  b.cards.sort((x,y)=>x.no-y.no);
+  const saved=persistNewCard(card,b.id);
+  undoStack.push({type:'addCard', bookId:b.id, no:card.no});
   logAction('נוסף קלף: '+name+' ('+b.name+')');
   renderCounter();
-  tap('הקלף נוסף ליומן '+b.name);
+  tap(saved ? ('הקלף נוסף ליומן '+b.name) : 'הקלף נוסף, אך לא ניתן היה לשמור אותו במכשיר');
   showScreen('home');
 }
 
@@ -1445,11 +1561,16 @@ function undoLast(){
   }else if(a.type==='addCard'){
     const b=books.find(x=>x.id===a.bookId);
     if(b) b.cards=b.cards.filter(c=>c.no!==a.no);
+    forgetCard(a.no);
     logAction('בוטלה הוספת קלף');
   }else if(a.type==='editCard'){
-    const b=books.find(x=>x.id===a.bookId);
-    const c=b&&b.cards.find(x=>x.no===a.no);
-    if(c){ c.name=a.prev.name; c.note=a.prev.note; c.suit=a.prev.suit; }
+    let b=books.find(x=>x.id===a.bookId);
+    let c=b&&b.cards.find(x=>x.no===a.no);
+    if(!c){ books.forEach(bb=>{ const f=bb.cards.find(x=>x.no===a.no); if(f){ c=f; b=bb; } }); }
+    if(c){
+      c.name=a.prev.name; c.note=a.prev.note; c.suit=a.prev.suit;
+      persistCardEdit(c,b.id);
+    }
     logAction('בוטל שינוי בקלף');
   }
   renderCounter();
