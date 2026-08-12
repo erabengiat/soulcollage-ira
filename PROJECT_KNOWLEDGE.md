@@ -1,6 +1,6 @@
 # סול קולאז' של עירא — ידע הפרויקט / Project Knowledge
 
-**עודכן / Last updated:** 10 באוגוסט 2026 · **גרסת אפליקציה / App version:** v62
+**עודכן / Last updated:** 12 באוגוסט 2026 · **גרסת אפליקציה / App version:** v65
 
 מסמך זה הוא מקור האמת היחיד לפרויקט. החלק הראשון בעברית, החלק השני באנגלית —
 שני החלקים מכסים את אותו תוכן.
@@ -74,7 +74,7 @@ soulcollage-ira/
 
 ## 4. מצב נוכחי (v62)
 
-1,314 קלפים ב־12 יומנים, 1,288 עם הערה. לכל קלף יש תמונה ולכל תמונה יש קלף.
+1,344 קלפים ב־12 יומנים, 953 עם הערה ב־data.json (ועוד 343 ליומנים 7–9 בתוך index.html). לכל קלף יש תמונה ולכל תמונה יש קלף.
 
 חלוקת הסדרות: ועדה 1,043 · בני לוויה 114 · שקט 81 · קהילה 68 · מועצה 8.
 
@@ -93,7 +93,7 @@ soulcollage-ira/
 לשמות קבצי התמונות וליומנים הפיזיים של הבעלים.
 
 ### עבודה פתוחה
-- יומן 12 עתיד לקבל כ־30 קלפים חדשים.
+- יומן 12 הושלם: 30 קלפים חדשים (1339–1368). שלושה ללא הערה: 1345, 1367, 1368.
 - ההערות של יומנים 7–9 יושבות ב־`index.html` בתוך `CARD_TEXTS_7_9` במקום
   ב־`data.json` — אי־עקביות שכדאי לתקן.
 - קבצים מיותרים למחיקה מהמאגר: `soulcollage-ira-v52/`,
@@ -310,9 +310,9 @@ anywhere.** Adding cards updates every counter by itself.
 | 9 | 112 | 964–1075 | 112 | 0 |
 | 10 | 89 | 1076–1164 | 83 | 6 |
 | 11 | 104 | 1165–1268 | 100 | 4 |
-| 12 | 70 | 1269–1338 | 70 | 0 |
+| 12 | 100 | 1269–1368 | 97 | 0 |
 
-**Total: 1,314 cards — 1,288 with notes, 26 without.**
+**Total: 1,344 cards.**
 
 Journals 7, 8 and 9 now have their notes, but they live in a `CARD_TEXTS_7_9`
 constant inside `index.html` rather than in `data.json` — an inconsistency that
@@ -570,6 +570,26 @@ before replacing it.
 - **10 Aug 2026** — All 1,314 card images reviewed by eye; 92 cards set to
   `בני לוויה`, and the 27 older `מלווים` cards renamed to the same value so
   there is only one Companions suit. 114 cards total.
+- **12 Aug 2026** — **v63.** Journal 12: cards 1339–1347 added from
+  `הערות_ליומן_12.docx` + `1314.zip` (1345 has an image but its Word row was
+  empty, so it carries a blank note). The loading indicator was changed from an
+  hourglass to a circular ring with a wave sweeping round it (`.sc-spinner`).
+  A further 21 images arrived numbered 1438–1458 while their notes were numbered
+  1348–1366. **Two different offsets** reconciled them, confirmed by picture
+  content rather than by position: images 1448–1458 → cards 1348–1358 (offset
+  100; card 1352 "שטויות במיץ תפוזים" shows a boy with an orange, 1349 shows
+  turtles, 1358 shows Jupiter), and images 1438–1444 → cards 1360–1366 (offset
+  78; 1360 a tiger, 1363 a fairground ride, 1366 a snake). Image 1445 → card
+  1359; images 1446–1447 became cards 1367–1368 with no note. Journal 12 is now
+  100 cards, 1269–1368.
+- **12 Aug 2026** — **v65.** The owner then supplied a correctly numbered image
+  set (1269–1366), which confirmed 17 of the 19 inferred placements and
+  corrected two: card 1339 is the girl with a turtle flying over a pyramid
+  (its note is "הלוואי שצב יעוף"), and card 1354 is the hot-air balloons
+  ("אורחים מן השמיים"). The two pictures displaced by that correction became
+  1367 and 1368, which carry no note. **Lesson: infer a mapping only to unblock
+  work, and re-verify against a numbered set when one arrives.** Companions in
+  journal 12 after the correction: 1360, 1362, 1366, 1367.
 - **10 Aug 2026** — **v62.** The `על-אישי` suit renamed to `שקט` across all 81
   cards, and the dropdown updated to match. Only the `suit` field changed.
 - **10 Aug 2026** — **v61.** `על-אישי` and `מועצה` added to the `SUITS` list so
