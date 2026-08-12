@@ -171,6 +171,15 @@
   }
   #bootLoader .boot-sub{font-size:12.5px;opacity:.65;font-weight:500;}
   /* an image that has not arrived yet shows a small ring in its place */
+  .del-card-btn{
+    display:block; margin:26px auto 8px; padding:9px 20px;
+    background:transparent; border:1.5px solid rgba(176,68,59,.45);
+    color:#B0443B; border-radius:999px;
+    font-family:inherit; font-size:13px; font-weight:600; opacity:.75;
+    cursor:pointer; transition:opacity .15s ease, background .15s ease;
+  }
+  .del-card-btn:hover{ opacity:1; background:rgba(176,68,59,.07); }
+  .del-card-btn:active{ transform:scale(.97); }
   .sc-loading{position:relative;}
   .sc-loading::after{
     content:"";position:absolute;top:50%;left:50%;width:24px;height:24px;
@@ -632,7 +641,7 @@ if ('serviceWorker' in navigator) {
 
   <!-- BOOKS -->
   <div class="screen" id="books">
-    <div class="subhead"><button class="back" onclick="showScreen('home')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button><h2>היומנים</h2><span class="sub-count">12 יומנים</span></div>
+    <div class="subhead"><button class="back" onclick="showScreen('home')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button><h2>היומנים</h2><span class="sub-count" id="booksCount"></span></div>
     <div class="books" id="booksGrid"></div>
     <div class="footer">בחרו יומן כדי לצפות בקלפים שבו</div>
   </div>
@@ -855,8 +864,9 @@ if ('serviceWorker' in navigator) {
 /* ============ DATA (loaded from data/data.json) ============ */
 let DATA = {books:[], cards:[]};
 
-const APP_VERSION = 'v65';
-const BOOK_COLORS=['#C0673B','#244F5E','#D9A441','#8A5A44','#3E6E5E','#B0443B','#6E5A8A','#4A7C8C','#C98A3B','#5E7A44','#A84B6B','#3B5468'];
+const APP_VERSION = 'v67';
+const BOOK_COLORS=['#C0673B','#244F5E','#D9A441','#8A5A44','#3E6E5E','#B0443B','#6E5A8A','#4A7C8C','#C98A3B','#5E7A44','#A84B6B','#3B5468','#7A6A4F'];
+function bookColor(id){ return BOOK_COLORS[(id-1) % BOOK_COLORS.length]; }
 let books=[];
 const SUITS=["ועדה","קהילה","בני לוויה","מועצה - ארכיטיפים","מועצה","שקט"];
 const DEFAULT_SUIT="ועדה";
@@ -911,6 +921,54 @@ function forgetCard(no){
   if(edits[String(no)]){ delete edits[String(no)]; writeStore(EDITS_KEY, edits); }
 }
 
+/* Cards deleted from inside the app. Stored as a list of card numbers.
+   Deletion is local to this device, exactly like an edit — data.json is
+   untouched, so the card returns for anyone else and after a data wipe. */
+const DELETED_KEY='deletedCards';
+
+/* The delete gate. This is a deterrent against an accidental or casual
+   deletion, NOT real security: index.html is public, so anyone who reads the
+   source can find this. Never put a real secret here. */
+const DEL_PASS_HASH = 109403740;   // hash of the agreed word
+function _hash(str){
+  let h=0;
+  for(let i=0;i<str.length;i++){ h=(h*31 + str.charCodeAt(i))|0; }
+  return h;
+}
+function checkDeletePass(pw){ return _hash(String(pw||'').trim().toLowerCase())===DEL_PASS_HASH; }
+
+function persistDelete(no){
+  const list = readStore(DELETED_KEY, []);
+  if(list.indexOf(no)===-1) list.push(no);
+  return writeStore(DELETED_KEY, list);
+}
+function unpersistDelete(no){
+  const list = readStore(DELETED_KEY, []).filter(function(x){ return x!==no; });
+  writeStore(DELETED_KEY, list);
+}
+
+/* Asks for the word, then removes the card. */
+function deleteCardPrompt(){
+  if(!currentCard) return;
+  if(typeof READONLY!=='undefined' && READONLY) return;
+  const b = books.find(x=>x.id===currentCard.bookId);
+  const c = b && b.cards.find(x=>x.no===currentCard.no);
+  if(!c) return;
+  const pw = prompt('מחיקת קלף ' + c.no + '\n\nהקלידו את סיסמת המחיקה:');
+  if(pw===null) return;                       // cancelled
+  if(!checkDeletePass(pw)){ tap('סיסמה שגויה — הקלף לא נמחק'); return; }
+  if(!confirm('למחוק את הקלף "' + (c.name||c.no) + '"?\n\nאפשר לבטל מיד לאחר מכן.')) return;
+  const snapshot = {no:c.no, name:c.name, note:c.note, suit:c.suit, img:c.img, book:b.id};
+  b.cards = b.cards.filter(x=>x.no!==c.no);
+  persistDelete(c.no);
+  undoStack.push({type:'deleteCard', bookId:b.id, card:snapshot});
+  logAction('נמחק קלף: ' + (c.name||c.no));
+  renderCounter();
+  tap('הקלף נמחק');
+  showScreen(currentCard.from||'bookCards');
+  currentCard=null;
+}
+
 /* Re-applies everything that was saved. Called once, from loadData(). */
 function restoreCardChanges(){
   readStore(ADDED_KEY, []).forEach(function(rec){
@@ -941,6 +999,12 @@ function restoreCardChanges(){
       }
     }
   });
+  const _del = readStore(DELETED_KEY, []);
+  if(_del.length){
+    books.forEach(function(b){
+      b.cards = b.cards.filter(function(c){ return _del.indexOf(c.no)===-1; });
+    });
+  }
   books.forEach(function(b){ b.cards.sort(function(x,y){ return x.no-y.no; }); });
 }
 
@@ -1019,11 +1083,16 @@ async function loadData(){
     return;
   }
   applyCardTexts();
-  // Build all 12 book slots
+  // Build a slot for every journal present in the data (never hardcode the count)
   books = [];
-  for(let i=1;i<=12;i++){
+  const _maxBook = Math.max(
+    12,
+    ...DATA.books.map(b=>b.id),
+    ...DATA.cards.map(c=>c.book)
+  );
+  for(let i=1;i<=_maxBook;i++){
     const meta = DATA.books.find(b=>b.id===i);
-    books.push({id:i, name: meta?meta.name:('יומן '+i), color:BOOK_COLORS[i-1], cards:[]});
+    books.push({id:i, name: meta?meta.name:('יומן '+i), color:bookColor(i), cards:[]});
   }
   // Fill cards
   DATA.cards.forEach(c=>{
@@ -1086,6 +1155,8 @@ function today(){const d=new Date();return d.toISOString().slice(0,10);}
 /* ---- BOOKS + CARDS ---- */
 function renderBooks(){
   const g=document.getElementById('booksGrid');g.innerHTML='';
+  const _bc=document.getElementById('booksCount');
+  if(_bc) _bc.textContent = books.length + ' יומנים';
   books.forEach(b=>{
     const el=document.createElement('div');el.className='book';el.onclick=()=>openBook(b.id);
     const cover=b.cards.length&&b.cards[0].img?`<img class="cover-img" src="${b.cards[0].img}">`:'';
@@ -1176,12 +1247,14 @@ function openCard(bookId,no,fromScreen){
         : `<select class="suit-select" id="detailSuit" onchange="changeSuitInline(this.value)">${SUITS.map(s=>`<option value="${s}" ${c.suit===s?'selected':''}>${s}</option>`).join('')}</select>`}
     </div>
     <div class="fld-label fld-note-label">תאור הקלף</div>
-    ${noteHtml}`;
+    ${noteHtml}
+    ${READONLY?'':`<button class="del-card-btn" id="delBtn">מחיקת הקלף</button>`}`;
   const _db=document.getElementById('detailBack'); if(_db) _db.onclick=()=>showScreen(fromScreen||'bookCards');
   const _dh=document.getElementById('detailHead'); if(_dh) _dh.textContent=b.id+'- '+c.no;
   attachImgLoaders(document.getElementById('detailBody'));
   showScreen('cardDetail');
   const _eb=document.getElementById('editBtn'); if(_eb) _eb.onclick=openEdit;
+  const _delb=document.getElementById('delBtn'); if(_delb) _delb.onclick=deleteCardPrompt;
 }
 
 function changeSuitInline(val){
@@ -1658,6 +1731,14 @@ function undoLast(){
     if(b) b.cards=b.cards.filter(c=>c.no!==a.no);
     forgetCard(a.no);
     logAction('בוטלה הוספת קלף');
+  }else if(a.type==='deleteCard'){
+    const b=books.find(x=>x.id===a.bookId);
+    if(b && !b.cards.find(x=>x.no===a.card.no)){
+      b.cards.push({no:a.card.no,name:a.card.name,note:a.card.note,suit:a.card.suit,img:a.card.img});
+      b.cards.sort((x,y)=>x.no-y.no);
+    }
+    unpersistDelete(a.card.no);
+    logAction('בוטלה מחיקת קלף');
   }else if(a.type==='editCard'){
     let b=books.find(x=>x.id===a.bookId);
     let c=b&&b.cards.find(x=>x.no===a.no);

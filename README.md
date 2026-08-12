@@ -1,6 +1,6 @@
 # סול קולאז' של עירא — מדריך מרכזי / Central Handout
 
-**גרסה / Version:** v65 · **עודכן / Updated:** 12 באוגוסט 2026
+**גרסה / Version:** v67 · **עודכן / Updated:** 12 באוגוסט 2026
 
 *עברית למטה בחלק הראשון · English in the second half*
 
@@ -12,7 +12,7 @@
 ## מה זו האפליקציה
 
 בית דיגיטלי לאוסף קלפי הסול־קולאז' של עירא. כל קלף הוא יצירת קולאז' — תמונה, שם,
-והערה שעירא כתבה בקולה שלה. האוסף מחולק ל־12 יומנים.
+והערה שעירא כתבה בקולה שלה. האוסף מחולק ל־13 יומנים.
 
 - **כתובת האפליקציה:** https://erabengiat.github.io/soulcollage-ira/
 - **המאגר בגיטהאב:** https://github.com/erabengiat/soulcollage-ira
@@ -25,7 +25,7 @@
 | | |
 |---|---|
 | סה"כ קלפים | 1,344 |
-| יומנים | 12 |
+| יומנים | 13 |
 | קלפים עם הערה | 1,288 |
 | תמונות | 1,314 — לכל קלף יש תמונה, ולכל תמונה יש קלף |
 
@@ -44,7 +44,8 @@
 | 9 | 112 | 964–1075 | 112 |
 | 10 | 89 | 1076–1164 | 83 |
 | 11 | 104 | 1165–1268 | 100 |
-| 12 | 100 | 1269–1368 | 97 |
+| 12 | 98 | 1269–1366 | 97 |
+| 13 | 2 | 1367–1368 | 0 |
 
 ### הסדרות (Suits)
 
@@ -67,6 +68,7 @@
 - **שליפת קלף** — שליפה אקראית, כמו קריאה בקלפים
 - **הוספת קלף** — צילום או בחירת תמונה, שם, הערה וסדרה
 - **עריכת קלף** — שינוי שם, הערה, סדרה, יומן או תמונה
+- **מחיקת קלף** — בתחתית מסך הקלף, מוגן בסיסמה. המחיקה מקומית למכשיר בלבד
 - **קישור לצפייה** — קישור לחברים לצפייה בלבד, בלי אפשרות לערוך
 - **גיבוי** — ייצוא וייבוא של כל השינויים לקובץ
 
@@ -118,7 +120,7 @@
 
 A digital home for Ira's SoulCollage card collection. Each card is a collage —
 a picture, a name, and a note written in Ira's own voice. The collection is
-divided into 12 journals.
+divided into 13 journals.
 
 - **Live app:** https://erabengiat.github.io/soulcollage-ira/
 - **Repository:** https://github.com/erabengiat/soulcollage-ira
@@ -131,7 +133,7 @@ offline from its local cache.
 | | |
 |---|---|
 | Total cards | 1,344 |
-| Journals | 12 |
+| Journals | 13 |
 | Cards with a note | 1,288 |
 | Images | 1,314 — every card has one, every image has a card |
 
@@ -150,7 +152,8 @@ offline from its local cache.
 | 9 | 112 | 964–1075 | 112 |
 | 10 | 89 | 1076–1164 | 83 |
 | 11 | 104 | 1165–1268 | 100 |
-| 12 | 100 | 1269–1368 | 97 |
+| 12 | 98 | 1269–1366 | 97 |
+| 13 | 2 | 1367–1368 | 0 |
 
 ### The suits
 
@@ -174,6 +177,7 @@ image, or a man-made object as a subject, disqualifies it.
 - **Draw a card** — a random draw, like a reading
 - **Add a card** — photo or gallery image, name, note, suit
 - **Edit a card** — name, note, suit, journal, or picture
+- **Delete a card** — at the bottom of the card screen, password-protected. The deletion is local to that device only
 - **Share link** — a view-only link for friends; they cannot edit
 - **Backup** — export and import all local changes as a file
 

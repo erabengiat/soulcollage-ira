@@ -1,6 +1,6 @@
 # סול קולאז' של עירא — ידע הפרויקט / Project Knowledge
 
-**עודכן / Last updated:** 12 באוגוסט 2026 · **גרסת אפליקציה / App version:** v65
+**עודכן / Last updated:** 12 באוגוסט 2026 · **גרסת אפליקציה / App version:** v67
 
 מסמך זה הוא מקור האמת היחיד לפרויקט. החלק הראשון בעברית, החלק השני באנגלית —
 שני החלקים מכסים את אותו תוכן.
@@ -74,7 +74,7 @@ soulcollage-ira/
 
 ## 4. מצב נוכחי (v62)
 
-1,344 קלפים ב־12 יומנים, 953 עם הערה ב־data.json (ועוד 343 ליומנים 7–9 בתוך index.html). לכל קלף יש תמונה ולכל תמונה יש קלף.
+1,344 קלפים ב־13 יומנים, 953 עם הערה ב־data.json (ועוד 343 ליומנים 7–9 בתוך index.html). לכל קלף יש תמונה ולכל תמונה יש קלף.
 
 חלוקת הסדרות: ועדה 1,043 · בני לוויה 114 · שקט 81 · קהילה 68 · מועצה 8.
 
@@ -161,6 +161,13 @@ im.save(dst, 'JPEG', quality=85, optimize=True, progressive=True)
 ### כותרת דביקה
 `.subhead` היא `position: sticky; top: 0; z-index: 40`. חץ החזרה הוא שברון
 המצביע **ימינה** — נכון לממשק מימין לשמאל, אין "לתקן" אותו לשמאל.
+
+### מחיקת קלף
+כפתור "מחיקת הקלף" בתחתית מסך הקלף מבקש סיסמה. `checkDeletePass()` משווה
+לגיבוב ב־`DEL_PASS_HASH`. **זו הגנה מפני מחיקה בשוגג בלבד, לא אבטחה** —
+`index.html` ציבורי וכל אחד יכול לקרוא את הקוד. אין לשים שם סוד אמיתי.
+המחיקה נשמרת ב־localStorage תחת `deletedCards`, כלומר היא מקומית למכשיר בדיוק
+כמו עריכה; `data.json` אינו משתנה. ניתן לבטל מיד דרך פעולת ה־Undo.
 
 ### שמירת שינויים
 `saveEdit()` ו־`saveNewCard()` כותבים ל־localStorage תחת `cardEdits` ו־
@@ -310,7 +317,8 @@ anywhere.** Adding cards updates every counter by itself.
 | 9 | 112 | 964–1075 | 112 | 0 |
 | 10 | 89 | 1076–1164 | 83 | 6 |
 | 11 | 104 | 1165–1268 | 100 | 4 |
-| 12 | 100 | 1269–1368 | 97 | 0 |
+| 12 | 98 | 1269–1366 | 97 |
+| 13 | 2 | 1367–1368 | 0 | 0 |
 
 **Total: 1,344 cards.**
 
@@ -582,6 +590,20 @@ before replacing it.
   78; 1360 a tiger, 1363 a fairground ride, 1366 a snake). Image 1445 → card
   1359; images 1446–1447 became cards 1367–1368 with no note. Journal 12 is now
   100 cards, 1269–1368.
+- **12 Aug 2026** — **v67.** A "מחיקת הקלף" button on the card screen, gated by
+  a prompt checked against `DEL_PASS_HASH`. Deletions persist in localStorage
+  under `deletedCards` and are re-applied at the end of `restoreCardChanges()`;
+  `data.json` is never touched, so the deletion is per-device and reversible via
+  Undo. The button is hidden in read-only share mode. **The gate is a deterrent,
+  not security** — the check runs in public client-side code.
+- **12 Aug 2026** — **v66.** Journal 13 opened; cards 1367 and 1368 moved into
+  it from journal 12, keeping their numbers (numbers are tied to
+  `images/<no>.jpg` and are never reassigned). Three things that had been
+  hardcoded to twelve journals were made data-driven at the same time: the build
+  loop now derives the journal count from `DATA.books` and `DATA.cards`, the
+  "N יומנים" label is computed in `renderBooks()`, and `bookColor(id)` wraps the
+  palette modulo its length, so a fourteenth journal needs no code change at
+  all. A thirteenth colour (`#7A6A4F`) was added.
 - **12 Aug 2026** — **v65.** The owner then supplied a correctly numbered image
   set (1269–1366), which confirmed 17 of the 19 inferred placements and
   corrected two: card 1339 is the girl with a turtle flying over a pyramid
