@@ -1,6 +1,6 @@
 # סול קולאז' של עירא — ידע הפרויקט / Project Knowledge
 
-**עודכן / Last updated:** 12 באוגוסט 2026 · **גרסת אפליקציה / App version:** v67
+**עודכן / Last updated:** 12 באוגוסט 2026 · **גרסת אפליקציה / App version:** v68
 
 מסמך זה הוא מקור האמת היחיד לפרויקט. החלק הראשון בעברית, החלק השני באנגלית —
 שני החלקים מכסים את אותו תוכן.
@@ -161,6 +161,14 @@ im.save(dst, 'JPEG', quality=85, optimize=True, progressive=True)
 ### כותרת דביקה
 `.subhead` היא `position: sticky; top: 0; z-index: 40`. חץ החזרה הוא שברון
 המצביע **ימינה** — נכון לממשק מימין לשמאל, אין "לתקן" אותו לשמאל.
+
+### מוזיקת רקע
+המוזיקה מסונתזת ב־Web Audio API (`startAmbient()` / `stopAmbient()`), ללא קובץ
+שמע — לכן אין הורדה נוספת, אין בעיית זכויות יוצרים, והיא פועלת גם בלי רשת.
+אקורד נמוך של ארבעה סינוסים דרך מסנן low-pass, עם פעמונים דלילים אקראיים.
+העוצמה עולה מ־0.0001 ל־0.035 בשתי שניות וחצי, ואז ל־0.22 לאורך 16 שניות.
+מופעלת רק במסך `cardDetail` דרך `showScreen()`, ונעצרת בכל מסך אחר וכשהלשונית
+מוסתרת. ההעדפה נשמרת ב־localStorage תחת `ambientMusic`.
 
 ### מחיקת קלף
 כפתור "מחיקת הקלף" בתחתית מסך הקלף מבקש סיסמה. `checkDeletePass()` משווה
@@ -590,6 +598,15 @@ before replacing it.
   78; 1360 a tiger, 1363 a fairground ride, 1366 a snake). Image 1445 → card
   1359; images 1446–1447 became cards 1367–1368 with no note. Journal 12 is now
   100 cards, 1269–1368.
+- **12 Aug 2026** — **v68.** Ambient music while a card is open, synthesised
+  with the Web Audio API rather than shipped as a file: a low four-note chord
+  through a low-pass filter plus sparse random bell tones, fading in over about
+  sixteen seconds. Started from `showScreen('cardDetail')` and stopped on every
+  other screen and on `visibilitychange`. A speaker button in the card header
+  and a toggle in Settings both write `ambientMusic` to localStorage. The first
+  fade curve was a single exponential ramp and left it inaudible for six
+  seconds, which read as broken — measured in the browser and split into two
+  ramps.
 - **12 Aug 2026** — **v67.** A "מחיקת הקלף" button on the card screen, gated by
   a prompt checked against `DEL_PASS_HASH`. Deletions persist in localStorage
   under `deletedCards` and are re-applied at the end of `restoreCardChanges()`;
