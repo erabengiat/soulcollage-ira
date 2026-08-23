@@ -1,6 +1,6 @@
 # סול קולאז' של עירא — ידע הפרויקט / Project Knowledge
 
-**עודכן / Last updated:** 12 באוגוסט 2026 · **גרסת אפליקציה / App version:** v71
+**עודכן / Last updated:** 12 באוגוסט 2026 · **גרסת אפליקציה / App version:** v73
 
 מסמך זה הוא מקור האמת היחיד לפרויקט. החלק הראשון בעברית, החלק השני באנגלית —
 שני החלקים מכסים את אותו תוכן.
@@ -161,6 +161,25 @@ im.save(dst, 'JPEG', quality=85, optimize=True, progressive=True)
 ### כותרת דביקה
 `.subhead` היא `position: sticky; top: 0; z-index: 40`. חץ החזרה הוא שברון
 המצביע **ימינה** — נכון לממשק מימין לשמאל, אין "לתקן" אותו לשמאל.
+
+### פרסום שינויים (v73)
+אין שרת מאחורי האפליקציה, ולכן עריכה נשמרת רק במכשיר שבו נעשתה. במסך "עזרה
+וגיבוי" יש כפתור **הורדת data.json מעודכן** (`exportDataJson()`), הבונה קובץ
+data.json שלם ממה שעל המסך — נתוני הקובץ בתוספת כל העריכות המקומיות — ומוריד
+אותו. הבעלים מחליף בו את הקובץ שבתיקייה ומבצע Commit ו־Push, וכל המכשירים
+מתעדכנים.
+
+**הקובץ המיוצא זהה לקובץ הקיים פרט לעריכות עצמן.** `RAW_DATA` שומר עותק של
+data.json כפי שהתקבל, ו־`buildDataJson()` בונה מתוכו ומחליף רק קלפים שנערכו,
+נוספו או נמחקו בפועל. טקסטים שהאפליקציה רק מציגה — למשל אלה של יומנים 7–9
+שנמצאים ב־index.html — אינם נכתבים לקובץ. כך ה־diff ב־GitHub Desktop קטן וברור. לאחר ההורדה מוצעת ניקוי העריכות המקומיות, כדי שהקובץ שבגיטהאב יהיה
+המקור היחיד.
+
+מתג **עריכה במכשיר זה** (`editingAllowed()`) חוסם עריכה, הוספה ומחיקה במכשיר
+מסוים. הכוונה: לערוך רק במחשב, ולחסום באנדרואיד.
+
+**חשוב:** `applyCardTexts()` תוקן כך שימלא רק שם או הערה **ריקים**. קודם הוא
+דרס תמיד, ולכן עריכה לקלף מיומנים 7–9 הייתה נמחקת בטעינה הבאה גם אחרי פרסום.
 
 ### מוזיקה
 יצירה מקורית המסונתזת ב־Web Audio API, ללא קובץ שמע — אין הורדה, אין בעיית
@@ -599,6 +618,22 @@ before replacing it.
   78; 1360 a tiger, 1363 a fairground ride, 1366 a snake). Image 1445 → card
   1359; images 1446–1447 became cards 1367–1368 with no note. Journal 12 is now
   100 cards, 1269–1368.
+- **23 Aug 2026** — **v73.** The export was rewritten to produce a minimal diff.
+  v72 built the file from the in-memory state, which silently pulled the 345
+  journal 7–9 notes into data.json on the first publish; the owner wanted the
+  data left exactly as it is. `RAW_DATA` now holds data.json as fetched and
+  `buildDataJson()` replaces only cards that were genuinely edited, added or
+  deleted. Verified: exporting with no edits reproduces the file byte-for-byte,
+  and a single edit changes exactly one card.
+- **23 Aug 2026** — **v72.** `exportDataJson()` builds a complete data.json from
+  the in-memory state and downloads it, so an edit made on the computer can be
+  committed and reach every device; it offers to clear the local overlay
+  afterwards and warns about any card whose picture is an embedded data URL. A
+  per-device `editingAllowed` switch hides the edit, add and delete controls.
+  **Bug found while testing this:** `applyCardTexts()` overwrote name and note
+  unconditionally, so once a journal 7–9 card's text lived in data.json — which
+  the export puts there — any edit to it was silently reverted on the next load.
+  It now fills in only empty values, making data.json authoritative.
 - **23 Aug 2026** — **v70/v71.** Each play now picks a random transposition,
   arpeggio pattern and starting point, so the same screen never sounds the same
   twice, and every note is scaled by a `soft` factor that rises over the first

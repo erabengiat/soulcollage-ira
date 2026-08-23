@@ -1,6 +1,6 @@
 # סול קולאז' של עירא — מדריך מרכזי / Central Handout
 
-**גרסה / Version:** v71 · **עודכן / Updated:** 12 באוגוסט 2026
+**גרסה / Version:** v73 · **עודכן / Updated:** 12 באוגוסט 2026
 
 *עברית למטה בחלק הראשון · English in the second half*
 
