@@ -1,6 +1,6 @@
 # סול קולאז' של עירא — מדריך מרכזי / Central Handout
 
-**גרסה / Version:** v73 · **עודכן / Updated:** 12 באוגוסט 2026
+**גרסה / Version:** v75 · **עודכן / Updated:** 12 באוגוסט 2026
 
 *עברית למטה בחלק הראשון · English in the second half*
 
@@ -61,6 +61,12 @@
 רק אם בקולאז' מופיעים בעלי חיים ותו לא. נוף, ים, עצים ושמיים — בסדר. יותר מחיה
 אחת — בסדר. אדם כלשהו בתמונה, או חפץ מעשה ידי אדם כנושא — מוציא את הקלף מהסדרה.
 
+## מי יכול לערוך
+
+עריכה, הוספה ומחיקה זמינות **במחשב בלבד**. טלפונים וטאבלטים נפתחים במצב צפייה
+בלבד, כי אי אפשר לפרסם מהם שינוי — הפרסום דורש Commit ו־Push. אפשר לשנות זאת
+לכל מכשיר במסך עזרה וגיבוי, בכפתור "עריכה במכשיר זה".
+
 ## מה אפשר לעשות באפליקציה
 
 - **היומנים** — עיון בכל יומן, הקלפים מסודרים לפי מספר
@@ -69,7 +75,7 @@
 - **הוספת קלף** — צילום או בחירת תמונה, שם, הערה וסדרה
 - **עריכת קלף** — שינוי שם, הערה, סדרה, יומן או תמונה
 - **מחיקת קלף** — בתחתית מסך הקלף, מוגן בסיסמה. המחיקה מקומית למכשיר בלבד
-- **מוזיקה** — מרימבה ותוף יד, **רק במצגת**. פותחת שקטה ולאט ונעשית חיה, ושונה בכל הפעלה. כפתור הרמקול משתיק
+- **מוזיקה** — "Beloved" מאת Sakura Girl, **רק במצגת**. מתחילה בנקודה אקראית, עולה בהדרגה בשתי שניות וממשיכה בלולאה. כפתור הרמקול משתיק
 - **קישור לצפייה** — קישור לחברים לצפייה בלבד, בלי אפשרות לערוך
 - **גיבוי** — ייצוא וייבוא של כל השינויים לקובץ
 
@@ -171,6 +177,13 @@ qualifies only if the collage shows animals and nothing else. Landscape — sea,
 trees, sky — is fine. Any number of animals is fine. A person anywhere in the
 image, or a man-made object as a subject, disqualifies it.
 
+## Who can edit
+
+Editing, adding and deleting are available **on the computer only**. Phones and
+tablets open read-only, because a change cannot be published from them — that
+needs a commit and a push. This can be changed per device in Help & Backup,
+under "עריכה במכשיר זה".
+
 ## What the app does
 
 - **Journals** — browse each journal, cards ordered by number
@@ -179,7 +192,7 @@ image, or a man-made object as a subject, disqualifies it.
 - **Add a card** — photo or gallery image, name, note, suit
 - **Edit a card** — name, note, suit, journal, or picture
 - **Delete a card** — at the bottom of the card screen, password-protected. The deletion is local to that device only
-- **Music** — marimba and hand drum, **in the slideshow only**. Opens quiet and slow, grows livelier, and differs every time. The speaker button mutes it
+- **Music** — "Beloved" by Sakura Girl, **in the slideshow only**. Begins at a random point, fades up over two seconds, loops. The speaker button mutes it
 - **Share link** — a view-only link for friends; they cannot edit
 - **Backup** — export and import all local changes as a file
 

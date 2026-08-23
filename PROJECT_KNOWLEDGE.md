@@ -1,6 +1,6 @@
 # סול קולאז' של עירא — ידע הפרויקט / Project Knowledge
 
-**עודכן / Last updated:** 12 באוגוסט 2026 · **גרסת אפליקציה / App version:** v73
+**עודכן / Last updated:** 12 באוגוסט 2026 · **גרסת אפליקציה / App version:** v75
 
 מסמך זה הוא מקור האמת היחיד לפרויקט. החלק הראשון בעברית, החלק השני באנגלית —
 שני החלקים מכסים את אותו תוכן.
@@ -175,20 +175,32 @@ data.json כפי שהתקבל, ו־`buildDataJson()` בונה מתוכו ומח�
 שנמצאים ב־index.html — אינם נכתבים לקובץ. כך ה־diff ב־GitHub Desktop קטן וברור. לאחר ההורדה מוצעת ניקוי העריכות המקומיות, כדי שהקובץ שבגיטהאב יהיה
 המקור היחיד.
 
-מתג **עריכה במכשיר זה** (`editingAllowed()`) חוסם עריכה, הוספה ומחיקה במכשיר
-מסוים. הכוונה: לערוך רק במחשב, ולחסום באנדרואיד.
+**טלפונים וטאבלטים הם לצפייה בלבד כברירת מחדל.** `isHandheld()` מזהה לפי
+user-agent, מסך צר ומגע, ו־`editingAllowed()` מחזיר false כשלא נקבע אחרת
+במפורש. במצב זה מוסתרים העיפרון, כפתור המחיקה, "הוספת קלף" וכל אזור הפרסום.
+המתג **עריכה במכשיר זה** במסך עזרה וגיבוי דורס לשני הכיוונים ונשמר לכל מכשיר
+בנפרד. הסיבה: עריכה בטלפון אינה ניתנת לפרסום — אין שם GitHub Desktop — ולכן
+היא הייתה נשארת תקועה במכשיר.
 
 **חשוב:** `applyCardTexts()` תוקן כך שימלא רק שם או הערה **ריקים**. קודם הוא
 דרס תמיד, ולכן עריכה לקלף מיומנים 7–9 הייתה נמחקת בטעינה הבאה גם אחרי פרסום.
 
 ### מוזיקה
-יצירה מקורית המסונתזת ב־Web Audio API, ללא קובץ שמע — אין הורדה, אין בעיית
-זכויות יוצרים, ופועלת בלי רשת. `_marimba()` בונה צליל עץ מוקש עם הרמוניות לא
-הרמוניות ודעיכה מהירה; `_drum()` מפיק תוף יד. `_tick()` מסדר תבניות משתלבות
-קצרות על שני אקורדים. הקצב עולה מ־76 ל־106 והצפיפות גדלה.
-**מופעל רק במצגת** (`MUSIC_SCREENS=['slideshow']`) — מסך הקלף ושליפת הקלף
-שקטים. כל הפעלה מקבלת טרנספוזיציה, תבנית ונקודת התחלה אקראיות, והפתיחה מרוסנת
-ל־28% מהעוצמה ועולה על פני 9 שניות. ההעדפה נשמרת תחת `ambientMusic`.
+**Beloved** מאת **Sakura Girl**, מוזיקה חופשית לשימוש מ-chosic.com, שמורה
+ב-`music/beloved.mp3`. הקובץ המקורי היה 11.85MB ב-320kbps וקודד מחדש ל-96kbps
+(3.6MB). קרדיט מופיע במסך "עזרה וגיבוי".
+
+מתנגנת **רק במצגת**. מתחילה בנקודה אקראית בתוך היצירה, עולה מאפס לעוצמה מלאה
+במשך שתי שניות, חוזרת בלולאה עד ליציאה, ואז דועכת ב-1.2 שניות.
+
+מנוגנת דרך אלמנט `<audio>` ולא דרך Web Audio API: פענוח יצירה של חמש דקות
+לזיכרון היה עולה מעל 100MB בטלפון, בעוד שהאלמנט משדר אותה.
+
+**ה-service worker מגיש את `/music/` מהמטמון קודם** ולא network-first, אחרת
+3.6MB היו יורדים בכל הפעלת מצגת.
+
+**דילוג לנקודה אקראית דורש תמיכת Range מהשרת.** GitHub Pages תומך. אם אין
+תמיכה, הנגינה פשוט מתחילה מההתחלה — נפילה רכה, לא תקלה.
 
 ### מחיקת קלף
 כפתור "מחיקת הקלף" בתחתית מסך הקלף מבקש סיסמה. `checkDeletePass()` משווה
@@ -618,6 +630,20 @@ before replacing it.
   78; 1360 a tiger, 1363 a fairground ride, 1366 a snake). Image 1445 → card
   1359; images 1446–1447 became cards 1367–1368 with no note. Journal 12 is now
   100 cards, 1269–1368.
+- **23 Aug 2026** — **v75.** The synthesised music was replaced with a real
+  royalty-free track the owner supplied — "Beloved" by Sakura Girl from
+  chosic.com — re-encoded from 320kbps/11.85MB to 96kbps/3.6MB and stored at
+  `music/beloved.mp3`. Played through an `<audio>` element rather than Web Audio
+  (decoding five minutes would cost a phone >100MB), starting at a random offset,
+  fading in over two seconds, looping until the slideshow is left. `sw.js` now
+  serves `/music/` cache-first so it is not re-downloaded on every run. A credit
+  line was added to the Help screen. Note: the random start relies on HTTP range
+  requests — a test server without them made every run begin at zero, which is
+  what a plain `python3 -m http.server` will do.
+- **23 Aug 2026** — **v74.** Handheld devices are now read-only by default via
+  `isHandheld()`, rather than relying on the owner to flip the switch on each
+  one. The publish section is hidden too, since a phone cannot commit anything.
+  The per-device switch still overrides in both directions.
 - **23 Aug 2026** — **v73.** The export was rewritten to produce a minimal diff.
   v72 built the file from the in-memory state, which silently pulled the 345
   journal 7–9 notes into data.json on the first publish; the owner wanted the

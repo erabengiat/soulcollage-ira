@@ -815,6 +815,12 @@ if ('serviceWorker' in navigator) {
     <div class="subhead"><h2>עזרה וגיבוי</h2></div>
     <div class="add-form">
 
+      <div class="detail-section-label">מוזיקה</div>
+      <div class="note-box" style="font-size:13.5px;margin-bottom:18px;line-height:1.7">
+        המוזיקה במצגת: <b>Beloved</b> מאת <b>Sakura Girl</b>, מוזיקה חופשית לשימוש
+        שהורדה מ-chosic.com.
+      </div>
+
       <div class="detail-section-label">מדריכים</div>
       <button class="btn secondary" onclick="showGuide('short')">מדריך מקוצר</button>
       <button class="btn secondary" onclick="showGuide('full')">מדריך מפורט</button>
@@ -825,6 +831,7 @@ if ('serviceWorker' in navigator) {
       </div>
       <button class="btn clay" onclick="exportBackup()">שמירת גיבוי לקובץ</button>
 
+      <div id="publishWrap">
       <div class="detail-section-label" style="margin-top:22px">פרסום שינויים לכל המכשירים</div>
       <div class="note-box" style="font-size:14px;margin-bottom:12px">
         עריכה באפליקציה נשמרת רק במכשיר שבו נעשתה. כדי שכל המכשירים יראו אותה,
@@ -832,6 +839,7 @@ if ('serviceWorker' in navigator) {
         ובצעו Commit ואז Push.
       </div>
       <button class="btn clay" onclick="exportDataJson()">הורדת data.json מעודכן</button>
+      </div>
       <button class="btn secondary" onclick="toggleEditingAllowed()"><span id="editDevTxt">עריכה במכשיר זה</span></button>
       <button class="btn secondary" onclick="document.getElementById('restoreFile').click()">שחזור מגיבוי</button>
       <input type="file" id="restoreFile" accept=".json,application/json" style="display:none" onchange="importBackup(event)">
@@ -891,7 +899,7 @@ if ('serviceWorker' in navigator) {
 let DATA = {books:[], cards:[]};
 let RAW_DATA = null;   // data.json exactly as fetched, before anything is layered on it
 
-const APP_VERSION = 'v73';
+const APP_VERSION = 'v75';
 const BOOK_COLORS=['#C0673B','#244F5E','#D9A441','#8A5A44','#3E6E5E','#B0443B','#6E5A8A','#4A7C8C','#C98A3B','#5E7A44','#A84B6B','#3B5468','#7A6A4F'];
 function bookColor(id){ return BOOK_COLORS[(id-1) % BOOK_COLORS.length]; }
 let books=[];
@@ -1715,8 +1723,27 @@ function exportDataJson(){
    Editing is meant to happen on the computer only, so the phone cannot drift
    out of step. This is a per-device switch. */
 const EDITDEV_KEY='editingAllowed';
+
+/* Phones and tablets are read-only by default. Editing belongs on the
+   computer, because that is where the updated data.json can be committed and
+   pushed — an edit made on a phone would otherwise sit there unpublished and
+   invisible everywhere else. The switch below overrides this either way and is
+   remembered per device. */
+function isHandheld(){
+  try{
+    const ua = /Android|iPhone|iPad|iPod|Windows Phone|Mobile/i.test(navigator.userAgent||'');
+    const touch = (navigator.maxTouchPoints||0) > 0 || ('ontouchstart' in window);
+    const narrow = Math.min(screen.width||9999, screen.height||9999) <= 820;
+    return ua || (touch && narrow);
+  }catch(e){ return false; }
+}
 function editingAllowed(){
-  try{ return localStorage.getItem(EDITDEV_KEY)!=='off'; }catch(e){ return true; }
+  try{
+    const v = localStorage.getItem(EDITDEV_KEY);
+    if(v==='off') return false;
+    if(v==='on')  return true;
+    return !isHandheld();          // never set on this device: decide by device
+  }catch(e){ return true; }
 }
 function setEditingAllowed(on){
   try{ localStorage.setItem(EDITDEV_KEY, on?'on':'off'); }catch(e){}
@@ -1737,20 +1764,30 @@ function applyEditLock(){
     const lab=t.querySelector('.tile-label');
     if(lab && lab.textContent.trim()==='הוספת קלף') t.style.display = lock ? 'none' : '';
   });
+  const pub=document.getElementById('publishWrap');
+  if(pub) pub.style.display = lock ? 'none' : '';
   const t=document.getElementById('editDevTxt');
-  if(t) t.textContent = lock ? 'עריכה במכשיר זה: חסומה' : 'עריכה במכשיר זה: מותרת';
+  if(t) t.textContent = lock ? 'עריכה במכשיר זה: חסומה (מכשיר לצפייה בלבד)'
+                             : 'עריכה במכשיר זה: מותרת';
 }
 
 /* ================= SLIDESHOW MUSIC =================
-   An original piece synthesised with the Web Audio API — no audio file, so
-   nothing extra to download, it works offline, and no third-party recording is
-   involved. Wooden marimba-like tones over a soft hand-drum pulse, built from
-   short interlocking patterns. It opens sparse and quiet and fills out as the
-   slideshow runs. Plays ONLY during the slideshow. */
+   "Beloved" by Sakura Girl, a royalty-free track supplied by the owner and
+   stored in the repo at music/beloved.mp3. It plays only during the slideshow:
+   it begins at a random point in the piece so a run of cards never opens the
+   same way twice, fades up over two seconds, loops seamlessly for as long as
+   the slideshow is running, and fades out on exit.
+
+   Played through a plain <audio> element rather than the Web Audio API — a
+   five-minute track decoded into memory would cost a phone well over a hundred
+   megabytes, whereas the element streams it. */
 const MUSIC_KEY='ambientMusic';
 const MUSIC_SCREENS=['slideshow'];
-let _actx=null, _mBus=null, _mOn=false, _mTimer=null, _mStep=0, _mStart=0, _mFadeTimer=null;
-let _mTrans=1, _mPat=null, _mBarOff=0, _mLead=null;
+const MUSIC_SRC='music/beloved.mp3';
+const MUSIC_VOL=0.55;          // full playing volume
+const FADE_IN_MS=2000;         // the slow opening the owner asked for
+const FADE_OUT_MS=1200;
+let _audio=null, _fadeTimer=null, _mOn=false;
 
 function musicEnabled(){
   try{ return localStorage.getItem(MUSIC_KEY)!=='off'; }catch(e){ return true; }
@@ -1776,177 +1813,64 @@ function updateMusicBtn(){
   if(t) t.textContent = on ? 'מוזיקה במצגת: פועלת' : 'מוזיקה במצגת: מושתקת';
 }
 
-function _ctx(){
-  if(!_actx){
-    const AC = window.AudioContext || window.webkitAudioContext;
-    if(!AC) return null;
-    _actx = new AC();
+function _getAudio(){
+  if(!_audio){
+    _audio=new Audio(MUSIC_SRC);
+    _audio.loop=true;
+    _audio.preload='auto';
+    _audio.volume=0;
+    _audio.addEventListener('error',function(){ _mOn=false; });
   }
-  if(_actx.state==='suspended'){ try{ _actx.resume(); }catch(e){} }
-  return _actx;
+  return _audio;
 }
 
-/* ---- marimba: a wooden bar. Struck hard and briefly, with the odd harmonic
-   spacing that gives tuned wood its hollow ring, and a fast decay. ---- */
-function _marimba(ctx, freq, when, vel, dest){
-  const dur = Math.max(0.45, 1.5 - freq/1400);      // low bars ring longer
-  const amp=ctx.createGain();
-  amp.gain.setValueAtTime(0.0001, when);
-  amp.gain.linearRampToValueAtTime(vel, when+0.004);
-  amp.gain.exponentialRampToValueAtTime(vel*0.18, when+0.09);
-  amp.gain.exponentialRampToValueAtTime(0.0001, when+dur);
-
-  const bp=ctx.createBiquadFilter();
-  bp.type='lowpass'; bp.frequency.value=Math.min(6000, freq*6+700); bp.Q.value=0.7;
-  amp.connect(bp); bp.connect(dest);
-
-  // the bar itself plus its characteristic upper partials
-  [[1,1],[3.9,0.30],[9.2,0.10]].forEach(function(pr){
-    const o=ctx.createOscillator(), g=ctx.createGain();
-    o.type='sine'; o.frequency.value=freq*pr[0];
-    g.gain.value=pr[1];
-    o.connect(g); g.connect(amp);
-    o.start(when); o.stop(when+dur+0.05);
-  });
-  // the knock of the mallet
-  const nb=ctx.createBufferSource(), nlen=Math.floor(ctx.sampleRate*0.03);
-  const buf=ctx.createBuffer(1,nlen,ctx.sampleRate), ch=buf.getChannelData(0);
-  for(let i=0;i<nlen;i++){ ch[i]=(Math.random()*2-1)*(1-i/nlen); }
-  nb.buffer=buf;
-  const ng=ctx.createGain(); ng.gain.value=vel*0.20;
-  const nf=ctx.createBiquadFilter(); nf.type='bandpass'; nf.frequency.value=freq*2.5; nf.Q.value=1.2;
-  nb.connect(nf); nf.connect(ng); ng.connect(dest);
-  nb.start(when);
-}
-
-/* ---- hand drum: a pitched thump plus a skin slap ---- */
-function _drum(ctx, low, when, vel, dest){
-  const o=ctx.createOscillator(), g=ctx.createGain();
-  o.type='sine';
-  o.frequency.setValueAtTime(low*1.7, when);
-  o.frequency.exponentialRampToValueAtTime(low, when+0.06);
-  g.gain.setValueAtTime(0.0001, when);
-  g.gain.linearRampToValueAtTime(vel, when+0.005);
-  g.gain.exponentialRampToValueAtTime(0.0001, when+0.42);
-  o.connect(g); g.connect(dest);
-  o.start(when); o.stop(when+0.5);
-
-  const nlen=Math.floor(ctx.sampleRate*0.09);
-  const buf=ctx.createBuffer(1,nlen,ctx.sampleRate), c=buf.getChannelData(0);
-  for(let i=0;i<nlen;i++){ c[i]=(Math.random()*2-1)*Math.pow(1-i/nlen,2.5); }
-  const nb=ctx.createBufferSource(); nb.buffer=buf;
-  const nf=ctx.createBiquadFilter(); nf.type='bandpass'; nf.frequency.value=1500; nf.Q.value=0.8;
-  const ng=ctx.createGain(); ng.gain.value=vel*0.28;
-  nb.connect(nf); nf.connect(ng); ng.connect(dest);
-  nb.start(when);
-}
-
-/* An original cycle. Two chords, open and unhurried, in a bright major.
-   Marimba music of the region leans on short interlocking figures, so the
-   parts are written as repeating cells that sit against each other. */
-const _CH=[
-  {bass: 98.00, notes:[196.00,246.94,293.66,392.00,493.88]},   // G
-  {bass:130.81, notes:[261.63,329.63,392.00,523.25,659.25]}    // C
-];
-const _PATTERNS=[
-  [0,2,4,2,1,3,2,0],
-  [0,3,1,4,2,3,1,2],
-  [0,2,1,3,4,2,3,1],
-  [0,4,2,3,1,2,4,0]
-];
-const _LEADS=[
-  [4,3,2,4,-1,3,2,-1],
-  [-1,4,3,-1,2,4,-1,3],
-  [3,-1,4,2,-1,4,3,-1]
-];
-
-function _newVariation(){
-  const semis=[-3,-2,-1,0,1,2];
-  _mTrans = Math.pow(2, semis[Math.floor(Math.random()*semis.length)]/12);
-  _mPat   = _PATTERNS[Math.floor(Math.random()*_PATTERNS.length)];
-  _mLead  = _LEADS[Math.floor(Math.random()*_LEADS.length)];
-  _mBarOff= Math.floor(Math.random()*2);
-  _mStep  = Math.floor(Math.random()*4)*2;
-}
-
-function _tick(){
-  if(!_mOn) return;
-  const ctx=_actx; if(!ctx) return;
-  const elapsed=ctx.currentTime-_mStart;
-  const grow=Math.min(1, elapsed/45);
-  const bpm=76+grow*30;                  // 76 -> 106
-  const stepDur=(60/bpm)/2;
-  const when=ctx.currentTime+0.06;
-
-  const bar=(Math.floor(_mStep/8)+_mBarOff)%2;
-  const pos=_mStep%8;
-  const ch=_CH[bar];
-  const T=_mTrans;
-  const soft=0.28+0.72*Math.min(1, elapsed/9);   // held back at the opening
-
-  // drum: a heartbeat first, filling in later
-  if(pos===0) _drum(ctx, ch.bass*T*0.5, when, 0.30*soft, _mBus);
-  if(grow>0.3 && pos===4) _drum(ctx, ch.bass*T*0.5, when, 0.20*soft, _mBus);
-  if(grow>0.65 && (pos===3||pos===6)) _drum(ctx, ch.bass*T*0.75, when, 0.11*soft, _mBus);
-
-  // bass marimba
-  if(pos===0 || (grow>0.4 && pos===5)){
-    _marimba(ctx, ch.bass*T, when, 0.22*soft, _mBus);
-  }
-  // the main interlocking figure
-  const play=(pos%4===0) || (grow>0.2 && pos%2===0) || (grow>0.55);
-  if(play){
-    _marimba(ctx, ch.notes[_mPat[pos]]*T, when, (0.13+0.07*grow)*soft, _mBus);
-  }
-  // a higher part answering it, once things have opened up
-  if(grow>0.3){
-    const li=_mLead[pos];
-    if(li>=0 && Math.random()<0.45+0.4*grow){
-      _marimba(ctx, ch.notes[li]*2*T, when+stepDur*0.5, (0.075+0.05*grow)*soft, _mBus);
+/* linear ramp on the element's own volume — no AudioContext needed */
+function _fadeTo(target, ms, done){
+  if(_fadeTimer){ clearInterval(_fadeTimer); _fadeTimer=null; }
+  const el=_getAudio();
+  const from=el.volume, steps=Math.max(1, Math.round(ms/50));
+  let i=0;
+  _fadeTimer=setInterval(function(){
+    i++;
+    const v=from+(target-from)*(i/steps);
+    try{ el.volume=Math.max(0, Math.min(1, v)); }catch(e){}
+    if(i>=steps){
+      clearInterval(_fadeTimer); _fadeTimer=null;
+      if(done) done();
     }
-  }
-
-  _mStep++;
-  _mTimer=setTimeout(_tick, stepDur*1000);
+  }, 50);
 }
 
 function startAmbient(){
   if(_mOn || !musicEnabled()) return;
-  const ctx=_ctx(); if(!ctx) return;
-  _mOn=true; _mStart=ctx.currentTime; _newVariation();
-  if(_mFadeTimer){ clearTimeout(_mFadeTimer); _mFadeTimer=null; }
+  const el=_getAudio();
+  _mOn=true;
 
-  _mBus=ctx.createGain();
-  _mBus.gain.setValueAtTime(0.0001, ctx.currentTime);
-  _mBus.gain.exponentialRampToValueAtTime(0.14, ctx.currentTime+3.5);
-  _mBus.gain.exponentialRampToValueAtTime(0.60, ctx.currentTime+24);
+  const begin=function(){
+    if(!_mOn) return;
+    // drop in at a random point, keeping clear of the very end
+    const d=el.duration;
+    if(isFinite(d) && d>10){
+      try{ el.currentTime=Math.random()*(d-6); }catch(e){}
+    }
+    el.volume=0;
+    const pr=el.play();
+    if(pr && pr.catch) pr.catch(function(){ /* blocked until a tap; harmless */ });
+    _fadeTo(MUSIC_VOL, FADE_IN_MS);
+  };
 
-  const wet=ctx.createGain(); wet.gain.value=0.16;
-  const dly=ctx.createDelay(1.0); dly.delayTime.value=0.23;
-  const fb=ctx.createGain(); fb.gain.value=0.22;
-  const damp=ctx.createBiquadFilter(); damp.type='lowpass'; damp.frequency.value=2600;
-  _mBus.connect(ctx.destination);
-  _mBus.connect(wet); wet.connect(dly); dly.connect(damp); damp.connect(fb);
-  fb.connect(dly); damp.connect(ctx.destination);
-
-  _tick();
+  if(isFinite(el.duration) && el.duration>0){ begin(); }
+  else { el.addEventListener('loadedmetadata', begin, {once:true}); try{ el.load(); }catch(e){} }
 }
 
 function stopAmbient(){
   if(!_mOn) return;
   _mOn=false;
-  if(_mTimer){ clearTimeout(_mTimer); _mTimer=null; }
-  const ctx=_actx, bus=_mBus;
-  if(ctx && bus){
-    const now=ctx.currentTime;
-    try{
-      bus.gain.cancelScheduledValues(now);
-      bus.gain.setValueAtTime(Math.max(bus.gain.value,0.0001), now);
-      bus.gain.exponentialRampToValueAtTime(0.0001, now+1.3);
-    }catch(e){}
-    _mFadeTimer=setTimeout(function(){ try{ bus.disconnect(); }catch(e){} }, 1700);
-  }
-  _mBus=null;
+  const el=_audio;
+  if(!el) return;
+  _fadeTo(0, FADE_OUT_MS, function(){
+    try{ el.pause(); }catch(e){}
+  });
 }
 
 document.addEventListener('visibilitychange',function(){ if(document.hidden) stopAmbient(); });
