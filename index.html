@@ -171,6 +171,10 @@
   }
   #bootLoader .boot-sub{font-size:12.5px;opacity:.65;font-weight:500;}
   /* an image that has not arrived yet shows a small ring in its place */
+  .slide-music{
+    position:absolute; top:14px; inset-inline-start:14px; z-index:60;
+    background:rgba(0,0,0,.35); border-radius:50%; padding:8px; color:#fff;
+  }
   .music-btn{
     margin-inline-start:auto; background:transparent; border:none; padding:6px;
     color:var(--clay,#C0673B); cursor:pointer; opacity:.75; line-height:0;
@@ -774,6 +778,7 @@ if ('serviceWorker' in navigator) {
 
   <!-- SLIDESHOW (full screen, tap to exit) -->
   <div class="screen" id="slideshow">
+    <button class="music-btn slide-music" id="musicBtnSlide" onclick="event.stopPropagation();toggleMusic()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path class="wave-a" d="M15.5 8.5a5 5 0 0 1 0 7"/><path class="wave-b" d="M18.5 5.5a9 9 0 0 1 0 13"/><line class="mute-x" x1="16" y1="9" x2="22" y2="15"/><line class="mute-x" x1="22" y1="9" x2="16" y2="15"/></svg></button>
     <div class="slideshow-body" id="slideBody" onclick="exitSlideshow()"></div>
   </div>
 
@@ -876,7 +881,7 @@ if ('serviceWorker' in navigator) {
 /* ============ DATA (loaded from data/data.json) ============ */
 let DATA = {books:[], cards:[]};
 
-const APP_VERSION = 'v68';
+const APP_VERSION = 'v69';
 const BOOK_COLORS=['#C0673B','#244F5E','#D9A441','#8A5A44','#3E6E5E','#B0443B','#6E5A8A','#4A7C8C','#C98A3B','#5E7A44','#A84B6B','#3B5468','#7A6A4F'];
 function bookColor(id){ return BOOK_COLORS[(id-1) % BOOK_COLORS.length]; }
 let books=[];
@@ -1587,33 +1592,39 @@ function runSearch(){
   attachImgLoaders(g);
 }
 
-/* ================= AMBIENT MUSIC ON THE CARD SCREEN =================
-   Synthesised with the Web Audio API — no audio file, so nothing extra to
-   download and it works offline. A soft low chord fades in very slowly, with
-   occasional distant bell tones drifting over it. Plays only while a card is
-   open; silent everywhere else. */
+/* ================= MUSIC WHILE A CARD IS ON SCREEN =================
+   An original piece, synthesised with the Web Audio API — no audio file, so
+   nothing extra to download, it works offline, and there is no third-party
+   music involved. Piano-like tones over a warm major progression. It opens
+   sparse and slow and gradually becomes livelier: the tempo lifts, the
+   arpeggio fills in, and a melody joins on top. Plays on the card screen, the
+   slideshow and the single draw; silent everywhere else. */
 const MUSIC_KEY='ambientMusic';
-let _actx=null, _mMaster=null, _mVoices=[], _mBellTimer=null, _mFadeTimer=null, _mOn=false;
+const MUSIC_SCREENS=['cardDetail','slideshow','singleDraw'];
+let _actx=null, _mBus=null, _mOn=false, _mTimer=null, _mStep=0, _mStart=0, _mFadeTimer=null;
 
 function musicEnabled(){
   try{ return localStorage.getItem(MUSIC_KEY)!=='off'; }catch(e){ return true; }
 }
 function setMusicEnabled(on){
   try{ localStorage.setItem(MUSIC_KEY, on?'on':'off'); }catch(e){}
-  if(!on) stopAmbient(); else if(document.getElementById('cardDetail').classList.contains('active')) startAmbient();
+  if(!on){ stopAmbient(); }
+  else {
+    const act=document.querySelector('.screen.active');
+    if(act && MUSIC_SCREENS.indexOf(act.id)>=0) startAmbient();
+  }
   updateMusicBtn();
 }
 function toggleMusic(){ setMusicEnabled(!musicEnabled()); }
 
 function updateMusicBtn(){
-  const b=document.getElementById('musicBtn');
-  if(b){
-    const on=musicEnabled();
+  const on=musicEnabled();
+  document.querySelectorAll('.music-btn').forEach(function(b){
     b.classList.toggle('muted', !on);
     b.title = on ? 'מוזיקה פועלת — לחצו להשתקה' : 'מוזיקה מושתקת — לחצו להפעלה';
-  }
+  });
   const t=document.getElementById('musicToggleTxt');
-  if(t) t.textContent = musicEnabled() ? 'מוזיקה בצפייה בקלף: פועלת' : 'מוזיקה בצפייה בקלף: מושתקת';
+  if(t) t.textContent = on ? 'מוזיקה בצפייה בקלף: פועלת' : 'מוזיקה בצפייה בקלף: מושתקת';
 }
 
 function _ctx(){
@@ -1626,86 +1637,120 @@ function _ctx(){
   return _actx;
 }
 
-/* one soft voice: a sine with a gentle wandering detune */
-function _voice(ctx, freq, gain, dest){
-  const o=ctx.createOscillator(), g=ctx.createGain(), lfo=ctx.createOscillator(), lg=ctx.createGain();
-  o.type='sine'; o.frequency.value=freq;
-  g.gain.value=gain;
-  lfo.type='sine'; lfo.frequency.value=0.03+Math.random()*0.05;   // very slow drift
-  lg.gain.value=gain*0.45;
-  lfo.connect(lg); lg.connect(g.gain);
-  o.connect(g); g.connect(dest);
-  o.start(); lfo.start();
-  return {o:o, lfo:lfo, g:g};
+/* ---- a piano-like note: struck attack, harmonics, filter closing as it decays ---- */
+function _piano(ctx, freq, when, dur, vel, dest){
+  const partials=[[1,1],[2,0.42],[3,0.17],[4,0.08],[5,0.04]];
+  const amp=ctx.createGain();
+  amp.gain.setValueAtTime(0.0001, when);
+  amp.gain.linearRampToValueAtTime(vel, when+0.006);          // the strike
+  amp.gain.exponentialRampToValueAtTime(vel*0.30, when+0.22); // quick initial fall
+  amp.gain.exponentialRampToValueAtTime(0.0001, when+dur);    // long tail
+
+  const lp=ctx.createBiquadFilter();
+  lp.type='lowpass';
+  lp.frequency.setValueAtTime(Math.min(7000, freq*7+900), when);
+  lp.frequency.exponentialRampToValueAtTime(Math.max(320, freq*2.2), when+dur*0.8);
+  lp.Q.value=0.5;
+
+  amp.connect(lp); lp.connect(dest);
+  partials.forEach(function(pr){
+    const o=ctx.createOscillator(), g=ctx.createGain();
+    o.type='sine';
+    o.frequency.value=freq*pr[0]*(1+ (pr[0]-1)*0.0009);   // slight inharmonicity
+    g.gain.value=pr[1];
+    o.connect(g); g.connect(amp);
+    o.start(when); o.stop(when+dur+0.05);
+  });
 }
 
-/* a sparse, distant bell */
-function _bell(ctx, dest){
-  const scale=[523.25, 587.33, 659.25, 783.99, 880.00, 1046.50];  // pentatonic, gentle
-  const f=scale[Math.floor(Math.random()*scale.length)];
-  const o=ctx.createOscillator(), g=ctx.createGain();
-  o.type='sine'; o.frequency.value=f;
-  const now=ctx.currentTime;
-  g.gain.setValueAtTime(0, now);
-  g.gain.linearRampToValueAtTime(0.055, now+0.35);
-  g.gain.exponentialRampToValueAtTime(0.0001, now+6.5);
-  o.connect(g); g.connect(dest);
-  o.start(now); o.stop(now+7);
+/* ---- an original progression in D major: warm, open, unhurried ---- */
+const _CHORDS=[
+  {bass:73.42,  notes:[146.83,220.00,293.66,369.99]},  // D
+  {bass:110.00, notes:[164.81,277.18,329.63,440.00]},  // A
+  {bass:123.47, notes:[185.00,246.94,293.66,369.99]},  // Bm
+  {bass:98.00,  notes:[146.83,196.00,246.94,293.66]}   // G
+];
+/* melody pool — D major pentatonic, an original line built from it */
+const _MEL=[293.66,329.63,369.99,440.00,493.88,587.33,659.25,739.99];
+const _PATTERN=[0,2,1,3,2,0,3,1];   // arpeggio order within a chord
+
+function _tick(){
+  if(!_mOn) return;
+  const ctx=_actx; if(!ctx){ return; }
+  const elapsed=(ctx.currentTime-_mStart);
+
+  /* how far into the "waking up" we are: 0 at the start, 1 after ~50 seconds */
+  const grow=Math.min(1, elapsed/50);
+
+  const bpm=66+grow*26;                 // 66 -> 92, lifts as it opens up
+  const stepDur=(60/bpm)/2;             // eighth notes
+  const when=ctx.currentTime+0.06;
+
+  const bar=Math.floor(_mStep/8)%4;
+  const pos=_mStep%8;
+  const ch=_CHORDS[bar];
+
+  // bass note on the downbeat, gentle
+  if(pos===0){
+    _piano(ctx, ch.bass, when, 3.4, 0.15+0.05*grow, _mBus);
+  }
+  // arpeggio: sparse at first, filling in as it grows
+  const play = (pos%4===0) || (grow>0.25 && pos%2===0) || (grow>0.6);
+  if(play){
+    const n=ch.notes[_PATTERN[pos]%ch.notes.length];
+    _piano(ctx, n, when, 1.9, 0.10+0.07*grow, _mBus);
+  }
+  // melody joins once it has warmed up, and stays sparse enough to breathe
+  if(grow>0.35 && (pos===2||pos===5||pos===7) && Math.random()<0.28+0.3*grow){
+    const m=_MEL[Math.floor(Math.random()*_MEL.length)];
+    _piano(ctx, m, when+stepDur*0.12, 2.6, 0.075+0.05*grow, _mBus);
+  }
+
+  _mStep++;
+  _mTimer=setTimeout(_tick, stepDur*1000);
 }
 
 function startAmbient(){
   if(_mOn || !musicEnabled()) return;
   const ctx=_ctx(); if(!ctx) return;
-  _mOn=true;
+  _mOn=true; _mStep=0; _mStart=ctx.currentTime;
   if(_mFadeTimer){ clearTimeout(_mFadeTimer); _mFadeTimer=null; }
 
-  _mMaster=ctx.createGain();
-  _mMaster.gain.value=0.0001;
-  const lp=ctx.createBiquadFilter();
-  lp.type='lowpass'; lp.frequency.value=900; lp.Q.value=0.4;   // soft, no harshness
-  _mMaster.connect(lp); lp.connect(ctx.destination);
+  _mBus=ctx.createGain();
+  _mBus.gain.setValueAtTime(0.0001, ctx.currentTime);
+  _mBus.gain.exponentialRampToValueAtTime(0.30, ctx.currentTime+2.2);  // in gently
+  _mBus.gain.exponentialRampToValueAtTime(0.62, ctx.currentTime+22);   // then opens out
 
-  // a quiet open chord, low in the register
-  const chord=[130.81, 196.00, 261.63, 329.63];                 // C3 G3 C4 E4
-  const gains=[0.085, 0.055, 0.045, 0.030];
-  _mVoices = chord.map((f,i)=>_voice(ctx, f, gains[i], _mMaster));
+  // a little air around the piano
+  const wet=ctx.createGain(); wet.gain.value=0.20;
+  const dly=ctx.createDelay(1.0); dly.delayTime.value=0.28;
+  const fb=ctx.createGain(); fb.gain.value=0.26;
+  const damp=ctx.createBiquadFilter(); damp.type='lowpass'; damp.frequency.value=2200;
+  _mBus.connect(ctx.destination);
+  _mBus.connect(wet); wet.connect(dly); dly.connect(damp); damp.connect(fb);
+  fb.connect(dly); damp.connect(ctx.destination);
 
-  // the slow rise the owner asked for: barely audible, then up over ~14 seconds
-  const now=ctx.currentTime;
-  _mMaster.gain.setValueAtTime(0.0001, now);
-  _mMaster.gain.exponentialRampToValueAtTime(0.035, now+2.5);  // audible, but barely
-  _mMaster.gain.exponentialRampToValueAtTime(0.22,  now+16);   // then swells very slowly
-
-  // distant bells, sparse and random
-  const schedule=()=>{
-    if(!_mOn) return;
-    _bell(ctx, _mMaster);
-    _mBellTimer=setTimeout(schedule, 7000+Math.random()*11000);
-  };
-  _mBellTimer=setTimeout(schedule, 4500+Math.random()*4000);
+  _tick();
 }
-
-document.addEventListener('visibilitychange',function(){ if(document.hidden) stopAmbient(); });
 
 function stopAmbient(){
   if(!_mOn) return;
   _mOn=false;
-  if(_mBellTimer){ clearTimeout(_mBellTimer); _mBellTimer=null; }
-  const ctx=_actx;
-  if(ctx && _mMaster){
-    const now=ctx.currentTime, m=_mMaster, vs=_mVoices;
+  if(_mTimer){ clearTimeout(_mTimer); _mTimer=null; }
+  const ctx=_actx, bus=_mBus;
+  if(ctx && bus){
+    const now=ctx.currentTime;
     try{
-      m.gain.cancelScheduledValues(now);
-      m.gain.setValueAtTime(Math.max(m.gain.value,0.0001), now);
-      m.gain.exponentialRampToValueAtTime(0.0001, now+1.6);   // gentle fade out
+      bus.gain.cancelScheduledValues(now);
+      bus.gain.setValueAtTime(Math.max(bus.gain.value,0.0001), now);
+      bus.gain.exponentialRampToValueAtTime(0.0001, now+1.4);
     }catch(e){}
-    _mFadeTimer=setTimeout(function(){
-      vs.forEach(function(v){ try{ v.o.stop(); v.lfo.stop(); }catch(e){} });
-      try{ m.disconnect(); }catch(e){}
-    }, 1900);
+    _mFadeTimer=setTimeout(function(){ try{ bus.disconnect(); }catch(e){} }, 1800);
   }
-  _mMaster=null; _mVoices=[];
+  _mBus=null;
 }
+
+document.addEventListener('visibilitychange',function(){ if(document.hidden) stopAmbient(); });
 
 /* ---- SLIDESHOW ---- */
 function exitSlideshow(){ stopSlideshow(); showScreen('slideMenu'); }
@@ -2219,7 +2264,7 @@ function resetScroll(){
   setTimeout(scrollTopNow,0);                            // after the grid is built
   setTimeout(scrollTopNow,120);                          // after the fade animation
 }
-function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(id==='books')renderBooks();resetScroll();var _fab=document.getElementById('homeFab');if(_fab)_fab.style.display=(id==='slideshow')?'none':'flex';if(id==='cardDetail'){setTimeout(attachCardImageListener,100);startAmbient();updateMusicBtn();}else{stopAmbient();}}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(id==='books')renderBooks();resetScroll();var _fab=document.getElementById('homeFab');if(_fab)_fab.style.display=(id==='slideshow')?'none':'flex';if(id==='cardDetail'){setTimeout(attachCardImageListener,100);}if(MUSIC_SCREENS.indexOf(id)>=0){startAmbient();updateMusicBtn();}else{stopAmbient();}}
 
 function attachCardImageListener(){
   const img=document.querySelector('.detail-img');

@@ -1,6 +1,6 @@
 # סול קולאז' של עירא — ידע הפרויקט / Project Knowledge
 
-**עודכן / Last updated:** 12 באוגוסט 2026 · **גרסת אפליקציה / App version:** v68
+**עודכן / Last updated:** 12 באוגוסט 2026 · **גרסת אפליקציה / App version:** v69
 
 מסמך זה הוא מקור האמת היחיד לפרויקט. החלק הראשון בעברית, החלק השני באנגלית —
 שני החלקים מכסים את אותו תוכן.
@@ -162,13 +162,16 @@ im.save(dst, 'JPEG', quality=85, optimize=True, progressive=True)
 `.subhead` היא `position: sticky; top: 0; z-index: 40`. חץ החזרה הוא שברון
 המצביע **ימינה** — נכון לממשק מימין לשמאל, אין "לתקן" אותו לשמאל.
 
-### מוזיקת רקע
-המוזיקה מסונתזת ב־Web Audio API (`startAmbient()` / `stopAmbient()`), ללא קובץ
-שמע — לכן אין הורדה נוספת, אין בעיית זכויות יוצרים, והיא פועלת גם בלי רשת.
-אקורד נמוך של ארבעה סינוסים דרך מסנן low-pass, עם פעמונים דלילים אקראיים.
-העוצמה עולה מ־0.0001 ל־0.035 בשתי שניות וחצי, ואז ל־0.22 לאורך 16 שניות.
-מופעלת רק במסך `cardDetail` דרך `showScreen()`, ונעצרת בכל מסך אחר וכשהלשונית
-מוסתרת. ההעדפה נשמרת ב־localStorage תחת `ambientMusic`.
+### מוזיקה
+יצירה מקורית המסונתזת ב־Web Audio API, ללא קובץ שמע — אין הורדה נוספת, אין
+בעיית זכויות יוצרים, ופועלת גם בלי רשת. `_piano()` בונה צליל דמוי פסנתר
+מחמש הרמוניות עם מעטפת הקשה ומסנן שנסגר בזמן הדעיכה. `_tick()` הוא סדרן
+צעדים: פרוגרסיה בסולם רה מז'ור (D–A–Bm–G), בס בפעמה הראשונה, ארפג'ו, ומלודיה
+פנטטונית שנכנסת אחרי כשליש מהדרך. הקצב עולה מ־66 ל־92 פעימות, וצפיפות
+התווים גדלה — פותח לאט ונעשה חי.
+מופעל במסכים שב־`MUSIC_SCREENS` (`cardDetail`, `slideshow`, `singleDraw`),
+נעצר בכל מסך אחר וכשהלשונית מוסתרת. מעבר בין שני מסכי־מוזיקה אינו מאתחל את
+הנגינה. ההעדפה נשמרת ב־localStorage תחת `ambientMusic`.
 
 ### מחיקת קלף
 כפתור "מחיקת הקלף" בתחתית מסך הקלף מבקש סיסמה. `checkDeletePass()` משווה
@@ -598,6 +601,14 @@ before replacing it.
   78; 1360 a tiger, 1363 a fairground ride, 1366 a snake). Image 1445 → card
   1359; images 1446–1447 became cards 1367–1368 with no note. Journal 12 is now
   100 cards, 1269–1368.
+- **18 Aug 2026** — **v69.** The music was rewritten from an ambient drone to an
+  original piano piece: `_piano()` synthesises a struck tone from five partials
+  with a closing filter, and `_tick()` sequences a D-major progression whose
+  tempo climbs 66→92 BPM while note density roughly quadruples over the first
+  fifty seconds. Extended to the slideshow and the single draw via
+  `MUSIC_SCREENS`; switching between those screens does not restart it. A second
+  mute button was added over the slideshow. **The brief referenced a well-known
+  song — the piece is an original written for the mood, not a reproduction.**
 - **12 Aug 2026** — **v68.** Ambient music while a card is open, synthesised
   with the Web Audio API rather than shipped as a file: a low four-note chord
   through a low-pass filter plus sparse random bell tones, fading in over about

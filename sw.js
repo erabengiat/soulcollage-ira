@@ -4,7 +4,7 @@
    - Cache is only a fallback for offline use.
    Its presence is what lets Android offer a real "Install app". */
 
-const CACHE = 'sole-collage-era-v34';
+const CACHE = 'sole-collage-era-v35';
 
 self.addEventListener('install', (e) => {
   self.skipWaiting();
