@@ -1,6 +1,6 @@
 # סול קולאז' של עירא — מדריך מרכזי / Central Handout
 
-**גרסה / Version:** v69 · **עודכן / Updated:** 12 באוגוסט 2026
+**גרסה / Version:** v71 · **עודכן / Updated:** 12 באוגוסט 2026
 
 *עברית למטה בחלק הראשון · English in the second half*
 
@@ -69,7 +69,7 @@
 - **הוספת קלף** — צילום או בחירת תמונה, שם, הערה וסדרה
 - **עריכת קלף** — שינוי שם, הערה, סדרה, יומן או תמונה
 - **מחיקת קלף** — בתחתית מסך הקלף, מוגן בסיסמה. המחיקה מקומית למכשיר בלבד
-- **מוזיקה** — פסנתר, נשמעת בצפייה בקלף, במצגת ובשליפת קלף. פותחת לאט ונעשית חיה. כפתור הרמקול משתיק
+- **מוזיקה** — מרימבה ותוף יד, **רק במצגת**. פותחת שקטה ולאט ונעשית חיה, ושונה בכל הפעלה. כפתור הרמקול משתיק
 - **קישור לצפייה** — קישור לחברים לצפייה בלבד, בלי אפשרות לערוך
 - **גיבוי** — ייצוא וייבוא של כל השינויים לקובץ
 
@@ -179,7 +179,7 @@ image, or a man-made object as a subject, disqualifies it.
 - **Add a card** — photo or gallery image, name, note, suit
 - **Edit a card** — name, note, suit, journal, or picture
 - **Delete a card** — at the bottom of the card screen, password-protected. The deletion is local to that device only
-- **Music** — piano, on the card screen, the slideshow and the single draw. Starts slow and grows livelier. The speaker button mutes it
+- **Music** — marimba and hand drum, **in the slideshow only**. Opens quiet and slow, grows livelier, and differs every time. The speaker button mutes it
 - **Share link** — a view-only link for friends; they cannot edit
 - **Backup** — export and import all local changes as a file
 

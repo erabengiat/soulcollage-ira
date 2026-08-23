@@ -1,6 +1,6 @@
 # סול קולאז' של עירא — ידע הפרויקט / Project Knowledge
 
-**עודכן / Last updated:** 12 באוגוסט 2026 · **גרסת אפליקציה / App version:** v69
+**עודכן / Last updated:** 12 באוגוסט 2026 · **גרסת אפליקציה / App version:** v71
 
 מסמך זה הוא מקור האמת היחיד לפרויקט. החלק הראשון בעברית, החלק השני באנגלית —
 שני החלקים מכסים את אותו תוכן.
@@ -163,15 +163,13 @@ im.save(dst, 'JPEG', quality=85, optimize=True, progressive=True)
 המצביע **ימינה** — נכון לממשק מימין לשמאל, אין "לתקן" אותו לשמאל.
 
 ### מוזיקה
-יצירה מקורית המסונתזת ב־Web Audio API, ללא קובץ שמע — אין הורדה נוספת, אין
-בעיית זכויות יוצרים, ופועלת גם בלי רשת. `_piano()` בונה צליל דמוי פסנתר
-מחמש הרמוניות עם מעטפת הקשה ומסנן שנסגר בזמן הדעיכה. `_tick()` הוא סדרן
-צעדים: פרוגרסיה בסולם רה מז'ור (D–A–Bm–G), בס בפעמה הראשונה, ארפג'ו, ומלודיה
-פנטטונית שנכנסת אחרי כשליש מהדרך. הקצב עולה מ־66 ל־92 פעימות, וצפיפות
-התווים גדלה — פותח לאט ונעשה חי.
-מופעל במסכים שב־`MUSIC_SCREENS` (`cardDetail`, `slideshow`, `singleDraw`),
-נעצר בכל מסך אחר וכשהלשונית מוסתרת. מעבר בין שני מסכי־מוזיקה אינו מאתחל את
-הנגינה. ההעדפה נשמרת ב־localStorage תחת `ambientMusic`.
+יצירה מקורית המסונתזת ב־Web Audio API, ללא קובץ שמע — אין הורדה, אין בעיית
+זכויות יוצרים, ופועלת בלי רשת. `_marimba()` בונה צליל עץ מוקש עם הרמוניות לא
+הרמוניות ודעיכה מהירה; `_drum()` מפיק תוף יד. `_tick()` מסדר תבניות משתלבות
+קצרות על שני אקורדים. הקצב עולה מ־76 ל־106 והצפיפות גדלה.
+**מופעל רק במצגת** (`MUSIC_SCREENS=['slideshow']`) — מסך הקלף ושליפת הקלף
+שקטים. כל הפעלה מקבלת טרנספוזיציה, תבנית ונקודת התחלה אקראיות, והפתיחה מרוסנת
+ל־28% מהעוצמה ועולה על פני 9 שניות. ההעדפה נשמרת תחת `ambientMusic`.
 
 ### מחיקת קלף
 כפתור "מחיקת הקלף" בתחתית מסך הקלף מבקש סיסמה. `checkDeletePass()` משווה
@@ -601,6 +599,16 @@ before replacing it.
   78; 1360 a tiger, 1363 a fairground ride, 1366 a snake). Image 1445 → card
   1359; images 1446–1447 became cards 1367–1368 with no note. Journal 12 is now
   100 cards, 1269–1368.
+- **23 Aug 2026** — **v70/v71.** Each play now picks a random transposition,
+  arpeggio pattern and starting point, so the same screen never sounds the same
+  twice, and every note is scaled by a `soft` factor that rises over the first
+  nine seconds so the opening is quiet regardless of the pattern. Then the piano
+  was replaced at the owner's request with a marimba-and-hand-drum piece
+  (`_marimba()`, `_drum()`) evoking southern African marimba music, and the
+  music was **restricted to the slideshow alone** — the card screen and single
+  draw are silent again, and the card-header speaker was removed. The owner
+  linked a YouTube video as a reference; it was not used, since copying a
+  recording is a copyright matter and the sandbox cannot reach YouTube anyway.
 - **18 Aug 2026** — **v69.** The music was rewritten from an ambient drone to an
   original piano piece: `_piano()` synthesises a struck tone from five partials
   with a closing filter, and `_tick()` sequences a D-major progression whose
