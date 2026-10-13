@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>סול קולאז' של עירא</title>
+<meta name="apple-mobile-web-app-title" content="סול קולאז' של עירא">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#F3EAD8">
+<!--
+  The shareable, view-only link. This page used to be a full separate copy of the
+  app and quietly fell behind (it was stuck on v51 and could not see journal 13).
+  It is now only a doorway into the real app in its built-in read-only mode, so
+  the shared link always shows the current collection and there is only one
+  codebase to maintain.
+-->
+<script>location.replace('index.html?view=1' + (location.hash || ''));</script>
+<style>
+  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
+       background:#F3EAD8;color:#244F5E;font-family:Assistant,system-ui,sans-serif;text-align:center}
+  a{color:#C0673B;font-weight:700}
+</style>
+</head>
+<body>
+  <p>פותחים את האוסף…<br><a href="index.html?view=1">אם לא נפתח, לחצו כאן</a></p>
+</body>
+</html>
